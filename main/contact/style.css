@@ -1,0 +1,846 @@
+#container {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+}
+
+#heading {
+  opacity: 0;
+}
+
+#slide {
+  z-index: 2;
+  position: fixed;
+  top: 160px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  font-family: 'Inconsolata', monospace;
+  color: rgba(207, 207, 207, 0.807);
+  font-size: 24px;
+  opacity: 0;
+  animation: fadeIn 2s ease-in-out forwards, slide 1s ease-in;
+}
+
+#send-btn {
+  width: 40px;
+  transition: all .1s ease-in-out;
+}
+
+#send-btn:hover {
+  cursor: pointer;
+  filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.9));
+  transform: scale(1.15, 1.15);
+}
+
+#contact {
+  font-family: 'Inconsolata', monospace;
+  display:flex;
+  position: fixed;
+  top: 155px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: 100%;
+  width: 650px;
+}
+
+body {
+  font-family: 'Teko', sans-serif;
+  font-size: 50px;
+  color: rgb(248, 248, 248);
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body:focus {
+  outline: none !important;
+}
+
+.title-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+img {
+  margin-top: 0px;
+}
+
+.logo-container {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  padding-bottom: 9px;
+}
+
+.logo {
+  max-height: 100%;
+  width: 78px;
+}
+
+ul#navbar {
+  width: 650px;
+  padding: 0 !important;
+  margin: 5px auto 15px auto;
+}
+
+ul#navbar li {
+  display:inline;
+  padding: 0 8px;
+}
+
+form {
+  display: none;
+  width: 100%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  position: relative;
+  height: calc(100% - 330px);
+}
+
+form p {
+  margin: 0px;
+}
+
+textarea.message-contact {
+  display: flex;
+  font-size: 16px;
+  min-height: 50px;
+  height: 100%;
+  margin: 50px auto 10px auto;
+  width: 90%;
+  height: 100%;
+  resize: none;
+  color: #FFF;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(238, 238, 238, 0.232);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: 1s box-shadow;
+  outline: none; 
+}
+
+.message-contact:hover {
+  box-shadow: 0 0 20px rgba(251, 251, 251, 0.156);
+}
+
+#submit {
+  font-family: 'Inconsolata', monospace;
+  background: transparent;
+  border: none;
+  color: rgba(207, 207, 207, 0.807);
+  font-size: 21px;
+  animation:bouncy 5s infinite linear;
+  transition: 2s;
+  letter-spacing: -1px;
+}
+
+#submit:hover {
+  text-shadow: 0 0 15px #ff71f6, 0 0 15px #34fff5;
+  color: rgb(253, 99, 225);
+  cursor: pointer;
+  transition:all .5s ease-in-out;
+  transform: scale(1.1,1.1);
+}
+
+a {
+  display: inline;
+  text-decoration: none;
+  position: relative;
+  color:rgba(248, 248, 248, 0.8);
+}
+
+a::after{
+  content: "";
+  background: white;
+	mix-blend-mode: exclusion;
+  width: calc(100% + 20px);
+  height: 0;
+  position: absolute;
+  bottom: -4px;
+  left: -10px;
+	transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+}
+
+a:hover::after{
+	height: calc(100% + 8px)
+}
+
+.wordsClick {
+  color: yellow;
+  text-shadow: 0 0 15px rgba(255, 255, 0, 0.5), 0 0 30px rgba(255, 255, 0, 0.5);
+  animation: move 2s linear infinite;
+}
+
+h1 {
+  font-family: 'Teko', sans-serif;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  color: #9effed;
+  letter-spacing: 8px;
+  top: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  position: relative;
+}
+
+h1::before {
+  content: "dyln.bk";
+  position: relative;
+  color: transparent;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0,
+    transparent 2px,
+    rgba(255, 165, 237, 0.869) 2px,
+    rgba(255, 103, 232, 0.845) 4px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  top: 0px;
+  left: 316px;
+  z-index: -1;
+  transition: 1s;
+}
+
+h1::after {
+  content: "dyln.bk";
+  position: relative;
+  color: transparent;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 2px,
+    rgb(177, 255, 249) 2px,
+    rgb(142, 255, 234) 4px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  top: 0px;
+  left: -316px;
+  transition: 1s;
+}
+
+h1:hover:before {
+  top: 5px;
+  left: 320px;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0,
+    transparent 2px,
+    rgba(255, 131, 241, 0.869) 2px,
+    rgba(255, 103, 232, 0.845) 4px
+  );
+}
+
+h1:hover:after {
+  top: -4px;
+  left: -320px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 2px,
+    rgb(0, 0, 0) 2px,
+    rgb(0, 255, 255) 4px
+  );
+} 
+
+.content {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  max-width: 650px;
+  height: 95vh;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.line {
+  position: fixed;
+  top: 140px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  display: flex;
+  opacity: 1;
+  gap: 5em;
+  width: 0%;
+  border-top: 1px solid rgba(157, 157, 157, 0.486);
+  text-align: center;
+  animation: line 1.5s linear forwards, fadeIn 2.5s ease-in-out forwards;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f100; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #bdbdbc24; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b7d0ff3b; 
+}
+
+
+pre, code {
+  white-space: pre-wrap;
+}
+
+ul.chatbox {
+  margin-bottom: 30px;
+  padding-left: 0px !important;
+}
+
+.chatbot {
+  display: block;
+  user-select: text;
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  background: #ffffff00;
+  border-radius: 15px;
+  opacity: 1;
+  transition: all 0.1s ease;
+}
+
+.chatbot .chatbox {
+  overflow-y: auto;
+  height: calc(100% - 450px);
+  padding: 30px 20px 100px 0px !important;
+}
+
+.chatbox .chat {
+  display: flex;
+  list-style: none;
+}
+.chatbox .outgoing {
+  justify-content: flex-end;
+  margin-left: 68px;
+}
+.chatbox .incoming span {
+
+  color: #fff;
+  font-size: 36px;
+  cursor: default;
+  text-align: center;
+  line-height: 38px;
+  align-self: flex-end;
+  background: #649aff00;
+  border-radius: 4px;
+  padding-bottom: 14px;
+  padding-left: 10px;
+  margin-right: 10px;
+}
+.chatbox .chat p {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  padding: 12px 12px;
+  border-radius: 10px 10px 0 10px;
+  max-width: 100%;
+  font-size: 0.95rem;
+  color: #ffffff;
+  background: #040404d3;
+  border: solid 1px #cfcfcf5e;
+}
+
+.chatbox .chat p.error {
+  color: #ffffff;
+  background: #040404a2;
+  border: solid 1px #9effed5f;
+}
+.chatbox .incoming p {
+  color: #ffffff;
+  background: #040404d3;
+  border: solid 1px #9effed5f;
+  border-radius: 10px 10px 10px 0;
+}
+.chatbot .chat-input {
+  width: 100%;
+  height: auto; 
+  background: #bdbdbc1c;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.chatbot .chat-input:hover,
+.chatbot .chat-input.clicked {
+  outline: solid 2px #9effed5f;
+}
+
+.chat-input textarea {
+  background: transparent;
+  color: #FFF;
+  max-height: 20px;
+  width: 90%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 15px 15px 15px 15px;
+  margin: auto;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  margin-top: 8px;
+  transition: .5s ease-in-out;
+}
+
+.chat-input span {
+  display: flex;
+  font-family: 'Inconsolata', monospace;
+  background: transparent;
+  border: none;
+  color: rgba(207, 207, 207, 0.807);
+  font-size: 32px;
+  transition: 2s;
+  padding: 5px 15px 5px 15px;
+  letter-spacing: -1px;
+}
+
+.chat-input span:hover {
+  cursor: pointer;
+  transition:all .5s ease-in-out;
+}
+
+.loading-dots:after {
+  position: absolute;
+  bottom: 245px;
+  left: 0;
+  right: 20px;
+  margin: auto;
+  content: ' .';
+  animation: dots 1s steps(18, end) infinite;
+}
+
+.closebtn {
+  font-size: 32px;
+  display: none;
+}
+
+#closebtn {
+  padding: 0px !important;
+}
+
+#toggle-button {
+  display: none;
+  position: absolute;
+  top: 145px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: rgba(255, 255, 255, 0.325);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+
+
+@keyframes slideIn {
+  0%{
+    transform: translateY(-10px);
+  }
+  100%{
+    transform: translateY(0px);
+  }
+}
+
+@keyframes slide {
+  0%{
+    transform: translateY(-20px);
+  }
+  100%{
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes move {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+
+@keyframes line {
+  from {
+    width: 0px;
+  }
+
+  to {
+    left: 0%;
+    width: 650px;
+  }
+}
+
+@keyframes line-short {
+  from {
+    width: 0px;
+  }
+
+  to {
+    left: 0%;
+    width: 450px;
+  }
+}
+
+@keyframes line-shorter {
+  from {
+    width: 0px;
+  }
+
+  to {
+    left: 0%;
+    width: 600px;
+  }
+}
+
+@media (max-width: 800px) {
+
+  #send-btn {
+    width: 35px;
+  }
+
+  .loading-dots:after {
+    bottom: 205px;
+  }
+
+  .chatbot .chatbox {
+    height: calc(100% - 380px);
+    padding: 0px 10px 100px 0px !important;
+    margin-top: 50px;
+  }
+
+  .chatbox .outgoing {
+    margin-left: 67px;
+  }
+
+  .title-container {
+    height: 100px;
+  }
+
+  h1 {
+    font-size: 80px;
+    letter-spacing: 4px;
+  }
+  
+  h1::before {
+    content: "dyln.bk";
+    position: relative;
+    color: transparent;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 165, 237, 0.869) 2px,
+      rgba(255, 103, 232, 0.845) 4px
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    top: 0px;
+    left: 236px;
+    z-index: -1;
+    transition: 1s;
+  }
+  
+  h1::after {
+    content: "dyln.bk";
+    position: relative;
+    color: transparent;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 2px,
+      rgb(177, 255, 249) 2px,
+      rgb(142, 255, 234) 4px
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    top: 0px;
+    left: -236px;
+    transition: 1s;
+  }
+  
+  h1:hover:before {
+    top: 5px;
+    left: 240px;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 131, 241, 0.869) 2px,
+      rgba(255, 103, 232, 0.845) 4px
+    );
+  }
+  
+  h1:hover:after {
+    top: -4px;
+    left: -240px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 2px,
+      rgb(0, 0, 0) 2px,
+      rgb(0, 255, 255) 4px
+    );
+  } 
+
+  #contact {
+    max-width: 450px;
+    width: 90%;
+    top: 120px;
+  }
+
+  .chat-input textarea  {
+    width: 85%;
+    font-size: 0.85rem;
+  }
+
+  .logo-container{
+    padding-bottom: 12px;
+  }
+
+  .logo {
+    max-height: 100%;
+    width: 62px;
+  }
+
+  .logo-container {
+    padding-bottom: 6px;
+  }
+
+  .line {
+    max-width: 88%;
+    top: 115px;
+    animation: line-short 1.5s linear forwards, fadeIn 1.5s ease-in forwards;
+  }
+
+  .chatbox .incoming span {
+    font-size: 35px;
+    margin: 0px 10px 0px 0px;
+    padding-bottom: 14px;
+  }
+
+  #slide {
+    font-size: 22px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  #navbar {
+    width: 100% !important;
+    display: none; /* Initially hiding the navbar */
+    flex-direction: column;
+    /* styling for animation */
+    animation: fadeIn 1s ease-in-out, slide 0.5s ease-in-out;
+    background-color: rgba(19, 19, 19, 0.97);
+    height: 100%;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 0 !important;
+  }
+
+  ul#navbar li {
+    display: flex;
+  }
+
+  #toggle-button {
+      display: block;
+  }
+
+  form {
+    height: calc(100% - 290px);
+  }
+
+  .closebtn {
+    display: block;
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .chatbox .outgoing {
+    margin-left: 60px;
+  }
+
+  .chatbox .incoming span {
+    font-size: 30px;
+  }
+
+  .loading-dots:after {
+    bottom: 185px;
+  }
+
+  .title-container {
+    height: 80px;
+  }
+
+  h1 {
+    font-size: 70px;
+    letter-spacing: 4px;
+  }
+  
+  h1::before {
+    content: "dyln.bk";
+    position: relative;
+    color: transparent;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 165, 237, 0.869) 2px,
+      rgba(255, 103, 232, 0.845) 4px
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    top: 0px;
+    left: 210px;
+    z-index: -1;
+    transition: 1s;
+  }
+  
+  h1::after {
+    content: "dyln.bk";
+    position: relative;
+    color: transparent;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 2px,
+      rgb(177, 255, 249) 2px,
+      rgb(142, 255, 234) 4px
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    top: 0px;
+    left: -210px;
+    transition: 1s;
+  }
+  
+  h1:hover:before {
+    top: 5px;
+    left: 215px;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 131, 241, 0.869) 2px,
+      rgba(255, 103, 232, 0.845) 4px
+    );
+  }
+  
+  h1:hover:after {
+    top: -4px;
+    left: -215px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 2px,
+      rgb(0, 0, 0) 2px,
+      rgb(0, 255, 255) 4px
+    );
+  } 
+
+  #slide {
+    font-size: 18px;
+  }
+
+  #contact {
+    width: 90%;
+    top: 100px;
+  }
+
+  .logo-container{
+    padding-bottom: 5px;
+  }
+
+  .logo {
+    max-height: 100%;
+    width: 47px;
+  }
+
+  .chat-input textarea  {
+    width: 85%;
+  }
+
+  .chatbot .chatbox {
+    height: calc(100% - 360px);
+  }
+
+  .line {
+    max-width: 80%;
+    top: 90px;
+  }
+
+  #toggle-button {
+    top: 120px;
+  }
+}
+
+html {
+  visibility: visible;
+  opacity: 1;
+}

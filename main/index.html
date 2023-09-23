@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <style>html{visibility: hidden;opacity:0;}</style>
+    <link type="image/png" sizes="32x32" rel="icon" href="love-32.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>dyln.bk</title>
+  </head>
+  
+  <body>
+    
+    <div id="container"></div>
+    <div class="content">
+      <div class="title-container">
+        <h1 id="heading">dyln.bk</h1>
+      </div>
+      <div class="line"></div>
+      <div id="slide">
+
+        <ul id="navbar">
+          <li><a href="#" onclick="return false;"><img src="home.svg"></a></li>
+          <li><a href="https://web-toolkit.netlify.app">APPS</a></li>
+          <li><a href="https://www.dylnbk.page">BLOG</a></li>
+          <li><a href="https://soundcloud.com/dylnbk">MUSIC</a></li>
+          <li><a href="https://www.deviantart.com/dylnbk">ART</a></li>
+          <li><a href="https://www.flickr.com/photos/195326075@N03/albums/72177720297807092">PHOTOS</a></li>
+          <li><a href="https://github.com/dylnbk">CODE</a></li>
+          <li><a href="#" onclick="return false;">CONTACT</a></li>
+          <li id="closebtn"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+        </ul>
+        <span id="toggle-button"><img src="menu.svg" alt="Menu" onclick="openNav()"></span>
+
+      </div>
+
+
+      <div id="contact">
+        <div class="chatbot">
+          <div class="loading-dots" style="display: none;"></div>
+          <ul class="chatbox">
+              <li class="chat incoming">
+                <span class="material-symbols-outlined" style="opacity: 0;">📎</span>
+                <p class="initial-message" style="opacity: 0; width: 100%;">If you have any questions, just start chatting!</p>
+              </li>
+            </ul>
+          
+          <div class="chat-input" style="opacity: 0;">
+            <textarea placeholder="Enter a message..." required></textarea>
+            <span><img src="send.svg" alt="Send" id="send-btn"></span>
+          </div>
+        </div>
+        <form name="contact" method="POST" action="/contact/contact" data-netlify="true">
+          
+          <textarea class="message-contact" name="message" required ></textarea>
+          
+          <p>
+            <button id="submit" type="submit">SEND EMAIL</button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+    <script type="module" src="/chat.js"></script>
+    <script>
+
+      // fade in
+
+      $('#heading').delay(100).animate({"opacity": "1"}, 2000);
+      $('#navbar').delay(1750).animate({"display": "block"}, 1000);
+      $('.initial-message').delay(800).animate({"opacity": "1"}, 2500);
+      $('.material-symbols-outlined').delay(800).animate({"opacity": "1"}, 2500);
+      $('.chat-input').delay(800).animate({"opacity": "1"}, 2500);
+
+      const mediaQuery = window.matchMedia('(min-width: 800px)');
+
+      function closeNav() {
+        document.getElementById("navbar").style.display = "none";
+        document.getElementById("toggle-button").style.display = "block";
+        document.getElementById("slide").style.height = "0%";
+      }
+
+      function openNav() {
+        document.getElementById("navbar").style.display = "flex";
+        document.getElementById("toggle-button").style.display = "none";
+        document.getElementById("slide").style.height = "100vh";
+      }
+
+      mediaQuery.addEventListener('change', function() {
+        if (mediaQuery.matches) {
+          document.getElementById("navbar").style.display = "block";
+          document.getElementById("toggle-button").style.display = "none";
+        } else {
+          document.getElementById("navbar").style.display = "none";
+          document.getElementById("toggle-button").style.display = "block";
+          
+        }
+      });
+
+      // rainbow text on click
+
+      $('h1').on('click', function() {
+        $(this).toggleClass('wordsClick');
+      });
+
+      var chatInput = document.querySelector('.chatbot .chat-input');
+      var textArea = document.querySelector('.chat-input textarea');
+
+      textArea.addEventListener('click', function() {
+        chatInput.classList.add('clicked');
+      });
+
+      document.addEventListener('click', function(event) {
+        var isClickInside = textArea.contains(event.target);
+        if (!isClickInside) {
+          //the click was outside the .chat-input, so remove the 'clicked' class
+          chatInput.classList.remove('clicked');
+        }
+      });
+
+      document.getElementById('navbar').addEventListener('click', function (e) {
+          if (e.target.textContent === "CONTACT") {
+            if (mediaQuery.matches) {
+              document.querySelector('form').style.display = 'block';
+              document.querySelector('.chatbot').style.display = 'none';
+              document.getElementById("slide").style.height = "0%";
+              document.getElementById("navbar").style.display = "block";
+              document.getElementById("toggle-button").style.display = "none";
+            } else {
+              document.querySelector('form').style.display = 'block';
+              document.querySelector('.chatbot').style.display = 'none';
+              document.getElementById("slide").style.height = "0%";
+              document.getElementById("navbar").style.display = "none";
+              document.getElementById("toggle-button").style.display = "block";
+            }
+          }
+        });
+
+      document.getElementById('navbar').addEventListener('click', function (e) {
+          if (e.target.textContent === "") {
+            if (mediaQuery.matches) {
+              document.querySelector('form').style.display = 'none';
+              document.querySelector('.chatbot').style.display = 'block';
+              document.getElementById("slide").style.height = "0%";
+              document.getElementById("navbar").style.display = "block";
+              document.getElementById("toggle-button").style.display = "none";
+            } else {
+              document.querySelector('form').style.display = 'none';
+              document.querySelector('.chatbot').style.display = 'block';
+              document.getElementById("slide").style.height = "0%";
+              document.getElementById("navbar").style.display = "none";
+              document.getElementById("toggle-button").style.display = "block";
+            }
+          }
+        });
+
+      // particle click effect
+      const anchors = document.querySelectorAll('body')
+    
+      Array.prototype.forEach.call(anchors, function(anchor) {
+        anchor.addEventListener('click', explode)
+      })
+    
+      function explode(e) {
+        let x = e.clientX
+        let y = e.clientY
+        let c = document.createElement('canvas')
+        let ctx = c.getContext('2d')
+        let ratio = window.devicePixelRatio
+        let particles = []
+    
+        document.body.appendChild(c)
+    
+        c.style.position = 'absolute'
+        c.style.left = (x - 100) + 'px'
+        c.style.top = (y - 100) + 'px'
+        c.style.pointerEvents = 'none'
+        c.style.width = 200 + 'px'
+        c.style.height = 200 + 'px'
+        c.width = 200 * ratio
+        c.height = 200 * ratio
+    
+        function Particle() {
+          return {
+            x: c.width / 2,
+            y: c.height / 2,
+            radius: r(3,3),
+            color: 'rgb(' + [r(1,2), r(200,255), r(180,255)].join(',') + ')',
+            rotation: r(0,360, true),
+            speed: r(8,12),
+            friction: .93,
+            opacity: r(0,1, true),
+            yVel: 0,
+            gravity: 0.01
+          }
+        }
+    
+        for(var i=0; i<10; i++) { // Reduce the number of particles
+          particles.push(Particle())
+        }
+    
+        function render() {
+          ctx.clearRect(0, 0, c.width, c.height)
+    
+          particles.forEach(function(p, i) {
+            angleTools.moveOnAngle(p, p.speed)
+    
+            p.opacity -= 0.01
+            p.speed *= p.friction
+            p.radius *= p.friction
+            p.yVel += p.gravity
+            p.y += p.yVel
+    
+            if(p.opacity < 0 || p.radius < 0) {
+              particles.splice(i, 1); // Remove particles that aren't visible anymore
+            } else {
+              ctx.beginPath()
+              ctx.globalAlpha = p.opacity
+              ctx.fillStyle = p.color
+              ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, false)
+              ctx.fill()
+            }
+          });
+    
+          if(particles.length === 0) {
+              document.body.removeChild(c) // Stop loop when all particles have died out
+          } else {
+              requestAnimationFrame(render)
+          }
+        }
+    
+        render()
+      }
+    
+      let angleTools={getAngle:function(t,n){var a=n.x-t.x,e=n.y-t.y;return Math.atan2(e,a)/Math.PI*180},getDistance:function(t,n){var a=t.x-n.x,e=t.y-n.y;return Math.sqrt(a*a+e*e)},moveOnAngle:function(t,n){let a=this.getOneFrameDistance(t,n);t.x+=a.x,t.y+=a.y},getOneFrameDistance:function(t,n){return{x:n*Math.cos(t.rotation*Math.PI/180),y:n*Math.sin(t.rotation*Math.PI/180)}}};
+    
+      function r(a,b,c){ return parseFloat((Math.random()*((a?a:1)-(b?b:0))+(b?b:0)).toFixed(c?c:0)); }
+    
+    </script>
+
+  </body>
+
+</html>
