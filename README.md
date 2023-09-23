@@ -1,5 +1,1 @@
-# BotBuddy - a chatbot powered by GPT
-
-### TODO:
-
-Fine tune a GPT model and provide an alt version of the bot
+# My personal linktree, updated to include a GPT powered assistant 
