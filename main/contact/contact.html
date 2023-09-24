@@ -37,17 +37,16 @@
           <li><a href="#" onclick="return false;">CONTACT</a></li>
           <li id="closebtn"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
         </ul>
-        <span id="toggle-button"><img src="menu.svg" alt="Menu" onclick="openNav()"></span>
+        <span id="toggle-button" style="opacity: 0;"><img src="menu.svg" alt="Menu" onclick="openNav()"></span>
       </div>
 
 
       <div id="contact">
         <div class="chatbot">
-          <div class="loading-dots" style="display: none;"></div>
           <ul class="chatbox">
               <li class="chat incoming">
                 <span class="material-symbols-outlined" style="opacity: 0;">👾</span>
-                <p class="initial-message" style="opacity: 0; width: 100%;">Your email was sent successfully, is there anything else that I can help you with?</p>
+                <p class="initial-message" style="opacity: 0; width: 100%;">Hello 👋 I'm Dylan's virtual assistant, how can I help you today?</p>
               </li>
             </ul>
           
@@ -75,6 +74,7 @@
 
       $('#heading').delay(100).animate({"opacity": "1"}, 2000);
       $('#navbar').delay(1750).animate({"display": "block"}, 1000);
+      $('#toggle-button').delay(1000).animate({"opacity": "1"}, 1000);
       $('.initial-message').delay(800).animate({"opacity": "1"}, 2500);
       $('.material-symbols-outlined').delay(800).animate({"opacity": "1"}, 2500);
       $('.chat-input').delay(800).animate({"opacity": "1"}, 2500);

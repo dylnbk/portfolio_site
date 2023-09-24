@@ -307,7 +307,7 @@ h1:hover:after {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #b7d0ff3b; 
+  background: #9effed42; 
 }
 
 
@@ -434,16 +434,6 @@ ul.chatbox {
   transition:all .5s ease-in-out;
 }
 
-.loading-dots:after {
-  position: absolute;
-  bottom: 245px;
-  left: 0;
-  right: 20px;
-  margin: auto;
-  content: ' .';
-  animation: dots 1s steps(18, end) infinite;
-}
-
 .closebtn {
   font-size: 32px;
   display: none;
@@ -559,10 +549,6 @@ ul.chatbox {
 
   #send-btn {
     width: 35px;
-  }
-
-  .loading-dots:after {
-    bottom: 205px;
   }
 
   .chatbot .chatbox {
@@ -733,10 +719,6 @@ ul.chatbox {
 
   .chatbox .incoming span {
     font-size: 30px;
-  }
-
-  .loading-dots:after {
-    bottom: 185px;
   }
 
   .title-container {

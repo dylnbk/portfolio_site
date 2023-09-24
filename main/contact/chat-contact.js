@@ -1,10 +1,9 @@
 const chatbox = document.querySelector(".chatbox");
 const chatInput = document.querySelector(".chat-input textarea");
 const sendChatBtn = document.querySelector(".chat-input span");
-const loadingDots = document.querySelector('.loading-dots');
 
 let userMessage = null;
-let messages = [{ role: "system", content: "You are a fun and casual personal assistant for Dylan Keay (dyln.bk), answering any questions the user has on his behalf (with occasional jokes and emojis). Dylan studied a foundation degree in computer network security and ethical hacking. He is currently a freelance web and application developer. If the user asks for contact information or how to contact, they can use the 'contact' form located in the menu of this website, which will email Dylan directly (remind them to include their contact details). Dylan has studied Python, JavaScript, HTML and CSS. His skill level in programming is between junior to mid-level. He can quickly learn how to use new software and loves to discover new technologies and concepts. Dylan administrated both servers and community channels on apps such as TeamSpeak and Discord. He has basic experience using Adobe products such as photoshop and premier pro. He can also use audio workstations such as fruity loops, logic and pro tools. Dylan has many interests, including photography, illustration, music production and programming - he likes being creative and enjoys a challenge. Dylan is from the UK lake district but is also half French, with the ability to speak French. He has travelled to: France, Spain, Italy, Netherlands, Zambia, Tanzania, Malawi, Morocco, Singapore, Malaysia, Taiwan, Japan, Vietnam, Thailand, Cambodia. Dylan enjoys pizza. Dylan enjoys playing the piano. Dylan really loves animals, particularly dogs. If the answer isn’t available simply ask the user to contact Dylan directly. Please have a natural and relaxed conversation with the user. Upwork: https://www.upwork.com/freelancers/~01da9f8fc9a955111f , LinkedIn: https://www.linkedin.com/in/dylnbk , Website: https://dylnbk.info , GitHub: https://github.com/dylnbk . It's !important to always provide a full URL including https:, do not use markdown, add or modify the URLs."}];
+let messages = [{ role: "system", content: "You are a fun and casual personal assistant for Dylan Keay (dyln.bk), answering any questions the user has on his behalf (with occasional jokes). Dylan studied a foundation degree in computer network security and ethical hacking, it included modules on web scripting, cyber security concepts, digital forensics, firewall and AV design and testing. He is currently a freelance web and application developer. If the user asks for contact information or how to contact, they can use the 'contact' form located in the menu of this website, which will email Dylan directly (remind them to include their contact details). Dylan has studied Python, JavaScript, HTML and CSS. His skill level in programming is between junior to mid-level. He can quickly learn how to use new software and loves to discover new technologies and concepts. He uses GitHub for version control and his coding IDE of choice is VS Code. Dylan administrated servers and community channels on apps such as TeamSpeak and Discord. He has basic experience using Adobe products such as Photoshop and Premier Pro. He can also use audio workstations such as Fruity Loops, Logic and Pro Tools. Dylan has many interests, including photography, illustration, music production and programming - he likes being creative and enjoys a challenge. Dylan is from the UK lake district but is also half French, with the ability to speak French. He has travelled to: France, Spain, Italy, Netherlands, Zambia, Tanzania, Malawi, Morocco, Singapore, Malaysia, Taiwan, Japan, Vietnam, Thailand, Cambodia. Dylan enjoys pizza. Dylan enjoys playing the piano. Dylan really loves animals, particularly dogs. If the answer isn’t available simply ask the user to contact Dylan directly. Please have a natural and relaxed conversation with the user. Upwork: https://www.upwork.com/freelancers/~01da9f8fc9a955111f , LinkedIn: https://www.linkedin.com/in/dylnbk , Website: https://dylnbk.info , GitHub: https://github.com/dylnbk . It's !important to always provide a full URL including https:, never use markdown or BBCode, do not add or modify the URLs, do not make them clickable, simply provide the plain URL."}];
 const inputInitHeight = chatInput.scrollHeight;
 
 
@@ -24,80 +23,86 @@ const createChatLi = (message, className) => {
     // Create a chat <li> element with passed message and className
     const chatLi = document.createElement("li");
     chatLi.classList.add("chat", `${className}`);
-    let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">👾</span><p></p>`;
+    let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">👾</span><p class="incoming-text"></p>`;
     chatLi.innerHTML = chatContent;
     chatLi.querySelector("p").textContent = message;
-    return chatLi; // return chat <li> element
+    return chatLi; // Return chat <li> element
 }
 
 const generateResponse = (chatElement) => {
-    const API_URL = "https://api.openai.com/v1/chat/completions";
-    const messageElement = chatElement.querySelector("p");
+    return new Promise((resolve) => {
+        const API_URL = "https://api.openai.com/v1/chat/completions";
+        const messageElement = chatElement.querySelector("p");
 
-    // Add user's current message to messages array
-    messages.push({ role: "user", content: userMessage });
+        // Add user's current message to messages array
+        messages.push({ role: "user", content: userMessage });
 
 
-    fetch('/.netlify/functions/manageAPIKey')
-        .then(response => response.json())
-        .then(data => {
-            // Here's the API key
-            const API_KEY = data.key;
+        fetch('/.netlify/functions/manageAPIKey')
+            .then(response => response.json())
+            .then(data => {
+                // Here's the API key
+                const API_KEY = data.key;
 
-            // Define the properties and message for the API request
-            const requestOptions = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-4",
-                    messages: messages,
-                    frequency_penalty: 0.5,
-                })
-            };
+                // Define the properties and message for the API request
+                const requestOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4",
+                        messages: messages,
+                        frequency_penalty: 0.5,
+                    })
+                };
 
-            // Send POST request to API, get response and set the reponse as paragraph text
-            fetch(API_URL, requestOptions)
-                .then(res => res.json())
-                .then(data => {
-                    // Check for the tokens usage and remove 1 index if gate condition satisfies.
-                    if (data['usage']['total_tokens'] > 7000) {
-                        messages.splice(1, 1);
-                    }
-
-                    loadingDots.style.display = 'none';
-                    let rawAssistantMessage = data.choices[0].message.content.trim();
-                    let parts = rawAssistantMessage.split("```");
-
-                    let assistantMessage = "";
-                    for (let i = 0; i < parts.length; i++) {
-                        if (i % 2 === 0) {
-                            // This is a normal text part
-                            assistantMessage += escapeHTML(parts[i]);
-                        } else {
-                            // This is a code part
-                            assistantMessage += `<pre><code>${escapeHTML(parts[i])}</code></pre>`;
+                // Send POST request to API, get response and set the reponse as paragraph text
+                fetch(API_URL, requestOptions)
+                    .then(res => res.json())
+                    .then(data => {
+                        // Check for the tokens usage and remove 1 index if gate condition satisfies.
+                        if (data['usage']['total_tokens'] > 7000) {
+                            messages.splice(1, 1);
                         }
-                    }
 
-                    // Check if the message contains a URL and wrap it in <a> tag if it does
-                    let urlRegex = /(https?:\/\/[^\s]+)/g; 
-                    assistantMessage = assistantMessage.replace(urlRegex, function(url) {
-                        return '<a href="' + url + '">' + url + '</a>';
-                    });
+                        let rawAssistantMessage = data.choices[0].message.content.trim();
+                        let parts = rawAssistantMessage.split("```");
 
-                    messageElement.innerHTML = assistantMessage;
+                        let assistantMessage = "";
+                        for (let i = 0; i < parts.length; i++) {
+                            if (i % 2 === 0) {
+                                // This is a normal text part
+                                assistantMessage += escapeHTML(parts[i]);
+                            } else {
+                                // This is a code part
+                                assistantMessage += `<pre><code>${escapeHTML(parts[i])}</code></pre>`;
+                            }
+                        }
 
-                    // Add assistant's response to messages array
-                    messages.push({ role: "assistant", content: rawAssistantMessage });
+                        // Check if the message contains a URL and wrap it in <a> tag if it does
+                        let urlRegex = /(https?:\/\/[^\s]+)/g;
+                        assistantMessage = assistantMessage.replace(urlRegex, function (url) {
+                            // Remove trailing period
+                            url = url.replace(/\.$/, '');
 
-                }).catch(() => {
-                    loadingDots.style.display = 'none';
-                    messageElement.classList.add("error");
-                    messageElement.textContent = "Oops! Something went wrong. Please try again.";
-                }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
+                            // Wrap URL in <a> tag
+                            return '<a href="' + url + '">' + url + '</a>';
+                        });
+
+                        messageElement.innerHTML = assistantMessage;
+
+                        // Add assistant's response to messages array
+                        messages.push({ role: "assistant", content: rawAssistantMessage });
+                        resolve();
+
+                    }).catch(() => {
+                        messageElement.classList.add("error");
+                        messageElement.textContent = "Oops! Something went wrong. Please try again.";
+                        resolve();
+                    }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
+            });
         });
 }
 
@@ -113,14 +118,25 @@ const handleChat = () => {
     chatbox.appendChild(createChatLi(userMessage, "outgoing"));
     chatbox.scrollTo(0, chatbox.scrollHeight);
 
-    loadingDots.style.display = 'flex';
+    // Define the states of thinking dots animation
+    const elipsis_frames = ["   ", ".  ", ".. ", "..."];
+    let current_frame = 0;
 
     setTimeout(() => {
-        // Display "Thinking..." message while waiting for the response
-        const incomingChatLi = createChatLi("Thinking...", "incoming");
+        const incomingChatLi = createChatLi(elipsis_frames[0], "incoming");
+    
+        const incomingP = incomingChatLi.querySelector('.incoming-text');
         chatbox.appendChild(incomingChatLi);
         chatbox.scrollTo(0, chatbox.scrollHeight);
-        generateResponse(incomingChatLi);
+    
+        let elipsis_interval = setInterval(() => {
+            current_frame = (current_frame + 1) % elipsis_frames.length; // Cycle through frames
+            incomingP.textContent = elipsis_frames[current_frame]; // Update p content
+        }, 250); // Change the dots every half second
+    
+        generateResponse(incomingChatLi).then(() => {
+            clearInterval(elipsis_interval); // Cancel the interval
+        });
     }, 600);
 }
 
