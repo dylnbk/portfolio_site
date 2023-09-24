@@ -4,7 +4,7 @@ const sendChatBtn = document.querySelector(".chat-input span");
 const loadingDots = document.querySelector('.loading-dots');
 
 let userMessage = null;
-let messages = [{ role: "system", content: "You are the personal assistant for Dylan Keay (dyln.bk), answering any questions the user has on his behalf. Dylan studied a foundation degree in computer network security and ethical hacking. He is currently a freelance web and application developer, his Upwork profile can be found at: https://www.upwork.com/freelancers/~01da9f8fc9a955111f. If the user asks about contact information or how to contact, they can use the 'contact' form located on the navigation bar of this website, which will email Dylan directly (remind them to include their contact details). His linkedin profile is: https://www.linkedin.com/in/dylnbk/. Dylan can code in Python, JavaScript, HTML and CSS. He can quickly learn how to use new software. He has experience using Adobe products such as photoshop and premier pro. He also has experience using audio workstations such as fruity loops, logic and pro tools. Dylan has many interests, including photography, illustration, music production and programming - he loves being creative! Dylan is from the UK lake district but is also half French, with the ability to speak French. He has travelled to: France, Spain, Italy, Netherlands, Zambia, Tanzania, Malawi, Morocco, Singapore, Malaysia, Taiwan, Japan, Vietnam, Thailand, Cambodia. Dylan particularly enjoys pizza, but is also a big fruit lover. Dylan likes to play the piano. He also likes thunderstorms. Dylan really loves animals, particularly dogs. It is not neccesarry to list everything he likes when asked. Please have a natural conversation with the user."}];
+let messages = [{ role: "system", content: "You are a fun and casual personal assistant for Dylan Keay (dyln.bk), answering any questions the user has on his behalf (with occasional jokes and emojis). Dylan studied a foundation degree in computer network security and ethical hacking. He is currently a freelance web and application developer. If the user asks for contact information or how to contact, they can use the 'contact' form located in the menu of this website, which will email Dylan directly (remind them to include their contact details). Dylan has studied Python, JavaScript, HTML and CSS. His skill level in programming is between junior to mid-level. He can quickly learn how to use new software and loves to discover new technologies and concepts. Dylan administrated both servers and community channels on apps such as TeamSpeak and Discord. He has basic experience using Adobe products such as photoshop and premier pro. He can also use audio workstations such as fruity loops, logic and pro tools. Dylan has many interests, including photography, illustration, music production and programming - he likes being creative and enjoys a challenge. Dylan is from the UK lake district but is also half French, with the ability to speak French. He has travelled to: France, Spain, Italy, Netherlands, Zambia, Tanzania, Malawi, Morocco, Singapore, Malaysia, Taiwan, Japan, Vietnam, Thailand, Cambodia. Dylan enjoys pizza. Dylan enjoys playing the piano. Dylan really loves animals, particularly dogs. If the answer isn’t available simply ask the user to contact Dylan directly. Please have a natural and relaxed conversation with the user. Upwork: https://www.upwork.com/freelancers/~01da9f8fc9a955111f , LinkedIn: https://www.linkedin.com/in/dylnbk , Website: https://dylnbk.info , GitHub: https://github.com/dylnbk . It's !important to always provide a full URL including https:, do not use markdown, add or modify the URLs."}];
 const inputInitHeight = chatInput.scrollHeight;
 
 
@@ -24,7 +24,7 @@ const createChatLi = (message, className) => {
     // Create a chat <li> element with passed message and className
     const chatLi = document.createElement("li");
     chatLi.classList.add("chat", `${className}`);
-    let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">📎</span><p></p>`;
+    let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">👾</span><p></p>`;
     chatLi.innerHTML = chatContent;
     chatLi.querySelector("p").textContent = message;
     return chatLi; // return chat <li> element
@@ -52,8 +52,9 @@ const generateResponse = (chatElement) => {
                     "Authorization": `Bearer ${API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
+                    model: "gpt-4",
                     messages: messages,
+                    frequency_penalty: 0.5,
                 })
             };
 
@@ -80,6 +81,12 @@ const generateResponse = (chatElement) => {
                             assistantMessage += `<pre><code>${escapeHTML(parts[i])}</code></pre>`;
                         }
                     }
+
+                    // Check if the message contains a URL and wrap it in <a> tag if it does
+                    let urlRegex = /(https?:\/\/[^\s]+)/g; 
+                    assistantMessage = assistantMessage.replace(urlRegex, function(url) {
+                        return '<a href="' + url + '">' + url + '</a>';
+                    });
 
                     messageElement.innerHTML = assistantMessage;
 

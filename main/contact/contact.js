@@ -123,8 +123,7 @@ function animate() {
   scene.rotation.x = mouse.y * 0.12;
 
   requestAnimationFrame(animate);
-  group.rotation.x += 0.0007;
-  group.rotation.y += 0.0001;
-  group.rotation.z += 0.0003;
+  group.rotation.x += 0.0005;
+  group.rotation.z += 0.0004;
   composer.render();
 }

@@ -708,6 +708,7 @@ ul.chatbox {
 
   #toggle-button {
       display: block;
+      top: 150px;
   }
 
   form {
@@ -721,6 +722,10 @@ ul.chatbox {
 }
 
 @media (max-width: 380px) {
+
+  form {
+    height: calc(100% - 255px);
+  }
 
   .chatbox .outgoing {
     margin-left: 60px;
@@ -837,6 +842,10 @@ ul.chatbox {
 
   #toggle-button {
     top: 120px;
+  }
+
+  textarea.message-contact {
+    margin-top: 35px;
   }
 }
 
