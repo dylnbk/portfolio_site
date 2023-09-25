@@ -190,23 +190,28 @@ a:hover::after{
 }
 
 h1 {
+  top: 10px;
+  position: relative;
   font-family: 'Teko', sans-serif;
-  display: flex;
-  justify-content: center; 
-  align-items: center;
   color: #9effed;
   letter-spacing: 8px;
-  top: 10px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-align: center;
-  position: relative;
+}
+
+h1::before, h1::after {
+  content: "dyln.bk";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: transparent;
+  z-index: -1;
+  transition: 1s;
 }
 
 h1::before {
-  content: "dyln.bk";
-  position: relative;
-  color: transparent;
   background-image: repeating-linear-gradient(
     45deg,
     transparent 0,
@@ -216,16 +221,9 @@ h1::before {
   );
   -webkit-background-clip: text;
   background-clip: text;
-  top: 0px;
-  left: 316px;
-  z-index: -1;
-  transition: 1s;
-}
+  }
 
 h1::after {
-  content: "dyln.bk";
-  position: relative;
-  color: transparent;
   background-image: repeating-linear-gradient(
     90deg,
     transparent 0,
@@ -235,14 +233,11 @@ h1::after {
   );
   -webkit-background-clip: text;
   background-clip: text;
-  top: 0px;
-  left: -316px;
-  transition: 1s;
-}
+  }
 
-h1:hover:before {
-  top: 5px;
-  left: 320px;
+h1:hover::before {
+  top: 53%;
+  left: 51%;
   background-image: repeating-linear-gradient(
     45deg,
     transparent 0,
@@ -252,9 +247,10 @@ h1:hover:before {
   );
 }
 
-h1:hover:after {
-  top: -4px;
-  left: -320px;
+h1:hover::after {
+  top: 47%;
+  left: 49%;
+  z-index: 2;
   background-image: repeating-linear-gradient(
     90deg,
     transparent 0,
@@ -262,7 +258,7 @@ h1:hover:after {
     rgb(0, 0, 0) 2px,
     rgb(0, 255, 255) 4px
   );
-} 
+}
 
 .content {
   position: absolute;
@@ -568,68 +564,8 @@ ul.chatbox {
   h1 {
     font-size: 80px;
     letter-spacing: 4px;
+    top: 12px;
   }
-  
-  h1::before {
-    content: "dyln.bk";
-    position: relative;
-    color: transparent;
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0,
-      transparent 2px,
-      rgba(255, 165, 237, 0.869) 2px,
-      rgba(255, 103, 232, 0.845) 4px
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    top: 0px;
-    left: 236px;
-    z-index: -1;
-    transition: 1s;
-  }
-  
-  h1::after {
-    content: "dyln.bk";
-    position: relative;
-    color: transparent;
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 2px,
-      rgb(177, 255, 249) 2px,
-      rgb(142, 255, 234) 4px
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    top: 0px;
-    left: -236px;
-    transition: 1s;
-  }
-  
-  h1:hover:before {
-    top: 5px;
-    left: 240px;
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0,
-      transparent 2px,
-      rgba(255, 131, 241, 0.869) 2px,
-      rgba(255, 103, 232, 0.845) 4px
-    );
-  }
-  
-  h1:hover:after {
-    top: -4px;
-    left: -240px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 2px,
-      rgb(0, 0, 0) 2px,
-      rgb(0, 255, 255) 4px
-    );
-  } 
 
   #contact {
     max-width: 450px;
@@ -728,68 +664,8 @@ ul.chatbox {
   h1 {
     font-size: 70px;
     letter-spacing: 4px;
+    top: 10px;
   }
-  
-  h1::before {
-    content: "dyln.bk";
-    position: relative;
-    color: transparent;
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0,
-      transparent 2px,
-      rgba(255, 165, 237, 0.869) 2px,
-      rgba(255, 103, 232, 0.845) 4px
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    top: 0px;
-    left: 210px;
-    z-index: -1;
-    transition: 1s;
-  }
-  
-  h1::after {
-    content: "dyln.bk";
-    position: relative;
-    color: transparent;
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 2px,
-      rgb(177, 255, 249) 2px,
-      rgb(142, 255, 234) 4px
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    top: 0px;
-    left: -210px;
-    transition: 1s;
-  }
-  
-  h1:hover:before {
-    top: 5px;
-    left: 215px;
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0,
-      transparent 2px,
-      rgba(255, 131, 241, 0.869) 2px,
-      rgba(255, 103, 232, 0.845) 4px
-    );
-  }
-  
-  h1:hover:after {
-    top: -4px;
-    left: -215px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 2px,
-      rgb(0, 0, 0) 2px,
-      rgb(0, 255, 255) 4px
-    );
-  } 
 
   #slide {
     font-size: 18px;
