@@ -445,6 +445,7 @@ ul.chatbox {
   top: 145px;
   left: 50%;
   transform: translate(-50%, -50%);
+  cursor: pointer;
 }
 
 
