@@ -331,17 +331,23 @@ ul.chatbox {
 .chatbot .chatbox {
   overflow-y: auto;
   height: calc(100% - 450px);
-  padding: 30px 20px 100px 0px !important;
+  padding: 30px 20px 100px 20px !important;
 }
 
 .chatbox .chat {
   display: flex;
   list-style: none;
 }
+
 .chatbox .outgoing {
   justify-content: flex-end;
-  margin-left: 68px;
+  margin-left: 59px;
 }
+
+.chatbox .incoming {
+  margin-right: 59px;
+}
+
 .chatbox .incoming span {
 
   color: #fff;
@@ -352,21 +358,35 @@ ul.chatbox {
   align-self: flex-end;
   background: #649aff00;
   border-radius: 4px;
-  padding-bottom: 14px;
-  padding-left: 10px;
-  margin-right: 10px;
+  padding: 0 10px 5px 0;
 }
+
+.chatbox .outgoing span {
+
+  color: #fff;
+  font-size: 36px;
+  cursor: default;
+  text-align: center;
+  line-height: 38px;
+  align-self: flex-end;
+  background: #649aff00;
+  border-radius: 4px;
+  padding: 0 0 5px 10px;
+}
+
 .chatbox .chat p {
   word-wrap: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
-  padding: 12px 12px;
+  padding: 15px 15px;
+  line-height: 25px;
   border-radius: 10px 10px 0 10px;
   max-width: 100%;
   font-size: 0.95rem;
   color: #ffffff;
   background: #040404d3;
   border: solid 1px #cfcfcf5e;
+  margin: 7px 0;
 }
 
 .chatbox .chat p.error {
@@ -555,7 +575,11 @@ ul.chatbox {
   }
 
   .chatbox .outgoing {
-    margin-left: 67px;
+    margin-left: 50px;
+  }
+
+  .chatbox .incoming{
+    margin-right: 51px;
   }
 
   .title-container {
@@ -579,19 +603,6 @@ ul.chatbox {
     font-size: 0.85rem;
   }
 
-  .logo-container{
-    padding-bottom: 12px;
-  }
-
-  .logo {
-    max-height: 100%;
-    width: 62px;
-  }
-
-  .logo-container {
-    padding-bottom: 6px;
-  }
-
   .line {
     max-width: 88%;
     top: 115px;
@@ -599,9 +610,13 @@ ul.chatbox {
   }
 
   .chatbox .incoming span {
-    font-size: 35px;
-    margin: 0px 10px 0px 0px;
-    padding-bottom: 14px;
+    font-size: 30px;
+    padding: 0 10px 2px 0;
+  }
+
+  .chatbox .outgoing span {
+    font-size: 30px;
+    padding: 0 0 2px 10px;
   }
 
   #slide {
@@ -651,11 +666,19 @@ ul.chatbox {
   }
 
   .chatbox .outgoing {
-    margin-left: 60px;
+    margin-left: 47px;
+  }
+
+  .chatbox .incoming {
+    margin-right: 47px;
   }
 
   .chatbox .incoming span {
-    font-size: 30px;
+    padding-right: 7px;
+  }
+
+  .chatbox .outgoing span {
+    padding-left: 7px;
   }
 
   .title-container {
