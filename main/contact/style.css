@@ -61,6 +61,7 @@ body {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
 body:focus {
@@ -287,12 +288,12 @@ h1:hover::after {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f100; 
+  background: #f1f1f100;
 }
  
 /* Handle */
@@ -305,7 +306,6 @@ h1:hover::after {
 ::-webkit-scrollbar-thumb:hover {
   background: #9effed42; 
 }
-
 
 pre, code {
   white-space: pre-wrap;
@@ -331,7 +331,7 @@ ul.chatbox {
 .chatbot .chatbox {
   overflow-y: auto;
   height: calc(100% - 450px);
-  padding: 30px 20px 100px 20px !important;
+  padding: 30px 0 100px 20px !important;
 }
 
 .chatbox .chat {
@@ -345,7 +345,7 @@ ul.chatbox {
 }
 
 .chatbox .incoming {
-  margin-right: 59px;
+  margin-right: 69px;
 }
 
 .chatbox .incoming span {
@@ -372,6 +372,7 @@ ul.chatbox {
   background: #649aff00;
   border-radius: 4px;
   padding: 0 0 5px 10px;
+  margin-right: 10px;
 }
 
 .chatbox .chat p {
@@ -570,7 +571,7 @@ ul.chatbox {
 
   .chatbot .chatbox {
     height: calc(100% - 380px);
-    padding: 0px 10px 100px 0px !important;
+    padding: 0px 5px 100px 0px !important;
     margin-top: 50px;
   }
 
@@ -611,12 +612,13 @@ ul.chatbox {
 
   .chatbox .incoming span {
     font-size: 30px;
-    padding: 0 10px 2px 0;
+    padding: 0 10px 5px 0;
   }
 
   .chatbox .outgoing span {
     font-size: 30px;
-    padding: 0 0 2px 10px;
+    padding: 0 0 4px 10px;
+    margin-right: 0px;
   }
 
   #slide {
@@ -666,19 +668,21 @@ ul.chatbox {
   }
 
   .chatbox .outgoing {
-    margin-left: 47px;
+    margin-left: 37px;
   }
 
   .chatbox .incoming {
-    margin-right: 47px;
+    margin-right: 37px;
   }
 
   .chatbox .incoming span {
-    padding-right: 7px;
+    padding: 0 5px 0 0;
+    font-size: 24px;
   }
 
   .chatbox .outgoing span {
-    padding-left: 7px;
+    padding: 0 0 0 5px;
+    font-size: 24px;
   }
 
   .title-container {

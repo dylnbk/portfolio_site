@@ -61,7 +61,7 @@ body {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 body:focus {
@@ -668,7 +668,7 @@ ul.chatbox {
   }
 
   .chatbox .outgoing {
-    margin-left: 47px;
+    margin-left: 37px;
   }
 
   .chatbox .incoming {
