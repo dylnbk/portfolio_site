@@ -416,6 +416,7 @@ ul.chatbox {
 .chatbot .chat-input:hover,
 .chatbot .chat-input.clicked {
   outline: solid 2px #9effed5f;
+  border-radius: 20px;
 }
 
 .chat-input textarea {
