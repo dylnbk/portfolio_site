@@ -52,7 +52,7 @@ const generateResponse = (chatElement) => {
                         "Authorization": `Bearer ${API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: "gpt-4o",
+                        model: "gpt-4-1106-preview",
                         messages: messages,
                     })
                 };
