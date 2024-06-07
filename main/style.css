@@ -155,8 +155,8 @@ textarea.message-contact {
 }
 
 #submit:hover {
-  text-shadow: 0 0 15px #ff71f6, 0 0 15px #34fff5;
-  color: rgb(253, 99, 225);
+  text-shadow: 0 0 15px #7194ff, 0 0 15px #34fff5;
+  color: rgb(99, 137, 253);
   cursor: pointer;
   transition:all .5s ease-in-out;
   transform: scale(1.1,1.1);
@@ -195,7 +195,7 @@ h1 {
   top: 10px;
   position: relative;
   font-family: 'Teko', sans-serif;
-  color: #9effed;
+  color: #ffffff;
   letter-spacing: 8px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -218,8 +218,8 @@ h1::before {
     45deg,
     transparent 0,
     transparent 2px,
-    rgba(255, 165, 237, 0.869) 2px,
-    rgba(255, 103, 232, 0.845) 4px
+    rgba(81, 150, 230, 0.869) 2px,
+    rgba(73, 148, 239, 0.845) 4px
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -230,8 +230,8 @@ h1::after {
     90deg,
     transparent 0,
     transparent 2px,
-    rgb(177, 255, 249) 2px,
-    rgb(142, 255, 234) 4px
+    rgb(255, 255, 255) 2px,
+    rgb(255, 255, 255) 4px
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -244,8 +244,8 @@ h1:hover::before {
     45deg,
     transparent 0,
     transparent 2px,
-    rgba(255, 131, 241, 0.869) 2px,
-    rgba(255, 103, 232, 0.845) 4px
+    rgba(84, 141, 214, 0.869) 2px,
+    rgba(75, 128, 209, 0.845) 4px
   );
 }
 
@@ -257,8 +257,8 @@ h1:hover::after {
     90deg,
     transparent 0,
     transparent 2px,
-    rgb(0, 0, 0) 2px,
-    rgb(0, 255, 255) 4px
+    rgb(68, 96, 143) 2px,
+    rgb(0, 0, 0) 4px
   );
 }
 
@@ -299,13 +299,13 @@ h1:hover::after {
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #bdbdbc24; 
+  background: #bcbdbd24; 
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #9effed42; 
+  background: #1a99d474; 
 }
 
 pre, code {
@@ -333,7 +333,7 @@ ul.chatbox {
 .chatbot .chatbox {
   overflow-y: auto;
   height: calc(100% - 450px);
-  padding: 30px 0 100px 20px !important;
+  padding: 30px 50px 100px 50px !important;
 }
 
 .chatbox .chat {
@@ -343,11 +343,6 @@ ul.chatbox {
 
 .chatbox .outgoing {
   justify-content: flex-end;
-  margin-left: 55px;
-}
-
-.chatbox .incoming {
-  margin-right: 60px;
 }
 
 .chatbox .incoming span {
@@ -361,7 +356,8 @@ ul.chatbox {
   align-self: flex-end;
   background: #649aff00;
   border-radius: 4px;
-  margin-right: 20px;
+  padding: 0 10px 5px 0;
+  margin-left: 15px;
   margin-bottom: 5px;
   width: 35px;
 }
@@ -400,12 +396,12 @@ ul.chatbox {
 .chatbox .chat p.error {
   color: #ffffff;
   background: #040404a2;
-  border: solid 1px #9effed5f;
+  border: solid 1px #435a83;
 }
 .chatbox .incoming p {
   color: #ffffff;
   background: #040404d3;
-  border: solid 1px #9effed5f;
+  border: solid 1px #435a83;
   border-radius: 10px 10px 10px 0;
 }
 .chatbot .chat-input {
@@ -422,7 +418,7 @@ ul.chatbox {
 
 .chatbot .chat-input:hover,
 .chatbot .chat-input.clicked {
-  outline: solid 2px #9effed5f;
+  outline: solid 2px #435a83;
   border-radius: 20px;
 }
 
@@ -579,16 +575,8 @@ ul.chatbox {
 
   .chatbot .chatbox {
     height: calc(100% - 380px);
-    padding: 0px 5px 100px 0px !important;
+    padding: 0px 20px 100px 20px !important;
     margin-top: 50px;
-  }
-
-  .chatbox .outgoing {
-    margin-left: 45px;
-  }
-
-  .chatbox .incoming{
-    margin-right: 35px;
   }
 
   .title-container {
@@ -620,15 +608,15 @@ ul.chatbox {
 
   .chatbox .incoming span {
     font-size: 30px;
-    padding: 0 10px 0 0;
-    margin-right: 5px;
+    padding: 0 5px 5px 0;
+    margin-left: 0px;
     margin-bottom: 0px;
     width: 30px;
   }
 
   .chatbox .outgoing span {
     font-size: 30px;
-    padding: 0 0 0 5px;
+    padding: 0 0 5px 5px;
     margin-right: 0px;
     width: 30px;
   }
@@ -679,22 +667,13 @@ ul.chatbox {
     height: calc(100% - 255px);
   }
 
-  .chatbox .outgoing {
-    margin-left: 35px;
-  }
-
-  .chatbox .incoming {
-    margin-right: 30px;
-  }
 
   .chatbox .incoming span {
-    padding: 0 5px 0 0;
     font-size: 24px;
     width: 25px;
   }
 
   .chatbox .outgoing span {
-    padding: 0 0 0 5px;
     font-size: 24px;
     width: 25px;
   }
@@ -733,6 +712,8 @@ ul.chatbox {
 
   .chatbot .chatbox {
     height: calc(100% - 360px);
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 
   .line {
