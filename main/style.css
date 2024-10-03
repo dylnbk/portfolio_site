@@ -455,6 +455,18 @@ ul.chatbox {
   transition:all .5s ease-in-out;
 }
 
+
+.chatbox a {
+  font-weight: bold;
+  text-decoration: underline;
+  color: rgb(248, 248, 248);
+}
+
+/* Hover effect for links */
+.chatbox a:hover {
+  text-decoration: none;
+}
+
 .closebtn {
   font-size: 32px;
   display: none;
