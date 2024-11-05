@@ -16,7 +16,29 @@ let mouse = new THREE.Vector2();
 let spheres = [];
 
 const clock = new THREE.Clock();
-const sphereCount = 750; // Number of spheres for a denser globe
+
+const minRadius = 0.0005;
+const maxPossibleRadius = 8;
+
+// Calculate maxRadius randomly between minRadius and maxPossibleRadius
+const maxRadius = Math.random() * (maxPossibleRadius - minRadius) + minRadius;
+
+// Define slope and intercept based on the linear relationship
+const slope = -133.3333; // Approximately -1000 / 7.5
+const intercept = 2066.6667; // Approximately 2000 + 66.6666
+
+// Calculate sphereCount based on maxRadius
+let sphereCount = Math.floor(slope * maxRadius + intercept);
+
+// Ensure sphereCount stays within desired bounds
+const minSphereCount = 750;
+const maxSphereCount = 2500;
+
+if (sphereCount < minSphereCount) {
+    sphereCount = minSphereCount;
+} else if (sphereCount > maxSphereCount) {
+    sphereCount = maxSphereCount;
+}
 
 // Added variables for hue cycling and mouse movement tracking
 let hue = 0;
@@ -24,12 +46,9 @@ let lastMouseX = 0;
 let lastMouseY = 0;
 let mouseDelta = 0;
 
-const minRadius = 0.0005;
-const maxRadius = 8;
-
 // **New Addition: Timer to Track Mouse Idle State**
 let lastMouseMoveTime = Date.now();
-const idleTimeout = 700; // Time in milliseconds to consider as idle
+const idleTimeout = 1000; // Time in milliseconds to consider as idle
 
 init();
 animate();
@@ -59,7 +78,7 @@ function init() {
   scene.fog = new THREE.FogExp2(0x000000, 0.008);
 
   // Create lighting
-  const hemiLight = new THREE.HemisphereLight(0x6499FF, 0x6499FF, 0.6);
+  const hemiLight = new THREE.HemisphereLight(0x6499FF, 0x6499FF, 0.5);
   hemiLight.position.set(0, 1000, 0);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
@@ -84,7 +103,7 @@ function init() {
     const z = globeRadius * Math.cos(phi);
 
     // Create spheres with uniform size
-    const geometry = new THREE.SphereGeometry(getRandomSize(), 10, 10);
+    const geometry = new THREE.SphereGeometry(getRandomSize(), 50, 50);
     const material = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, emissive: 0x112244 });
     const mesh = new THREE.Mesh(geometry, material);
 
@@ -124,7 +143,7 @@ function init() {
 
   // Afterimage - trail effect
   afterimagePass = new AfterimagePass();
-  afterimagePass.uniforms['damp'].value = 0.96;
+  afterimagePass.uniforms['damp'].value = 0.95;
 
   // Bloom - to make certain elements glow
   const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 1, 1);
@@ -214,7 +233,7 @@ function handleInteractions() {
 
   // Define parameters for interaction
   const interactionRadius = 70; // Radius around the camera where interaction affects spheres
-  const maxDisplacement = 150; // Maximum displacement per frame
+  const maxDisplacement = 350; // Maximum displacement per frame
 
   // Increment hue for color cycling
   hue += 0.001; // Adjust the speed of cycling here

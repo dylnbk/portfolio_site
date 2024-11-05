@@ -351,7 +351,7 @@ ul.chatbox {
   color: #fff;
   font-size: 36px;
   cursor: default;
-  text-align: center;
+  text-align: justify;
   line-height: 38px;
   align-self: flex-end;
   background: #649aff00;
@@ -368,7 +368,7 @@ ul.chatbox {
   color: #fff;
   font-size: 36px;
   cursor: default;
-  text-align: center;
+  text-align: justify;
   line-height: 38px;
   align-self: flex-end;
   background: #649aff00;
@@ -380,6 +380,7 @@ ul.chatbox {
 
 .chatbox .chat p {
   word-wrap: break-word;
+  text-align: justify;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   padding: 15px 15px;
@@ -403,11 +404,12 @@ ul.chatbox {
   background: #040404d3;
   border: solid 1px #435a83;
   border-radius: 10px 10px 10px 0;
+  text-align: justify;
 }
 .chatbot .chat-input {
   width: 100%;
   height: auto; 
-  background: #bdbdbc1c;
+  background: #121212e6;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
