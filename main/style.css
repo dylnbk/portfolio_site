@@ -764,6 +764,149 @@ ul.chatbox {
   cursor: pointer;
   transition:all .5s ease-in-out;
 }
+/* Microphone toggle styles */
+.mic-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  color: var(--clr-text-secondary);
+  border: 1px solid transparent;
+}
+
+.mic-toggle:hover {
+  color: var(--clr-text-accent);
+  background: var(--clr-surface-a20);
+  border-color: var(--clr-border-secondary);
+}
+
+/* Inactive state - default styling */
+.mic-toggle.inactive {
+  color: var(--clr-text-secondary);
+  background: transparent;
+}
+
+/* Active/Listening state - strong white background with black icon in dark mode */
+.mic-toggle.active {
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  animation: mic-listening 2s ease-in-out infinite;
+}
+
+/* Processing state - strong highlighting */
+.mic-toggle.processing {
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-processing 1.5s ease-in-out infinite;
+}
+
+/* Speaking state - strong highlighting */
+.mic-toggle.speaking {
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-speaking 0.8s ease-in-out infinite alternate;
+}
+
+/* Connecting state - strong highlighting */
+.mic-toggle.connecting {
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-connecting 1s ease-in-out infinite;
+}
+
+/* Error state - subtle indication without harsh colors */
+.mic-toggle.error {
+  color: var(--clr-text-secondary);
+  background: var(--clr-surface-a10);
+  border-color: var(--clr-border-primary);
+  opacity: 0.7;
+}
+
+.mic-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+/* Light mode specific adjustments - black background with white icon */
+[data-theme="light"] .mic-toggle.active {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .mic-toggle.processing {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+[data-theme="light"] .mic-toggle.speaking {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+[data-theme="light"] .mic-toggle.connecting {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+/* Smooth, professional animations */
+@keyframes mic-listening {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes mic-processing {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes mic-speaking {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+@keyframes mic-connecting {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
 
 
 .chatbox a {
@@ -1063,3 +1206,7 @@ html {
   visibility: visible;
   opacity: 1;
 }
+
+/* ===== REALTIME SPEECH CONTROLLER STYLES ===== */
+/* These styles are now integrated above with the main microphone toggle styles */
+/* Removed orange background and harsh colors in favor of theme-aware styling */

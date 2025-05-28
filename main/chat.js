@@ -1,10 +1,14 @@
 const chatbox = document.querySelector(".chatbox");
 const chatInput = document.querySelector(".chat-input textarea");
-const sendChatBtn = document.querySelector(".chat-input span");
+const sendChatBtn = document.querySelector("#send-btn");
 
 let userMessage = null;
 let messages = [{ role: "system", content: "You are a personal assistant for Dylan Keay (dyln.bk), answering any questions the user has on his behalf - keep it concise and professional. Dylan studied a foundation degree in computer network security & ethical hacking, it included modules on web scripting, cyber security concepts, digital forensics, firewall & AV design & testing at a junior level of experience. He is currently a Junior Software Engineer at GoReport, a data analytics and reporting company. If the user asks for contact information or how to contact, they can use the 'contact' form located in the menu of this website, which will email Dylan directly (remind them to include their contact details). Dylan has studied Python, PHP, JavaScript, HTML & CSS. His skill level in programming is between junior to mid-level. This website was made using Vite, JavaScript, three.js. He has some experience making static sites, using 11ty & the Jamstack. He likes using the Streamlit app framework to get Python scripts up & running & has built a variety of apps with it, including: Chatty, a collection of AI models: https://chatty-demo.streamlit.app | Grabby, download media from websites: https://grabby.streamlit.app | Quietly, share secret messages: https://quietly.streamlit.app | Switchy, a conversion tool: https://switchy.streamlit.app | He has a mobile app on Google Play store called LetterLink, a word puzzle game available here: https://play.google.com/store/apps/details?id=dylnbk.info.wordy | He can quickly learn how to use new software & loves to discover new technologies & concepts. He has experience using various APIs, including the most popular AI platforms. He uses GitHub for version control & his coding IDE of choice is VS Code. Dylan has done some basic server configuration on Azure & has some starter level understanding of various Linux distros (Debian & Arch based). He has created community channels on apps such as TeamSpeak & Discord. He has basic experience using Adobe products such as Photoshop & Premier Pro. He can also use audio workstations such as Fruity Loops, Logic & Ableton. Dylan has many interests, including photography, illustration, music production (CertHE in Sound Engineering & Design) & programming - he likes being creative & enjoys a challenge. Dylan is from the UK lake district but is also half French, with the ability to speak French (conversational level). He likes travelling & has visited: France (great place to socialize), Spain (beautiful beaches), Italy (delicious food), Netherlands, Zambia, Tanzania (incredible wildlife), Malawi (stunning lake), Morocco, Singapore (modern & amazing architecture), Malaysia, Taiwan (tasty food, unique culture), Japan (best metropolis, spectacular cherry blossoms), Vietnam (wonderful durian), Thailand (perfect beaches & blue ocean), Cambodia (ancient temples, friendly people). Dylan enjoys pizza and likes to drink espresso. Dylan enjoys playing the piano. Dylan loves animals, particularly dogs. Please have a natural & relaxed conversation with the user. Please offer these additional links - Chatty: https://chatty-demo.streamlit.app | BotBuddy: https://botbuddy.netlify.app | Website: https://dylnbk.page | GitHub: https://github.com/dylnbk" }];
 const inputInitHeight = chatInput.scrollHeight;
+
+// Speech controller instances
+let speechController = null; // Legacy speech controller (fallback)
+let realtimeSpeechController = null; // New realtime speech controller
 
 /**
  * Create a chat <li> element with the provided message and class name.
@@ -40,7 +44,11 @@ const generateResponse = async (chatElement, onFirstChunk) => {
 
     try {
         // Fetch the API key from your serverless function
-        const responseKey = await fetch('/.netlify/functions/manageAPIKey');
+        // Use Netlify dev server port for functions in development
+        const apiUrl = window.location.hostname === 'localhost' && window.location.port !== '8888'
+            ? 'http://localhost:8888/.netlify/functions/manageAPIKey'
+            : '/.netlify/functions/manageAPIKey';
+        const responseKey = await fetch(apiUrl);
         const dataKey = await responseKey.json();
         const API_KEY = dataKey.key;
 
@@ -122,6 +130,18 @@ const generateResponse = async (chatElement, onFirstChunk) => {
         // Add assistant's complete response to messages array
         messages.push({ role: "assistant", content: assistantMessage });
 
+        // Note: Realtime API handles speech synthesis automatically
+        // Legacy TTS is only used if realtime speech is not active
+        try {
+            if (speechController && speechController.isActive &&
+                (!realtimeSpeechController || !realtimeSpeechController.isSessionActive)) {
+                await speechController.speakResponse(assistantMessage);
+            }
+        } catch (speechError) {
+            console.warn('Speech synthesis failed, continuing without audio:', speechError);
+            // Continue without speech - don't break the chat
+        }
+
     } catch (error) {
         console.error(error);
         messageElement.classList.add("error");
@@ -130,6 +150,47 @@ const generateResponse = async (chatElement, onFirstChunk) => {
         chatbox.scrollTo(0, chatbox.scrollHeight);
     }
 }
+
+/**
+ * Handle speech message from voice input
+ * @param {string} transcript - The transcribed speech text
+ */
+const handleSpeechMessage = async (transcript) => {
+    userMessage = transcript.trim();
+    if (!userMessage) return;
+
+    // Escape and sanitize user message before displaying
+    const safeMessage = DOMPurify.sanitize(escapeHTML(userMessage));
+
+    // Append the user's message to the chatbox
+    chatbox.appendChild(createChatLi(safeMessage, "outgoing"));
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+
+    // Define the states of thinking dots animation
+    const ellipsisFrames = ["   ", ".  ", ".. ", "..."];
+    let currentFrame = 0;
+
+    setTimeout(() => {
+        const incomingChatLi = createChatLi(ellipsisFrames[0], "incoming");
+        const incomingP = incomingChatLi.querySelector('.incoming-text');
+        chatbox.appendChild(incomingChatLi);
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+
+        let ellipsisInterval = setInterval(() => {
+            currentFrame = (currentFrame + 1) % ellipsisFrames.length;
+            incomingP.textContent = ellipsisFrames[currentFrame];
+        }, 250);
+
+        // Define the callback to stop the thinking dots
+        const stopThinkingDots = () => {
+            clearInterval(ellipsisInterval);
+        };
+
+        generateResponse(incomingChatLi, stopThinkingDots).then(() => {
+            clearInterval(ellipsisInterval);
+        });
+    }, 600);
+};
 
 /**
  * Handle sending a message: appends the user's message, starts the thinking animation, and triggers the assistant's response.
@@ -217,3 +278,34 @@ chatInput.addEventListener("keydown", (e) => {
  * Handle the send button click to send messages.
  */
 sendChatBtn.addEventListener("click", handleChat);
+
+/**
+ * Initialize speech controllers when DOM is loaded
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait a bit for all modules to load
+    setTimeout(() => {
+        try {
+            // Initialize new Realtime Speech Controller (primary)
+            if (window.RealtimeSpeechController) {
+                realtimeSpeechController = new window.RealtimeSpeechController();
+                console.log('Realtime speech controller initialized successfully');
+            } else {
+                console.warn('RealtimeSpeechController not available');
+            }
+
+            // Initialize legacy speech controller as fallback
+            if (window.SpeechController) {
+                speechController = new window.SpeechController(handleSpeechMessage);
+                console.log('Legacy speech controller initialized as fallback');
+            } else {
+                console.warn('Legacy SpeechController not available');
+            }
+        } catch (error) {
+            console.error('Failed to initialize speech controllers:', error);
+            // Ensure chat still works without speech
+            speechController = null;
+            realtimeSpeechController = null;
+        }
+    }, 500);
+});
