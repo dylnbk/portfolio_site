@@ -771,45 +771,141 @@ ul.chatbox {
   justify-content: center;
   cursor: pointer;
   padding: 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: 6px;
+  transition: all 0.3s ease;
   color: var(--clr-text-secondary);
+  border: 1px solid transparent;
 }
 
 .mic-toggle:hover {
   color: var(--clr-text-accent);
   background: var(--clr-surface-a20);
+  border-color: var(--clr-border-secondary);
 }
 
+/* Inactive state - default styling */
+.mic-toggle.inactive {
+  color: var(--clr-text-secondary);
+  background: transparent;
+}
+
+/* Active/Listening state - strong white background with black icon in dark mode */
 .mic-toggle.active {
-  color: var(--clr-text-accent);
-  background: var(--clr-surface-a20);
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  animation: mic-listening 2s ease-in-out infinite;
 }
 
+/* Processing state - strong highlighting */
 .mic-toggle.processing {
-  animation: pulse 1s infinite;
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-processing 1.5s ease-in-out infinite;
 }
 
+/* Speaking state - strong highlighting */
 .mic-toggle.speaking {
-  color: #4CAF50;
-  animation: speaking 0.5s infinite alternate;
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-speaking 0.8s ease-in-out infinite alternate;
+}
+
+/* Connecting state - strong highlighting */
+.mic-toggle.connecting {
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
+  animation: mic-connecting 1s ease-in-out infinite;
+}
+
+/* Error state - subtle indication without harsh colors */
+.mic-toggle.error {
+  color: var(--clr-text-secondary);
+  background: var(--clr-surface-a10);
+  border-color: var(--clr-border-primary);
+  opacity: 0.7;
 }
 
 .mic-icon {
   width: 20px;
   height: 20px;
   fill: currentColor;
+  transition: transform 0.2s ease;
 }
 
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+/* Light mode specific adjustments - black background with white icon */
+[data-theme="light"] .mic-toggle.active {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes speaking {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.1); }
+[data-theme="light"] .mic-toggle.processing {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+[data-theme="light"] .mic-toggle.speaking {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+[data-theme="light"] .mic-toggle.connecting {
+  color: #ffffff;
+  background: #000000;
+  border-color: #000000;
+}
+
+/* Smooth, professional animations */
+@keyframes mic-listening {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes mic-processing {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes mic-speaking {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+@keyframes mic-connecting {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 
@@ -1112,18 +1208,5 @@ html {
 }
 
 /* ===== REALTIME SPEECH CONTROLLER STYLES ===== */
-/* Microphone button states for realtime speech */
-.mic-toggle.connecting {
-    animation: pulse 1.5s infinite;
-    background-color: #ffa500 !important;
-}
-
-.mic-toggle.error {
-    background-color: #ff4444 !important;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
+/* These styles are now integrated above with the main microphone toggle styles */
+/* Removed orange background and harsh colors in favor of theme-aware styling */

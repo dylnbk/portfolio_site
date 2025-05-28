@@ -7,7 +7,7 @@ class OpenAISpeechSynthesis {
     this.apiKey = null;
     this.apiKeyInitialized = false;
     this.baseUrl = 'https://api.openai.com/v1/audio/speech';
-    this.defaultVoice = 'alloy';
+    this.defaultVoice = 'ballad';
     this.defaultModel = 'tts-1';
     // Don't initialize API key immediately - wait until needed
   }
@@ -84,7 +84,7 @@ class OpenAISpeechSynthesis {
           input: cleanText,
           voice: voice,
           response_format: 'mp3',
-          speed: 1.0
+          speed: 1.5
         })
       });
 
@@ -155,7 +155,8 @@ class OpenAISpeechSynthesis {
     return [
       { id: 'alloy', name: 'Alloy', description: 'Neutral, balanced voice' },
       { id: 'echo', name: 'Echo', description: 'Male voice' },
-      { id: 'fable', name: 'Fable', description: 'British accent' },
+      { id: 'fable', name: 'ballad', description: 'British accent v1' },
+      { id: 'fable', name: 'Fable', description: 'British accent v2' },
       { id: 'onyx', name: 'Onyx', description: 'Deep male voice' },
       { id: 'nova', name: 'Nova', description: 'Female voice' },
       { id: 'shimmer', name: 'Shimmer', description: 'Soft female voice' }
