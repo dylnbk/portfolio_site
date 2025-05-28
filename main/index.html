@@ -26,7 +26,10 @@
     <title>dyln.bk</title>
   </head>
   
-  <body>
+  <body data-theme="dark">
+    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">Dark</button>
     
     <div id="container"></div>
     <div class="content">
@@ -87,6 +90,56 @@
     <script type="module" src="/main.js"></script>
     <script type="module" src="/chat.js"></script>
     <script>
+
+      // Theme switching functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const body = document.body;
+      
+      // Theme configuration
+      const themes = {
+        dark: { icon: '', name: 'Dark' },
+        light: { icon: '', name: 'Light' },
+        party: { icon: '', name: 'Party' }
+      };
+      
+      let currentTheme = 'dark';
+      
+      // Load saved theme from localStorage
+      const savedTheme = localStorage.getItem('portfolio-theme');
+      if (savedTheme && themes[savedTheme]) {
+        currentTheme = savedTheme;
+        body.setAttribute('data-theme', currentTheme);
+        updateThemeButton();
+      }
+      
+      function updateThemeButton() {
+        const theme = themes[currentTheme];
+        themeToggle.textContent = `${theme.icon} ${theme.name}`;
+      }
+      
+      function switchTheme() {
+        const themeOrder = ['dark', 'light', 'party'];
+        const currentIndex = themeOrder.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % themeOrder.length;
+        
+        currentTheme = themeOrder[nextIndex];
+        body.setAttribute('data-theme', currentTheme);
+        updateThemeButton();
+        
+        // Save theme preference
+        localStorage.setItem('portfolio-theme', currentTheme);
+        
+        // Add a subtle animation feedback
+        themeToggle.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          themeToggle.style.transform = 'scale(1)';
+        }, 150);
+      }
+      
+      themeToggle.addEventListener('click', switchTheme);
+      
+      // Initialize theme button
+      updateThemeButton();
 
       // fade in
 
