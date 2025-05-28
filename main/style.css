@@ -90,117 +90,6 @@
   --clr-bg-navbar: rgba(240, 240, 240, 0.97);
 }
 
-/* Party mode - uses CSS animations for color cycling */
-[data-theme="party"] {
-  /* Use dark mode as base but with animated colors */
-  --clr-primary-a0: #0e0826;
-  --clr-primary-a10: #19172f;
-  --clr-primary-a20: #252339;
-  --clr-primary-a30: #312f42;
-  --clr-primary-a40: #3e3b4c;
-  --clr-primary-a50: #4a4856;
-  
-  --clr-surface-a0: #040404;
-  --clr-surface-a10: #121212;
-  --clr-surface-a20: #1a1a1a;
-  --clr-surface-a30: #2a2a2a;
-  --clr-surface-a40: #3a3a3a;
-  --clr-surface-a50: #4a4a4a;
-  
-  --clr-surface-tonal-a0: #1a1a1a;
-  --clr-surface-tonal-a10: #2a2a2a;
-  --clr-surface-tonal-a20: #3a3a3a;
-  --clr-surface-tonal-a30: #4a4a4a;
-  --clr-surface-tonal-a40: #5a5a5a;
-  --clr-surface-tonal-a50: #6a6a6a;
-  
-  --clr-text-primary: rgb(248, 248, 248);
-  --clr-text-secondary: rgba(207, 207, 207, 0.807);
-  --clr-text-accent: #ffffff;
-  --clr-text-header: #000000;
-  
-  --clr-border-primary: rgba(154, 154, 154, 0.486);
-  --clr-border-secondary: #cfcfcf5e;
-  --clr-border-accent: #636363;
-  
-  --clr-bg-primary: #000000;
-  --clr-bg-secondary: #040404d3;
-  --clr-bg-tertiary: #121212e6;
-  --clr-bg-navbar: rgba(19, 19, 19, 0.97);
-}
-
-/* Party mode animations - selective styling */
-[data-theme="party"] .chat-input {
-  position: relative;
-}
-
-[data-theme="party"] .chat-input::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid transparent;
-  border-radius: 20px;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  pointer-events: none;
-}
-
-[data-theme="party"] .chat-input.clicked::before {
-  opacity: 1;
-  border-color: #cc0066;
-  animation: rainbow-border 3s linear infinite;
-}
-
-/* Party mode navbar text color - same as dark mode */
-[data-theme="party"] #navbar a {
-  color: var(--clr-text-primary);
-  opacity: 0.8;
-}
-
-
-/* Party mode hover effects with RGB animated border */
-[data-theme="party"] a {
-  position: relative;
-  transition: all 0.3s ease-in-out;
-}
-
-[data-theme="party"] a::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -6px;
-  right: -6px;
-  bottom: -4px;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  pointer-events: none;
-}
-
-[data-theme="party"] a:hover::before {
-  opacity: 1;
-  border-color: #cc0066;
-  animation: rainbow-border 3s linear infinite;
-}
-
-[data-theme="party"] a::after {
-  display: none;
-}
-
-@keyframes rainbow-border {
-  0% { border-color: #cc0066; }
-  16.66% { border-color: #cc6600; }
-  33.33% { border-color: #cccc00; }
-  50% { border-color: #66cc00; }
-  66.66% { border-color: #00cc66; }
-  83.33% { border-color: #0066cc; }
-  100% { border-color: #cc0066; }
-}
-
 /* Theme toggle button */
 .theme-toggle {
   position: fixed;
@@ -418,23 +307,6 @@ textarea.message-contact {
   color: var(--clr-text-primary);
 }
 
-/* Party mode submit button hover */
-[data-theme="party"] #submit:hover {
-  text-shadow: 0 0 15px #cc0066, 0 0 15px #cc6600;
-  color: #cccc00;
-  animation: rainbow-text 3s linear infinite;
-}
-
-@keyframes rainbow-text {
-  0% { color: #cc0066; }
-  16.66% { color: #cc6600; }
-  33.33% { color: #cccc00; }
-  50% { color: #66cc00; }
-  66.66% { color: #00cc66; }
-  83.33% { color: #0066cc; }
-  100% { color: #cc0066; }
-}
-
 a {
   display: inline;
   text-decoration: none;
@@ -606,7 +478,7 @@ h1:hover::after {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #1a99d474; 
+  background: #96969684; 
 }
 
 pre, code {

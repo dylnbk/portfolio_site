@@ -106,8 +106,7 @@
       // Theme configuration
       const themes = {
         dark: { icon: '', name: 'Dark' },
-        light: { icon: '', name: 'Light' },
-        party: { icon: '', name: 'Party' }
+        light: { icon: '', name: 'Light' }
       };
       
       let currentTheme = 'dark';
@@ -126,7 +125,7 @@
       }
       
       function switchTheme() {
-        const themeOrder = ['dark', 'light', 'party'];
+        const themeOrder = ['dark', 'light'];
         const currentIndex = themeOrder.indexOf(currentTheme);
         const nextIndex = (currentIndex + 1) % themeOrder.length;
         
