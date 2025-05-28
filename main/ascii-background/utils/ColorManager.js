@@ -17,10 +17,6 @@ export class ColorManager {
             light: {
                 ascii: '#000000',
                 background: '#ffffff'
-            },
-            party: {
-                ascii: '#ffffff',
-                background: '#000000'
             }
         };
     }
