@@ -764,6 +764,53 @@ ul.chatbox {
   cursor: pointer;
   transition:all .5s ease-in-out;
 }
+/* Microphone toggle styles */
+.mic-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  color: var(--clr-text-secondary);
+}
+
+.mic-toggle:hover {
+  color: var(--clr-text-accent);
+  background: var(--clr-surface-a20);
+}
+
+.mic-toggle.active {
+  color: var(--clr-text-accent);
+  background: var(--clr-surface-a20);
+}
+
+.mic-toggle.processing {
+  animation: pulse 1s infinite;
+}
+
+.mic-toggle.speaking {
+  color: #4CAF50;
+  animation: speaking 0.5s infinite alternate;
+}
+
+.mic-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes speaking {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
 
 
 .chatbox a {
@@ -1062,4 +1109,21 @@ ul.chatbox {
 html {
   visibility: visible;
   opacity: 1;
+}
+
+/* ===== REALTIME SPEECH CONTROLLER STYLES ===== */
+/* Microphone button states for realtime speech */
+.mic-toggle.connecting {
+    animation: pulse 1.5s infinite;
+    background-color: #ffa500 !important;
+}
+
+.mic-toggle.error {
+    background-color: #ff4444 !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
