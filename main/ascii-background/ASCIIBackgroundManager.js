@@ -39,12 +39,34 @@ export class ASCIIBackgroundManager {
      * Initialize the ASCII background system
      */
     initialize() {
+        this.ensureFullViewport();
         this.setupColorManager();
         this.setupThreeJS();
         this.setupASCIIGrid();
         this.setupInteractionSystems();
         this.setupEventListeners();
         this.start();
+    }
+
+    /**
+     * Ensure full viewport coverage by injecting CSS
+     */
+    ensureFullViewport() {
+        // Inject CSS to ensure full viewport coverage
+        const style = document.createElement('style');
+        style.textContent = `
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+            #container {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     /**
@@ -98,15 +120,20 @@ export class ASCIIBackgroundManager {
         // Append to container
         this.container.appendChild(this.renderer.domElement);
         
-        // Set canvas style to fill entire viewport
+        // Set canvas style to fill entire viewport with robust positioning
         this.renderer.domElement.style.position = 'fixed';
         this.renderer.domElement.style.top = '0';
         this.renderer.domElement.style.left = '0';
-        this.renderer.domElement.style.width = '100%';
-        this.renderer.domElement.style.height = '100%';
+        this.renderer.domElement.style.right = '0';
+        this.renderer.domElement.style.bottom = '0';
+        this.renderer.domElement.style.width = '100vw';
+        this.renderer.domElement.style.height = '100vh';
+        this.renderer.domElement.style.margin = '0';
+        this.renderer.domElement.style.padding = '0';
         this.renderer.domElement.style.zIndex = '1';
         this.renderer.domElement.style.pointerEvents = 'auto';
         this.renderer.domElement.style.display = 'block';
+        this.renderer.domElement.style.overflow = 'hidden';
     }
 
     /**
@@ -148,8 +175,8 @@ export class ASCIIBackgroundManager {
         const gridWorldWidth = gridDimensions.width * gridDimensions.cellSize;
         const gridWorldHeight = gridDimensions.height * gridDimensions.cellSize;
         
-        const frustumWidth = gridWorldWidth * 1.1; // Add 10% padding
-        const frustumHeight = gridWorldHeight * 1.1;
+        const frustumWidth = gridWorldWidth * 1; // Add 10% padding
+        const frustumHeight = gridWorldHeight * 1;
         
         // Use the larger dimension to ensure everything fits
         const frustumSize = Math.max(frustumWidth / aspect, frustumHeight);

@@ -122,11 +122,11 @@ export class ASCIIGrid {
                     density = densityFunction(x, y);
                 }
                 
-                // Apply mouse excitement effects to density threshold
-                let threshold = 0.05;
+                // Apply mouse excitement effects to density threshold for intense sparkle
+                let threshold = 0.06; // Lower base threshold for more visible characters
                 if (mouseInteraction) {
                     const excitement = mouseInteraction.getExcitementLevel(x, y);
-                    threshold = Math.max(0.01, threshold - excitement * 0.04); // Lower threshold when excited
+                    threshold = Math.max(0.01, threshold - excitement * 0.05); // Allow more characters to show
                 }
                 
                 // Only show characters if density is above threshold

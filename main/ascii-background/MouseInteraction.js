@@ -13,9 +13,9 @@ export class MouseInteraction {
         this.isMouseActive = false;
         this.lastMouseMove = 0;
         
-        // Configuration - enhanced for better sparkle effect
-        this.influenceRadius = 150; // Increased radius for more sparkle
-        this.maxChaosMultiplier = 5; // Increased chaos for more sparkle
+        // Configuration - enhanced intensity with longer decay
+        this.influenceRadius = 140; // Larger radius for more intense sparkle
+        this.maxChaosMultiplier = 4; // Higher chaos for more intense sparkle
         this.mouseInactiveTimeout = 2000; // ms before mouse is considered inactive
         
         // Grid mapping
@@ -24,7 +24,11 @@ export class MouseInteraction {
         
         // Excitement state
         this.excitementMap = new Map(); // Grid position -> excitement level
-        this.excitementDecay = 0.95; // How fast excitement decays per frame
+        this.excitementDecay = 0.97; // Longer decay for trailing effect
+        
+        // State management for consistent initialization
+        this.isInitialized = false;
+        this.initializationTime = 0;
         
         this.initialize();
     }
@@ -35,6 +39,12 @@ export class MouseInteraction {
     initialize() {
         this.updateGridDimensions();
         this.setupEventListeners();
+        
+        // Mark as initialized after a short delay to ensure consistent behavior
+        setTimeout(() => {
+            this.isInitialized = true;
+            this.initializationTime = performance.now();
+        }, 100);
     }
 
     /**
@@ -89,7 +99,7 @@ export class MouseInteraction {
      * Update excitement map based on mouse position
      */
     updateExcitement() {
-        if (!this.isMouseActive) return;
+        if (!this.isMouseActive || !this.isInitialized) return;
 
         // Convert screen mouse position to grid coordinates
         // Screen coordinates: (0,0) at top-left, positive Y goes down
@@ -117,9 +127,9 @@ export class MouseInteraction {
                 );
                 
                 if (distance <= this.influenceRadius) {
-                    // Calculate excitement level with more intense falloff for sparkle effect
+                    // Calculate excitement level with enhanced intensity
                     const normalizedDistance = distance / this.influenceRadius;
-                    const excitement = Math.pow(1 - normalizedDistance, 1.5) * 1.5; // Increased intensity
+                    const excitement = Math.pow(1 - normalizedDistance, 1.3) * 1.4; // More intense effect
                     
                     const key = `${x},${y}`;
                     const currentExcitement = this.excitementMap.get(key) || 0;
@@ -134,6 +144,8 @@ export class MouseInteraction {
      * @param {number} deltaTime - Time elapsed since last update
      */
     update(deltaTime) {
+        if (!this.isInitialized) return;
+        
         const currentTime = performance.now();
         
         // Check if mouse has been inactive
@@ -141,7 +153,7 @@ export class MouseInteraction {
             this.isMouseActive = false;
         }
         
-        // Decay excitement levels
+        // Decay excitement levels with consistent timing
         for (const [key, excitement] of this.excitementMap.entries()) {
             const newExcitement = excitement * this.excitementDecay;
             if (newExcitement < 0.01) {

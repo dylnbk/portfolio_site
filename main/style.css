@@ -606,7 +606,7 @@ h1:hover::after {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #1a99d474; 
+  background: #96969684; 
 }
 
 pre, code {
