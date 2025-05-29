@@ -84,7 +84,7 @@ class OpenAISpeechSynthesis {
           input: cleanText,
           voice: voice,
           response_format: 'mp3',
-          speed: 1.5
+          speed: 1
         })
       });
 
@@ -155,8 +155,7 @@ class OpenAISpeechSynthesis {
     return [
       { id: 'alloy', name: 'Alloy', description: 'Neutral, balanced voice' },
       { id: 'echo', name: 'Echo', description: 'Male voice' },
-      { id: 'fable', name: 'ballad', description: 'British accent v1' },
-      { id: 'fable', name: 'Fable', description: 'British accent v2' },
+      { id: 'ballad', name: 'Ballad', description: 'British accent' },
       { id: 'onyx', name: 'Onyx', description: 'Deep male voice' },
       { id: 'nova', name: 'Nova', description: 'Female voice' },
       { id: 'shimmer', name: 'Shimmer', description: 'Soft female voice' }
