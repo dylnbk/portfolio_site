@@ -864,6 +864,11 @@ ul.chatbox {
   color: inherit;
 }
 
+/* Welcome message initial styling for fade-in effect */
+.welcome-message {
+  opacity: 0;
+}
+
 /* Light mode adjustments for character spans */
 [data-theme="light"] .char-span {
   color: inherit;

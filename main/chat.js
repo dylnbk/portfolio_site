@@ -324,12 +324,38 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn('ChatCursorEffect not available');
             }
+            
+            // Display welcome message after cursor effect is initialized
+            displayWelcomeMessage();
         } catch (error) {
             console.error('Failed to initialize controllers:', error);
             // Ensure chat still works without enhancements
             speechController = null;
             realtimeSpeechController = null;
             chatCursorEffect = null;
+            
+            // Still display welcome message even if enhancements fail
+            displayWelcomeMessage();
         }
     }, 500);
 });
+
+/**
+ * Display welcome message when chat initializes
+ */
+const displayWelcomeMessage = () => {
+    const welcomeMessage = "Hi! Welcome to Dylan's site. I'm an assistant and can answer any questions you have about Dylan, his skills, and experience. You can use text mode by simply writing normal messages, or have a realtime speech conversation by pressing the microphone icon.";
+    
+    // Create welcome message as incoming (assistant) message
+    const welcomeChatLi = createChatLi(welcomeMessage, "incoming");
+    
+    // Add welcome-message class for initial styling
+    welcomeChatLi.classList.add("welcome-message");
+    
+    // Append to chatbox
+    chatbox.appendChild(welcomeChatLi);
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+    
+    // Fade in the welcome message using jQuery (matching site's fade-in pattern)
+    $(welcomeChatLi).delay(800).animate({"opacity": "1"}, 2500);
+};
