@@ -6,8 +6,10 @@
 export default {
   contentType: 'art',
   files: [
-    '/content/art/2025-05-29-sample-digital-art.md'
-    // Add more art files here as they are created
+    '/content/art/2025-05-29-sample-digital-art.md',
+    '/content/art/2025-05-30-abstract-expressions.md',
+    '/content/art/2025-05-30-digital-portrait-study.md',
+    '/content/art/2025-05-30-ethereal-landscape.md'
   ],
   metadata: {
     section: 'ART',

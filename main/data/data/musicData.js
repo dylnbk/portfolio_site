@@ -6,8 +6,9 @@
 export default {
   contentType: 'music',
   files: [
-    '/content/music/2025-05-29-sample-music-track.md'
-    // Add more music files here as they are created
+    '/content/music/2025-05-29-sample-music-track.md',
+    '/content/music/2025-05-30-ambient-journey.md',
+    '/content/music/2025-05-30-synthwave-pulse.md'
   ],
   metadata: {
     section: 'MUSIC',
