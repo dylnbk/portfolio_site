@@ -1,0 +1,232 @@
+/**
+ * Shared Component Styles
+ * Loading spinners, error states, and common UI elements
+ */
+
+/* ===== LOADING SPINNER ===== */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-spinner__dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.loading-spinner__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--clr-text-secondary);
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-spinner__dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-spinner__dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-spinner__text {
+  font-family: 'Inconsolata', monospace;
+  font-size: 14px;
+  color: var(--clr-text-secondary);
+  opacity: 0.8;
+}
+
+.loading-spinner--medium {
+  padding: 30px 20px;
+}
+
+.loading-spinner--small {
+  padding: 20px 15px;
+}
+
+.loading-spinner--small .loading-spinner__dot {
+  width: 6px;
+  height: 6px;
+}
+
+.loading-spinner--small .loading-spinner__text {
+  font-size: 12px;
+}
+
+.loading-spinner--inline {
+  display: inline-block;
+  font-family: 'Inconsolata', monospace;
+  font-size: 14px;
+  color: var(--clr-text-secondary);
+  opacity: 0.8;
+  padding: 20px;
+}
+
+/* ===== ERROR STATES ===== */
+.loading-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-error__icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.loading-error__message {
+  font-family: 'Inconsolata', monospace;
+  font-size: 14px;
+  color: var(--clr-text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.loading-error__retry {
+  background: transparent;
+  border: 1px solid var(--clr-border-secondary);
+  border-radius: 4px;
+  padding: 8px 16px;
+  color: var(--clr-text-secondary);
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.loading-error__retry:hover {
+  background: var(--clr-bg-secondary);
+  color: var(--clr-text-primary);
+  border-color: var(--clr-border-accent);
+}
+
+/* ===== EMPTY STATES ===== */
+.music-player__empty,
+.image-gallery__empty,
+.project-grid__empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 14px;
+  color: var(--clr-text-secondary);
+  opacity: 0.7;
+}
+
+/* ===== SECTION HEADERS (REMOVED FOR MINIMAL DESIGN) ===== */
+/* Headers removed for minimal design */
+
+/* ===== COMMON BUTTON STYLES ===== */
+.btn {
+  background: transparent;
+  border: 1px solid var(--clr-border-secondary);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--clr-text-secondary);
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: var(--clr-bg-secondary);
+  color: var(--clr-text-primary);
+  border-color: var(--clr-border-accent);
+  transform: translateY(-1px);
+}
+
+.btn--primary {
+  background: var(--clr-primary-a20);
+  border-color: var(--clr-primary-a40);
+  color: var(--clr-text-accent);
+}
+
+.btn--primary:hover {
+  background: var(--clr-primary-a30);
+  border-color: var(--clr-primary-a50);
+}
+
+/* ===== COMMON TAG STYLES ===== */
+.tag {
+  display: inline-block;
+  background: var(--clr-surface-tonal-a10);
+  border: 1px solid var(--clr-border-secondary);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 11px;
+  color: var(--clr-text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background: var(--clr-surface-tonal-a20);
+  border-color: var(--clr-border-accent);
+  color: var(--clr-text-primary);
+}
+
+/* ===== RESPONSIVE UTILITIES ===== */
+@media (max-width: 650px) {
+  .loading-spinner {
+    padding: 30px 15px;
+  }
+  
+  .loading-error {
+    padding: 30px 15px;
+  }
+  
+  .music-player__title,
+  .image-gallery__title,
+  .project-grid__title {
+    font-size: 24px;
+  }
+  
+  .btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply fade-in to content sections */
+.music-player,
+.image-gallery,
+.project-grid {
+  animation: fadeIn 0.6s ease-out;
+}

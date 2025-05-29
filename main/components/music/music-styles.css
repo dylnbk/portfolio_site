@@ -1,0 +1,218 @@
+/**
+ * Music Player Component Styles
+ * Using existing CSS variables and design patterns
+ */
+
+/* ===== MUSIC PLAYER CONTAINER ===== */
+.music-player {
+  font-family: 'Inconsolata', monospace;
+  color: var(--clr-text-primary);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== TRACK LIST ===== */
+.music-player__tracklist {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-bottom: 20px;
+}
+
+.music-track {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 12px;
+  border: 1px solid var(--clr-border-secondary);
+  border-radius: 8px;
+  background: var(--clr-bg-primary);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.music-track:hover {
+  background: var(--clr-bg-primary);
+  border-color: var(--clr-border-secondary);
+}
+
+.music-track--active {
+  background: var(--clr-bg-primary);
+  border-color: var(--clr-border-secondary);
+}
+
+.music-track--active:hover {
+  background: var(--clr-bg-primary);
+}
+
+/* ===== TRACK PLAY BUTTON ===== */
+.music-track__play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--clr-bg-primary);
+  border: 1px solid var(--clr-border-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  color: var(--clr-text-primary);
+}
+
+.music-track__play-btn:hover {
+  background: var(--clr-surface-tonal-a20);
+  border-color: var(--clr-border-accent);
+  transform: scale(1.05);
+}
+
+.music-track--active .music-track__play-btn {
+  background: var(--clr-bg-primary);
+  border-color: var(--clr-border-secondary);
+  color: var(--clr-text-primary);
+}
+
+.music-track--active .music-track__play-btn:hover {
+  background: var(--clr-surface-tonal-a20);
+  border-color: var(--clr-border-accent);
+  transform: scale(1.05);
+}
+
+/* ===== TRACK INFO ===== */
+.music-track__info {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+/* ===== TEXT CONTENT ===== */
+.music-track__text-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.2s ease-in-out;
+}
+
+.music-track__title {
+  font-family: 'Inconsolata', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--clr-text-primary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-track__description {
+  font-size: 13px;
+  color: var(--clr-text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ===== PLAYER CONTENT ===== */
+.music-track__player-content {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease-in-out;
+}
+
+.music-track__waveform {
+  margin-bottom: 8px;
+}
+
+.music-track__progress-bar {
+  height: 4px;
+  background: var(--clr-surface-tonal-a30);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light mode specific progress bar background */
+[data-theme="light"] .music-track__progress-bar {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.music-track__progress-fill {
+  height: 100%;
+  background: var(--clr-text-primary);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.1s ease;
+}
+
+.music-track__progress-bar:hover .music-track__progress-fill {
+  background: var(--clr-text-primary);
+}
+
+.music-track__time-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--clr-text-secondary);
+}
+
+.music-track__current-time,
+.music-track__total-time {
+  min-width: 35px;
+  text-align: center;
+}
+
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 650px) {
+  .music-track {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .music-track__play-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+    margin-right: 12px;
+  }
+  
+  .music-track__title {
+    font-size: 14px;
+  }
+  
+  .music-track__description {
+    font-size: 12px;
+  }
+  
+  .music-track__time-info {
+    font-size: 10px;
+  }
+  
+  .music-track__current-time,
+  .music-track__total-time {
+    min-width: 30px;
+  }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.music-player__tracklist::-webkit-scrollbar {
+  width: 6px;
+}
+
+.music-player__tracklist::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.music-player__tracklist::-webkit-scrollbar-thumb {
+  background: var(--clr-border-secondary);
+  border-radius: 3px;
+}
+
+.music-player__tracklist::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-border-accent);
+}

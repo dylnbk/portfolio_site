@@ -190,6 +190,52 @@
   width: 650px;
 }
 
+/* ===== CONTENT SECTIONS ===== */
+.content-section {
+  font-family: 'Inconsolata', monospace;
+  position: fixed;
+  top: 210px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: calc(100vh - 210px);
+  width: 650px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.content-section > div {
+  height: 100%;
+  padding: 0 0 40px 0;
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments for content sections */
+@media (max-width: 650px) {
+  .content-section {
+    width: 95%;
+    margin: 0 auto;
+    padding: 0 10px;
+    top: 20vh;
+    height: calc(100vh - 190px);
+  }
+  
+  .content-section > div {
+    padding: 15px 0;
+  }
+}
+
+/* Ensure music player controls don't overlap content */
+.content-section.has-music-player {
+  padding-bottom: 120px;
+}
+
+@media (max-width: 650px) {
+  .content-section.has-music-player {
+    padding-bottom: 100px;
+  }
+}
+
 body {
   font-family: 'Teko', sans-serif;
   font-size: 50px;
@@ -285,7 +331,7 @@ textarea.message-contact {
 }
 
 .message-contact:hover {
-  box-shadow: 0 0 20px rgba(251, 251, 251, 0.156);
+  box-shadow: 0 0 20px var(--clr-border-secondary);
 }
 
 #submit {
