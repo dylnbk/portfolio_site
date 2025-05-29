@@ -12,6 +12,9 @@ class ChatCursorEffect {
         this.updateThreshold = 16; // ~60fps throttling
         this.maxDistance = 100; // Maximum distance for effect
         this.animationFrameId = null;
+        this.isMouseInChatbox = false;
+        this.decayRate = 0.95; // Decay factor for gradual fade
+        this.characterIntensities = new Map(); // Track intensity per character
         
         this.init();
     }
