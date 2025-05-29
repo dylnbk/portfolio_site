@@ -10,6 +10,9 @@ const inputInitHeight = chatInput.scrollHeight;
 let speechController = null; // Legacy speech controller (fallback)
 let realtimeSpeechController = null; // New realtime speech controller
 
+// Cursor effect instance
+let chatCursorEffect = null;
+
 /**
  * Create a chat <li> element with the provided message and class name.
  * @param {string} message - The message content.
@@ -27,6 +30,12 @@ const createChatLi = (message, className) => {
 
     p.innerHTML = message; // Use innerHTML to allow HTML content
     chatLi.appendChild(p);
+    
+    // Apply cursor effect to the new chat element
+    if (chatCursorEffect) {
+        chatCursorEffect.applyCursorEffect(chatLi);
+    }
+    
     return chatLi;
 }
 
@@ -118,6 +127,12 @@ const generateResponse = async (chatElement, onFirstChunk) => {
 
                             // Update the message element's HTML
                             messageElement.innerHTML = sanitizedHTML;
+                            
+                            // Reapply cursor effect for streaming updates
+                            if (chatCursorEffect) {
+                                chatCursorEffect.applyCursorEffect(chatElement);
+                            }
+                            
                             chatbox.scrollTo(0, chatbox.scrollHeight);
                         }
                     } catch (e) {
@@ -280,7 +295,7 @@ chatInput.addEventListener("keydown", (e) => {
 sendChatBtn.addEventListener("click", handleChat);
 
 /**
- * Initialize speech controllers when DOM is loaded
+ * Initialize speech controllers and cursor effect when DOM is loaded
  */
 document.addEventListener('DOMContentLoaded', () => {
     // Wait a bit for all modules to load
@@ -301,11 +316,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn('Legacy SpeechController not available');
             }
+
+            // Initialize cursor effect system
+            if (window.ChatCursorEffect) {
+                chatCursorEffect = new window.ChatCursorEffect();
+                console.log('Chat cursor effect initialized successfully');
+            } else {
+                console.warn('ChatCursorEffect not available');
+            }
         } catch (error) {
-            console.error('Failed to initialize speech controllers:', error);
-            // Ensure chat still works without speech
+            console.error('Failed to initialize controllers:', error);
+            // Ensure chat still works without enhancements
             speechController = null;
             realtimeSpeechController = null;
+            chatCursorEffect = null;
         }
     }, 500);
 });
