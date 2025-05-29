@@ -5,3 +5,9 @@
 
 [dev]
   targetPort = 3000
+
+# Enable Netlify Identity for Decap CMS
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200

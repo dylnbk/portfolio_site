@@ -13,7 +13,9 @@
     "vite-plugin-copy": "^0.1.6"
   },
   "dependencies": {
+    "decap-cms-app": "^3.6.3",
     "jquery": "^3.6.0",
+    "netlify-identity-widget": "^1.9.2",
     "openai": "^4.0.0",
     "three": "^0.139.2"
   }

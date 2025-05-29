@@ -1,0 +1,96 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "main/assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "music"
+    label: "Music"
+    folder: "main/content/music"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Artist", name: "artist", widget: "string" }
+      - { label: "Album", name: "album", widget: "string", required: false }
+      - { label: "Release Date", name: "releaseDate", widget: "datetime" }
+      - { label: "Genre", name: "genre", widget: "select", options: ["Electronic", "Rock", "Jazz", "Classical", "Hip-Hop", "Pop", "Ambient", "Experimental", "Folk", "Blues", "Other"] }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Audio File", name: "audioFile", widget: "file", media_folder: "/main/assets/uploads/music" }
+      - { label: "Cover Image", name: "coverImage", widget: "image", media_folder: "/main/assets/uploads/covers", required: false }
+      - { label: "Duration", name: "duration", widget: "string", hint: "Format: MM:SS" }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Streaming Links", name: "streamingLinks", widget: "object", required: false, fields: [
+          { label: "Spotify", name: "spotify", widget: "string", required: false },
+          { label: "Apple Music", name: "appleMusic", widget: "string", required: false },
+          { label: "YouTube", name: "youtube", widget: "string", required: false },
+          { label: "SoundCloud", name: "soundcloud", widget: "string", required: false }
+        ]}
+
+  - name: "art"
+    label: "Art"
+    folder: "main/content/art"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Creation Date", name: "creationDate", widget: "datetime" }
+      - { label: "Medium", name: "medium", widget: "select", options: ["Digital", "Oil", "Acrylic", "Watercolor", "Pencil", "Charcoal", "Mixed Media", "Photography", "Sculpture", "Other"] }
+      - { label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "e.g., 24x36 inches or 1920x1080 pixels" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image", media_folder: "/main/assets/uploads/gallery" }
+      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/main/assets/uploads/gallery", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Available for Sale", name: "forSale", widget: "boolean", default: false }
+      - { label: "Price", name: "price", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Process Notes", name: "processNotes", widget: "markdown", required: false }
+
+  - name: "photos"
+    label: "Photos"
+    folder: "main/content/photos"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date Taken", name: "dateTaken", widget: "datetime" }
+      - { label: "Location", name: "location", widget: "string", required: false }
+      - { label: "Camera", name: "camera", widget: "string", required: false }
+      - { label: "Lens", name: "lens", widget: "string", required: false }
+      - { label: "Settings", name: "settings", widget: "object", required: false, fields: [
+          { label: "Aperture", name: "aperture", widget: "string", required: false },
+          { label: "Shutter Speed", name: "shutterSpeed", widget: "string", required: false },
+          { label: "ISO", name: "iso", widget: "string", required: false },
+          { label: "Focal Length", name: "focalLength", widget: "string", required: false }
+        ]}
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Photo", name: "photo", widget: "image", media_folder: "/main/assets/uploads/gallery" }
+      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/main/assets/uploads/gallery", required: false }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "EXIF Data", name: "exifData", widget: "text", required: false, hint: "Additional technical details" }
+
+  - name: "code"
+    label: "Code Projects"
+    folder: "main/content/code"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Project Type", name: "projectType", widget: "select", options: ["Web App", "Mobile App", "Desktop App", "Library", "Tool", "Game", "API", "Website", "Other"] }
+      - { label: "Technologies", name: "technologies", widget: "list", hint: "e.g., React, Node.js, Python" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Long Description", name: "longDescription", widget: "markdown" }
+      - { label: "Repository URL", name: "repositoryUrl", widget: "string", required: false }
+      - { label: "Live Demo URL", name: "liveDemoUrl", widget: "string", required: false }
+      - { label: "Status", name: "status", widget: "select", options: ["In Progress", "Completed", "On Hold", "Archived"], default: "In Progress" }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Screenshot", name: "screenshot", widget: "image", media_folder: "/main/assets/uploads/projects", required: false }
+      - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image", media_folder: "/main/assets/uploads/projects" }, required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Challenges", name: "challenges", widget: "markdown", required: false }
+      - { label: "Lessons Learned", name: "lessonsLearned", widget: "markdown", required: false }

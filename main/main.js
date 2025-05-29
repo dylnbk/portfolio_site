@@ -1,5 +1,6 @@
 import './style.css'
 import { ASCIIBackgroundManager } from './ascii-background/ASCIIBackgroundManager.js';
+import './portfolio-content-manager.js';
 
 // Global reference to ASCII background manager
 let asciiBackgroundManager = null;
@@ -73,6 +74,9 @@ if (document.readyState === 'loading') {
 } else {
   initializeASCIIBackground();
 }
+
+// Portfolio content manager will initialize itself
+console.log('Main.js: Portfolio Content Manager system loading...');
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
