@@ -10,6 +10,9 @@ const inputInitHeight = chatInput.scrollHeight;
 let speechController = null; // Legacy speech controller (fallback)
 let realtimeSpeechController = null; // New realtime speech controller
 
+// Cursor effect instance
+let chatCursorEffect = null;
+
 /**
  * Create a chat <li> element with the provided message and class name.
  * @param {string} message - The message content.
@@ -27,6 +30,12 @@ const createChatLi = (message, className) => {
 
     p.innerHTML = message; // Use innerHTML to allow HTML content
     chatLi.appendChild(p);
+    
+    // Apply cursor effect to the new chat element
+    if (chatCursorEffect) {
+        chatCursorEffect.applyCursorEffect(chatLi);
+    }
+    
     return chatLi;
 }
 
@@ -118,6 +127,12 @@ const generateResponse = async (chatElement, onFirstChunk) => {
 
                             // Update the message element's HTML
                             messageElement.innerHTML = sanitizedHTML;
+                            
+                            // Reapply cursor effect for streaming updates
+                            if (chatCursorEffect) {
+                                chatCursorEffect.applyCursorEffect(chatElement);
+                            }
+                            
                             chatbox.scrollTo(0, chatbox.scrollHeight);
                         }
                     } catch (e) {
@@ -280,7 +295,7 @@ chatInput.addEventListener("keydown", (e) => {
 sendChatBtn.addEventListener("click", handleChat);
 
 /**
- * Initialize speech controllers when DOM is loaded
+ * Initialize speech controllers and cursor effect when DOM is loaded
  */
 document.addEventListener('DOMContentLoaded', () => {
     // Wait a bit for all modules to load
@@ -301,11 +316,46 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn('Legacy SpeechController not available');
             }
+
+            // Initialize cursor effect system
+            if (window.ChatCursorEffect) {
+                chatCursorEffect = new window.ChatCursorEffect();
+                console.log('Chat cursor effect initialized successfully');
+            } else {
+                console.warn('ChatCursorEffect not available');
+            }
+            
+            // Display welcome message after cursor effect is initialized
+            displayWelcomeMessage();
         } catch (error) {
-            console.error('Failed to initialize speech controllers:', error);
-            // Ensure chat still works without speech
+            console.error('Failed to initialize controllers:', error);
+            // Ensure chat still works without enhancements
             speechController = null;
             realtimeSpeechController = null;
+            chatCursorEffect = null;
+            
+            // Still display welcome message even if enhancements fail
+            displayWelcomeMessage();
         }
     }, 500);
 });
+
+/**
+ * Display welcome message when chat initializes
+ */
+const displayWelcomeMessage = () => {
+    const welcomeMessage = "Hi! Welcome to Dylan's site. I'm an assistant and can answer any questions you have about Dylan, his skills, and experience. You can use text mode by simply writing normal messages, or have a realtime speech conversation by pressing the microphone icon.";
+    
+    // Create welcome message as incoming (assistant) message
+    const welcomeChatLi = createChatLi(welcomeMessage, "incoming");
+    
+    // Add welcome-message class for initial styling
+    welcomeChatLi.classList.add("welcome-message");
+    
+    // Append to chatbox
+    chatbox.appendChild(welcomeChatLi);
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+    
+    // Fade in the welcome message using jQuery (matching site's fade-in pattern)
+    $(welcomeChatLi).delay(800).animate({"opacity": "1"}, 2500);
+};

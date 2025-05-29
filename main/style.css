@@ -44,6 +44,11 @@
   --clr-bg-secondary: #040404d3;
   --clr-bg-tertiary: #121212e6;
   --clr-bg-navbar: rgba(19, 19, 19, 0.97);
+  
+  /* Cursor hover effect colors */
+  --clr-cursor-hover-base: #ffffff;
+  --clr-cursor-hover-accent: #00ffff;
+  --clr-cursor-glow: rgba(255, 255, 255, 0.8);
 }
 
 /* Light mode */
@@ -88,6 +93,11 @@
   --clr-bg-secondary: rgb(255, 255, 255);
   --clr-bg-tertiary: rgba(240, 240, 240, 0.9);
   --clr-bg-navbar: rgba(240, 240, 240, 0.97);
+  
+  /* Cursor hover effect colors - light mode */
+  --clr-cursor-hover-base: #000000;
+  --clr-cursor-hover-accent: #0066ff;
+  --clr-cursor-glow: rgba(0, 102, 255, 0.6);
 }
 
 /* Theme toggle button */
@@ -518,7 +528,7 @@ ul.chatbox {
   justify-content: flex-end;
 }
 
-.chatbox .incoming span {
+.chatbox .incoming span:not(.char-span) {
 
   display: inline-block;
   color: var(--clr-text-accent);
@@ -535,7 +545,7 @@ ul.chatbox {
   width: 35px;
 }
 
-.chatbox .outgoing span {
+.chatbox .outgoing span:not(.char-span) {
 
   display: inline-block;
   color: var(--clr-text-accent);
@@ -789,6 +799,85 @@ ul.chatbox {
 /* Hover effect for links */
 .chatbox a:hover {
   text-decoration: none;
+}
+
+/* ===== CURSOR HOVER EFFECT STYLES ===== */
+
+/* Character span wrapper for hover effects */
+.char-span {
+  /* Don't use 'all: unset' as it removes transitions */
+  display: inline !important;
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  vertical-align: baseline !important;
+  
+  /* Inherit all text properties from parent */
+  color: inherit !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  text-align: inherit !important;
+  white-space: inherit !important;
+  letter-spacing: inherit !important;
+  word-spacing: inherit !important;
+  text-decoration: inherit !important;
+  
+  /* Add smooth transitions for hover effects */
+  transition: color 0.2s ease-out, text-shadow 0.2s ease-out !important;
+}
+
+/* Specific styles for character spans in chat paragraphs */
+.chatbox .chat p .char-span {
+  /* Ensure no interference from existing span styles */
+  cursor: inherit !important;
+  float: none !important;
+  /* Don't force color inheritance - allow inline styles to work */
+  color: inherit;
+}
+
+/* Override any conflicting color rules */
+.chatbox .chat p .char-span[style*="color"] {
+  color: inherit;
+}
+
+/* Performance optimization - reduce repaints */
+.char-span {
+  will-change: color, text-shadow;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Ensure hover effects work with existing link styles */
+.chatbox a .char-span {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/* Maintain link hover behavior */
+.chatbox a:hover .char-span {
+  color: inherit;
+}
+
+/* Welcome message initial styling for fade-in effect */
+.welcome-message {
+  opacity: 0;
+}
+
+/* Light mode adjustments for character spans */
+[data-theme="light"] .char-span {
+  color: inherit;
+}
+
+/* Ensure character effects don't interfere with code blocks */
+code .char-span,
+pre .char-span {
+  font-family: monospace;
 }
 
 .closebtn {

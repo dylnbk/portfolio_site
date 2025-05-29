@@ -71,7 +71,7 @@ export class MouseInteraction {
 
         document.addEventListener('mouseleave', () => {
             this.isMouseActive = false;
-            this.clearExcitement();
+            // Don't clear excitement immediately - let natural decay handle it
         });
 
         // Handle window resize
