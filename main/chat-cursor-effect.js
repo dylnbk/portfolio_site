@@ -247,3 +247,6 @@ class ChatCursorEffect {
 
 // Export for use in other modules
 window.ChatCursorEffect = ChatCursorEffect;
+
+// Also export as ES module
+export default ChatCursorEffect;
