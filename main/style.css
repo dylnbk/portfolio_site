@@ -666,8 +666,7 @@ ul.chatbox {
   color: #000000;
   background: #ffffff;
   border-color: #ffffff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-  animation: mic-listening 2s ease-in-out infinite;
+  animation: mic-listening 3s ease-in-out infinite;
 }
 
 /* Processing state - strong highlighting */
@@ -714,7 +713,6 @@ ul.chatbox {
   color: #ffffff;
   background: #000000;
   border-color: #000000;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] .mic-toggle.processing {
@@ -744,6 +742,7 @@ ul.chatbox {
   50% {
     transform: scale(1.05);
     opacity: 0.9;
+    background-color: rgb(10, 200, 130);
   }
 }
 

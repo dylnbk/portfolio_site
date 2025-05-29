@@ -40,7 +40,7 @@
       <div id="slide">
 
         <ul id="navbar">
-          <li><a href="#" onclick="return false;"><img src="home.svg"></a></li>
+          <li><a href="#" onclick="return false;">CHAT</a></li>
           <!--
           <li><a href="https://web-toolkit.netlify.app" target="_blank">APPS</a></li>
           <li><a href="https://www.dylnbk.info" target="_blank">IDEAS</a></li>
@@ -223,7 +223,7 @@
         });
 
       document.getElementById('navbar').addEventListener('click', function (e) {
-          if (e.target.textContent === "") {
+          if (e.target.textContent === "CHAT") {
             if (mediaQuery.matches) {
               document.querySelector('form').style.display = 'none';
               document.querySelector('.chatbot').style.display = 'block';
@@ -239,88 +239,6 @@
             }
           }
         });
-
-      // particle click effect
-      const anchors = document.querySelectorAll('body')
-    
-      Array.prototype.forEach.call(anchors, function(anchor) {
-        anchor.addEventListener('click', explode)
-      })
-    
-      function explode(e) {
-        let x = e.clientX
-        let y = e.clientY
-        let c = document.createElement('canvas')
-        let ctx = c.getContext('2d')
-        let ratio = window.devicePixelRatio
-        let particles = []
-    
-        document.body.appendChild(c)
-    
-        c.style.position = 'absolute'
-        c.style.left = (x - 100) + 'px'
-        c.style.top = (y - 100) + 'px'
-        c.style.pointerEvents = 'none'
-        c.style.width = 200 + 'px'
-        c.style.height = 200 + 'px'
-        c.width = 200 * ratio
-        c.height = 200 * ratio
-    
-        function Particle() {
-          return {
-            x: c.width / 2,
-            y: c.height / 2,
-            radius: r(3,3),
-            color: 'rgb(' + [r(1,2), r(200,255), r(180,255)].join(',') + ')',
-            rotation: r(0,360, true),
-            speed: r(8,12),
-            friction: .93,
-            opacity: r(0,1, true),
-            yVel: 0,
-            gravity: 0.01
-          }
-        }
-    
-        for(var i=0; i<10; i++) { // Reduce the number of particles
-          particles.push(Particle())
-        }
-    
-        function render() {
-          ctx.clearRect(0, 0, c.width, c.height)
-    
-          particles.forEach(function(p, i) {
-            angleTools.moveOnAngle(p, p.speed)
-    
-            p.opacity -= 0.01
-            p.speed *= p.friction
-            p.radius *= p.friction
-            p.yVel += p.gravity
-            p.y += p.yVel
-    
-            if(p.opacity < 0 || p.radius < 0) {
-              particles.splice(i, 1); // Remove particles that aren't visible anymore
-            } else {
-              ctx.beginPath()
-              ctx.globalAlpha = p.opacity
-              ctx.fillStyle = p.color
-              ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, false)
-              ctx.fill()
-            }
-          });
-    
-          if(particles.length === 0) {
-              document.body.removeChild(c) // Stop loop when all particles have died out
-          } else {
-              requestAnimationFrame(render)
-          }
-        }
-    
-        render()
-      }
-    
-      let angleTools={getAngle:function(t,n){var a=n.x-t.x,e=n.y-t.y;return Math.atan2(e,a)/Math.PI*180},getDistance:function(t,n){var a=t.x-n.x,e=t.y-n.y;return Math.sqrt(a*a+e*e)},moveOnAngle:function(t,n){let a=this.getOneFrameDistance(t,n);t.x+=a.x,t.y+=a.y},getOneFrameDistance:function(t,n){return{x:n*Math.cos(t.rotation*Math.PI/180),y:n*Math.sin(t.rotation*Math.PI/180)}}};
-    
-      function r(a,b,c){ return parseFloat((Math.random()*((a?a:1)-(b?b:0))+(b?b:0)).toFixed(c?c:0)); }
     
     </script>
 
