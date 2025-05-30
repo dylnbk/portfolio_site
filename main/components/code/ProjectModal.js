@@ -114,14 +114,14 @@ class ProjectModal {
           <div class="project-modal__links">
             ${project.repositoryUrl && project.repositoryUrl !== '' ? `
               <a href="${project.repositoryUrl}" target="_blank" class="project-modal__link">
-                <span class="project-modal__link-icon">📁</span>
-                View Repository
+                <span class="project-modal__link-icon">💾</span>
+                Repo
               </a>
             ` : ''}
             ${project.liveDemoUrl && project.liveDemoUrl !== '' ? `
               <a href="${project.liveDemoUrl}" target="_blank" class="project-modal__link">
-                <span class="project-modal__link-icon">🚀</span>
-                Live Demo
+                <span class="project-modal__link-icon">🔗</span>
+                Live
               </a>
             ` : ''}
           </div>

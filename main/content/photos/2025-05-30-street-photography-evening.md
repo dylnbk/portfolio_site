@@ -1,5 +1,5 @@
 ---
-title: "Evening Street Photography"
+title: "Taipei, Taiwan"
 dateTaken: "2025-05-30T18:30:00.000Z"
 location: "Downtown Urban District"
 camera: "Canon EOS R6 Mark II"
@@ -9,7 +9,7 @@ settings:
   shutterSpeed: "1/60"
   iso: "800"
   focalLength: "35mm"
-description: "A candid street photograph capturing the dynamic energy of urban life during golden hour with natural lighting and spontaneous human moments."
+description: ""
 image: "/assets/uploads/gallery/street-photography-2.jpg"
 featured: false
 tags:

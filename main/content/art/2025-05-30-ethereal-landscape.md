@@ -1,9 +1,9 @@
 ---
-title: "Ethereal Landscape"
+title: "Shlufklan"
 creationDate: "2025-05-30T16:45:00.000Z"
 medium: "Digital Concept Art"
 dimensions: "3840x2160 pixels"
-description: "A dreamlike landscape composition blending reality with fantasy elements, created using advanced digital painting and compositing techniques."
+description: ""
 image: "/assets/uploads/gallery/art-landscape-4.png"
 featured: false
 forSale: true

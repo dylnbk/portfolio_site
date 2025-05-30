@@ -1,5 +1,5 @@
 ---
-title: "Urban Sunset Skyline"
+title: "Ho Chi Minh, Vietnam"
 dateTaken: "2025-05-30T19:45:00.000Z"
 location: "City Skyline Viewpoint"
 camera: "Nikon Z9"
@@ -9,7 +9,7 @@ settings:
   shutterSpeed: "1/125"
   iso: "100"
   focalLength: "45mm"
-description: "A dramatic cityscape photograph capturing the interplay between urban architecture and natural light during sunset, showcasing the dynamic relationship between built and natural environments."
+description: ""
 image: "/assets/uploads/gallery/urban-sunset-4.jpg"
 featured: false
 tags:

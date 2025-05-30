@@ -1,9 +1,9 @@
 ---
-title: "Digital Portrait Study"
+title: "Gfluge"
 creationDate: "2025-05-30T14:22:00.000Z"
 medium: "Digital Painting"
 dimensions: "1080x1350 pixels"
-description: "A contemporary digital portrait exploring lighting techniques and character expression through digital painting methods."
+description: ""
 image: "/assets/uploads/gallery/art-portrait-3.png"
 featured: true
 forSale: true

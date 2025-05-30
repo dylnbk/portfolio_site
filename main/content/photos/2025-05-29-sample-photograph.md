@@ -1,5 +1,5 @@
 ---
-title: "Sample Photograph"
+title: "Taipei, Taiwan"
 dateTaken: "2025-05-29T19:38:00.000Z"
 location: "Portfolio Studio"
 camera: "Digital Camera"
@@ -9,7 +9,7 @@ settings:
   shutterSpeed: "1/125"
   iso: "200"
   focalLength: "50mm"
-description: "A sample photograph demonstrating the CMS capabilities for photography content management."
+description: ""
 image: "/assets/uploads/gallery/sample-photo.jpg"
 featured: true
 tags:

@@ -155,15 +155,14 @@
 }
 
 #send-btn {
-  width: 40px;
-  transition: all .1s ease-in-out;
+  width: 35px;
+  transition: all .2s ease-in-out;
   filter: brightness(0) saturate(100%) invert(80%);
 }
 
 #send-btn:hover {
   cursor: pointer;
-  filter: drop-shadow();
-  transform: scale(1.15, 1.15);
+  transform: scale(1.1, 1.1);
   filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.9));
 }
 
@@ -363,8 +362,7 @@ textarea.message-contact {
   color: var(--clr-text-primary);
 }
 
-a {
-  display: inline;
+a:not(.project-modal__link) {
   text-decoration: none;
   position: relative;
   color: var(--clr-text-primary);
@@ -372,20 +370,20 @@ a {
   transition: color 0.3s ease;
 }
 
-a::after{
+a:not(.project-modal__link)::after {
   content: "";
   background: white;
-	mix-blend-mode: exclusion;
+  mix-blend-mode: exclusion;
   width: calc(100% + 20px);
   height: 0;
   position: absolute;
   bottom: -4px;
   left: -10px;
-	transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  transition: all .3s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 
-a:hover::after{
-	height: calc(100% + 8px)
+a:not(.project-modal__link):hover::after {
+  height: calc(100% + 8px)
 }
 
 /* Light mode link hover effects */
@@ -698,17 +696,16 @@ ul.chatbox {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 8px;
+  padding: 4px;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-in-out;
   color: var(--clr-text-secondary);
   border: 1px solid transparent;
 }
 
 .mic-toggle:hover {
-  color: var(--clr-text-accent);
-  background: var(--clr-surface-a20);
-  border-color: var(--clr-border-secondary);
+  transform: scale(1.2);
+  filter: brightness(1.1) drop-shadow(0px 0px 1px var(--clr-text-accent));
 }
 
 /* Inactive state - default styling */
@@ -752,16 +749,16 @@ ul.chatbox {
 /* Error state - subtle indication without harsh colors */
 .mic-toggle.error {
   color: var(--clr-text-secondary);
-  background: var(--clr-surface-a10);
+  background: rgb(180, 0, 0);
   border-color: var(--clr-border-primary);
-  opacity: 0.7;
+  opacity: 0.2;
 }
 
 .mic-icon {
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  height: 23px;
   fill: currentColor;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease-in-out;
 }
 
 /* Light mode specific adjustments - black background with white icon */

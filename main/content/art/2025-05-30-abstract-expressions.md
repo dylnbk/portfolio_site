@@ -1,9 +1,9 @@
 ---
-title: "Abstract Expressions"
+title: "Ine flerkrt"
 creationDate: "2025-05-30T10:15:00.000Z"
 medium: "Mixed Digital Media"
 dimensions: "2560x1440 pixels"
-description: "A vibrant abstract composition exploring color harmony and geometric relationships through digital painting techniques."
+description: ""
 image: "/assets/uploads/gallery/art-abstract-2.png"
 featured: false
 forSale: true

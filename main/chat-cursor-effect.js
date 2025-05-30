@@ -209,14 +209,14 @@ class ChatCursorEffect {
         } else {
             
             if (intensity > 0.7) {
-                span.style.setProperty('color', '#ff0095', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px rgb(255, 0, 102), 0 0 ${intensity * 30}pxrgb(140, 0, 255)`, 'important');
+                span.style.setProperty('color', '#ff00c8', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px rgb(255, 0, 200), 0 0 ${intensity * 30}px rgb(255, 0, 234)`, 'important');
             } else if (intensity > 0.4) {
-                span.style.setProperty('color', '#ff00ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px rgb(255, 64, 182)`, 'important');
+                span.style.setProperty('color', '#b340ff', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px rgb(179, 64, 255)`, 'important');
             } else {
-                span.style.setProperty('color', '#9400ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px rgb(141, 96, 255)`, 'important');
+                span.style.setProperty('color', '#7300e6', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px rgb(25, 42, 188)`, 'important');
             }
         }
     }

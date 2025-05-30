@@ -1,5 +1,5 @@
 ---
-title: "Nature Macro Detail"
+title: "Osaka, Japan"
 dateTaken: "2025-05-30T09:15:00.000Z"
 location: "Botanical Gardens"
 camera: "Sony α7R V"
@@ -9,7 +9,7 @@ settings:
   shutterSpeed: "1/320"
   iso: "400"
   focalLength: "90mm"
-description: "An intimate macro photograph revealing the intricate patterns and textures found in natural forms, showcasing the hidden beauty of botanical structures."
+description: ""
 image: "/assets/uploads/gallery/nature-macro-3.jpg"
 featured: true
 tags:

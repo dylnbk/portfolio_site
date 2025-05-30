@@ -1,9 +1,9 @@
 ---
-title: "Sample Digital Art"
+title: "Ptuble"
 creationDate: "2025-05-29T19:38:00.000Z"
 medium: "Digital"
 dimensions: "1920x1080 pixels"
-description: "A sample digital artwork demonstrating the CMS capabilities for art content management."
+description: ""
 image: "/assets/uploads/gallery/sample-art.png"
 featured: true
 forSale: false
