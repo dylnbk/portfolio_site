@@ -260,10 +260,10 @@ export class ASCIIGrid {
         const width = Math.floor(containerWidth / cellSize);
         const height = Math.floor(containerHeight / cellSize);
         
-        // Ensure minimum and maximum grid sizes
+        // Ensure minimum grid sizes, remove maximum caps to fill viewport
         return {
-            width: Math.max(20, Math.min(200, width)),
-            height: Math.max(15, Math.min(120, height))
+            width: Math.max(20, width),
+            height: Math.max(15, height)
         };
     }
 }

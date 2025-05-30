@@ -12,31 +12,137 @@ class ChatCursorEffect {
         this.updateThreshold = 16; // ~60fps throttling
         this.maxDistance = 100; // Maximum distance for effect
         this.animationFrameId = null;
-        this.isMouseInChatbox = false;
-        this.decayRate = 0.95; // Decay factor for gradual fade
-        this.characterIntensities = new Map(); // Track intensity per character
-        
-        this.init();
-    }
+        this.animationFrameIdScroll = null; // For scroll-triggered cache updates
+        this.lastScrollUpdate = 0;
 
-    init() {
-        // Bind mouse tracking to the chatbox
-        const chatbox = document.querySelector('.chatbox');
-        if (chatbox) {
-            chatbox.addEventListener('mousemove', this.handleMouseMove.bind(this));
-            chatbox.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+        this.chatboxElement = null;
+        this.characterSpans = [];
+        this.characterPositions = []; // To store { span, rect }
+        this.isDarkMode = false;
+
+        // Bound event handlers
+        this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+        this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
+        this.boundHandleResize = this.handleResize.bind(this);
+        this.boundMutationObserverCallback = this.handleMutations.bind(this);
+        this.boundHandleScroll = this.handleScroll.bind(this); // For scroll events
+
+        this.mutationObserver = null;
+        
+        // Wait for DOM ready before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
         }
     }
 
+    init() {
+        if (!this.isEnabled) return;
+
+        this.chatboxElement = document.querySelector('.chatbox');
+        if (!this.chatboxElement) {
+            console.warn('ChatCursorEffect: Chatbox element not found.');
+            return;
+        }
+
+        this.updateThemeStatus();
+        this.chatboxElement.addEventListener('mousemove', this.boundHandleMouseMove);
+        this.chatboxElement.addEventListener('mouseleave', this.boundHandleMouseLeave);
+        window.addEventListener('resize', this.boundHandleResize);
+        if (this.chatboxElement) { // Check as it might not be found
+            this.chatboxElement.addEventListener('scroll', this.boundHandleScroll);
+        }
+
+        // Initial processing of existing messages
+        this.processAllMessages();
+
+        // Observe for new messages
+        this.mutationObserver = new MutationObserver(this.boundMutationObserverCallback);
+        this.mutationObserver.observe(this.chatboxElement, { childList: true, subtree: true });
+
+        // Observe for theme changes
+        const themeObserver = new MutationObserver(() => this.updateThemeStatus());
+        themeObserver.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+
+    updateThemeStatus() {
+        this.isDarkMode = !document.body.hasAttribute('data-theme') ||
+                           document.body.getAttribute('data-theme') === 'dark';
+    }
+
+    handleResize() {
+        if (!this.isEnabled) return;
+        this.cacheCharacterPositions();
+    }
+
+    handleScroll() {
+        if (!this.isEnabled) return;
+        const now = performance.now();
+        // Throttle scroll updates. Using a slightly higher threshold than mouse move.
+        if (now - this.lastScrollUpdate < (this.updateThreshold * 2)) {
+            return;
+        }
+        this.lastScrollUpdate = now;
+
+        if (this.animationFrameIdScroll) {
+            cancelAnimationFrame(this.animationFrameIdScroll);
+        }
+        this.animationFrameIdScroll = requestAnimationFrame(() => {
+            this.cacheCharacterPositions();
+            this.animationFrameIdScroll = null;
+        });
+    }
+    
+    handleMutations(mutationsList) {
+        if (!this.isEnabled) return;
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        // Check if it's a message element or contains message elements
+                        if (node.matches('li') || node.querySelector('li')) {
+                             // Assuming new messages are added as <li> or contain <li>
+                            this.processNewMessageElement(node.closest('li') || node);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    processNewMessageElement(messageElement) {
+        if (!messageElement || !this.isEnabled) return;
+        const messageContent = messageElement.querySelector('p'); // Adjust if structure is different
+        if (messageContent) {
+            this.wrapCharactersInSpans(messageContent);
+            this.cacheCharacterPositions(); // Update cache after new spans are added
+        }
+    }
+    
+    processAllMessages() {
+        if (!this.chatboxElement || !this.isEnabled) return;
+        const messageElements = this.chatboxElement.querySelectorAll('li p'); // Adjust selector as needed
+        messageElements.forEach(p => this.wrapCharactersInSpans(p));
+        this.cacheCharacterPositions();
+    }
+
+    cacheCharacterPositions() {
+        if (!this.isEnabled || !this.chatboxElement) return;
+        this.characterSpans = Array.from(this.chatboxElement.querySelectorAll('.char-span'));
+        this.characterPositions = this.characterSpans.map(span => {
+            return { span, rect: span.getBoundingClientRect() };
+        });
+    }
+
     handleMouseMove(event) {
+        if (!this.isEnabled) return;
         const now = performance.now();
         if (now - this.lastUpdate < this.updateThreshold) return;
         
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
         this.lastUpdate = now;
-        
-        console.log('Mouse move:', this.mouseX, this.mouseY);
         
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
@@ -48,24 +154,23 @@ class ChatCursorEffect {
     }
 
     handleMouseLeave() {
+        if (!this.isEnabled) return;
         // Reset all character colors when mouse leaves chatbox
-        const charSpans = document.querySelectorAll('.chatbox .char-span');
-        charSpans.forEach(span => {
+        this.characterPositions.forEach(({ span }) => {
             span.style.color = '';
             span.style.textShadow = '';
         });
     }
 
     updateCharacterColors() {
-        const charSpans = document.querySelectorAll('.chatbox .char-span');
+        if (!this.isEnabled || this.characterPositions.length === 0) return;
         
-        charSpans.forEach(span => {
-            const rect = span.getBoundingClientRect();
+        this.characterPositions.forEach(({ span, rect }) => {
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             
             const distance = Math.sqrt(
-                Math.pow(this.mouseX - centerX, 2) + 
+                Math.pow(this.mouseX - centerX, 2) +
                 Math.pow(this.mouseY - centerY, 2)
             );
             
@@ -89,40 +194,29 @@ class ChatCursorEffect {
             span.style.setProperty('text-shadow', '', 'important');
             return;
         }
-        
-        // Get current theme
-        const isDarkMode = !document.body.hasAttribute('data-theme') ||
-                          document.body.getAttribute('data-theme') === 'dark';
-        
-        if (isDarkMode) {
-            // Dark mode: very dramatic cyan/bright blue effect
+                
+        if (this.isDarkMode) {
             if (intensity > 0.7) {
-                // Very close - bright cyan
                 span.style.setProperty('color', '#00ffff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px #00ffff, 0 0 ${intensity * 30}px #00ffff`, 'important');
             } else if (intensity > 0.4) {
-                // Medium distance - bright blue
                 span.style.setProperty('color', '#4080ff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px #4080ff`, 'important');
             } else {
-                // Far but still affected - light blue
                 span.style.setProperty('color', '#8080ff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px #8080ff`, 'important');
             }
         } else {
-            // Light mode: very dramatic blue effect
+            
             if (intensity > 0.7) {
-                // Very close - bright blue
-                span.style.setProperty('color', '#0040ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px #0040ff, 0 0 ${intensity * 30}px #0040ff`, 'important');
+                span.style.setProperty('color', '#ff0095', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px rgb(255, 0, 102), 0 0 ${intensity * 30}pxrgb(140, 0, 255)`, 'important');
             } else if (intensity > 0.4) {
-                // Medium distance - medium blue
-                span.style.setProperty('color', '#4080ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px #4080ff`, 'important');
+                span.style.setProperty('color', '#ff00ff', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px rgb(255, 64, 182)`, 'important');
             } else {
-                // Far but still affected - light blue
-                span.style.setProperty('color', '#6090ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px #6090ff`, 'important');
+                span.style.setProperty('color', '#9400ff', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px rgb(141, 96, 255)`, 'important');
             }
         }
     }
@@ -135,6 +229,7 @@ class ChatCursorEffect {
         if (!element || !this.isEnabled) return;
         
         this.processTextNodes(element);
+        // Note: Caching of positions will be handled by processAllMessages or processNewMessageElement
     }
 
     processTextNodes(node) {
@@ -145,13 +240,13 @@ class ChatCursorEffect {
             {
                 acceptNode: (textNode) => {
                     // Skip text nodes that are already inside char-span elements
-                    if (textNode.parentElement && 
+                    if (textNode.parentElement &&
                         textNode.parentElement.classList.contains('char-span')) {
                         return NodeFilter.FILTER_REJECT;
                     }
                     // Only process text nodes with actual content
-                    return textNode.textContent.trim().length > 0 ? 
-                           NodeFilter.FILTER_ACCEPT : 
+                    return textNode.textContent.trim().length > 0 ?
+                           NodeFilter.FILTER_ACCEPT :
                            NodeFilter.FILTER_REJECT;
                 }
             }
@@ -191,39 +286,78 @@ class ChatCursorEffect {
         }
 
         // Replace the original text node with the wrapped characters
-        textNode.parentNode.replaceChild(fragment, textNode);
-    }
-
-    /**
-     * Apply character wrapping to a chat message element
-     * @param {HTMLElement} chatElement - The chat li element
-     */
-    applyCursorEffect(chatElement) {
-        if (!chatElement || !this.isEnabled) return;
-        
-        const messageElement = chatElement.querySelector('p');
-        if (messageElement) {
-            // Small delay to ensure content is fully rendered
-            setTimeout(() => {
-                this.wrapCharactersInSpans(messageElement);
-            }, 10);
+        if (textNode.parentNode) { // Ensure parentNode exists
+           textNode.parentNode.replaceChild(fragment, textNode);
         }
     }
 
     /**
+     * This method is now effectively replaced by MutationObserver and processNewMessageElement.
+     * It can be kept for manual triggering if needed, or removed.
+     * For now, let's adapt it to re-process a specific element and update caches.
+     * @param {HTMLElement} chatElement - The chat li element
+     */
+    applyCursorEffect(chatElement) {
+        if (!chatElement || !this.isEnabled) return;
+        this.processNewMessageElement(chatElement); // Re-process and update cache
+    }
+
+    /**
      * Enable or disable the cursor effect
-     * @param {boolean} enabled 
+     * @param {boolean} enabled
      */
     setEnabled(enabled) {
         this.isEnabled = enabled;
-        if (!enabled) {
-            // Clean up existing spans
-            const charSpans = document.querySelectorAll('.chatbox .char-span');
-            charSpans.forEach(span => {
-                const parent = span.parentNode;
-                parent.replaceChild(document.createTextNode(span.textContent), span);
-                parent.normalize(); // Merge adjacent text nodes
+        if (enabled) {
+            // Re-initialize if it was disabled
+            if (!this.chatboxElement) {
+                 // Wait for DOM ready before initializing
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.init());
+                } else {
+                    this.init();
+                }
+            } else {
+                // Re-attach listeners and process messages if already initialized
+                if (this.chatboxElement) {
+                    this.chatboxElement.addEventListener('mousemove', this.boundHandleMouseMove);
+                    this.chatboxElement.addEventListener('mouseleave', this.boundHandleMouseLeave);
+                    this.chatboxElement.addEventListener('scroll', this.boundHandleScroll);
+                }
+                window.addEventListener('resize', this.boundHandleResize); // Stays on window
+                if (this.mutationObserver && this.chatboxElement) {
+                    this.mutationObserver.observe(this.chatboxElement, { childList: true, subtree: true });
+                }
+                this.processAllMessages();
+            }
+        } else {
+            // Clean up existing spans and clear caches
+            this.characterSpans.forEach(span => {
+                if (span.parentNode) {
+                    span.parentNode.replaceChild(document.createTextNode(span.textContent), span);
+                    span.parentNode.normalize(); // Merge adjacent text nodes
+                }
             });
+            this.characterSpans = [];
+            this.characterPositions = [];
+
+            if (this.chatboxElement) {
+                this.chatboxElement.removeEventListener('mousemove', this.boundHandleMouseMove);
+                this.chatboxElement.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+                this.chatboxElement.removeEventListener('scroll', this.boundHandleScroll);
+            }
+            window.removeEventListener('resize', this.boundHandleResize);
+            if (this.mutationObserver) {
+                this.mutationObserver.disconnect();
+            }
+            if (this.animationFrameId) {
+                cancelAnimationFrame(this.animationFrameId);
+                this.animationFrameId = null;
+            }
+            if (this.animationFrameIdScroll) { // Add this for scroll anim frame
+                cancelAnimationFrame(this.animationFrameIdScroll);
+                this.animationFrameIdScroll = null;
+            }
         }
     }
 
@@ -231,17 +365,29 @@ class ChatCursorEffect {
      * Clean up resources
      */
     destroy() {
+        this.setEnabled(false); // This now handles listener removal and cleanup
+
+        // Ensure mutation observer is disconnected if not already by setEnabled(false)
+        if (this.mutationObserver) {
+            this.mutationObserver.disconnect();
+            this.mutationObserver = null;
+        }
+        
+        // Nullify cached elements
+        this.chatboxElement = null;
+        this.characterSpans = [];
+        this.characterPositions = [];
+
+        // Cancel any pending animation frame
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
         }
-        
-        const chatbox = document.querySelector('.chatbox');
-        if (chatbox) {
-            chatbox.removeEventListener('mousemove', this.handleMouseMove.bind(this));
-            chatbox.removeEventListener('mouseleave', this.handleMouseLeave.bind(this));
+        if (this.animationFrameIdScroll) {
+            cancelAnimationFrame(this.animationFrameIdScroll);
+            this.animationFrameIdScroll = null;
         }
-        
-        this.setEnabled(false);
+        console.log('ChatCursorEffect destroyed.');
     }
 }
 
