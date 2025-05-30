@@ -95,34 +95,27 @@ class ChatCursorEffect {
                           document.body.getAttribute('data-theme') === 'dark';
         
         if (isDarkMode) {
-            // Dark mode: very dramatic cyan/bright blue effect
             if (intensity > 0.7) {
-                // Very close - bright cyan
                 span.style.setProperty('color', '#00ffff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px #00ffff, 0 0 ${intensity * 30}px #00ffff`, 'important');
             } else if (intensity > 0.4) {
-                // Medium distance - bright blue
                 span.style.setProperty('color', '#4080ff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px #4080ff`, 'important');
             } else {
-                // Far but still affected - light blue
                 span.style.setProperty('color', '#8080ff', 'important');
                 span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px #8080ff`, 'important');
             }
         } else {
-            // Light mode: very dramatic blue effect
+            
             if (intensity > 0.7) {
-                // Very close - bright blue
-                span.style.setProperty('color', '#0040ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px #0040ff, 0 0 ${intensity * 30}px #0040ff`, 'important');
+                span.style.setProperty('color', '#ff0095', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 20}px rgb(255, 0, 102), 0 0 ${intensity * 30}pxrgb(140, 0, 255)`, 'important');
             } else if (intensity > 0.4) {
-                // Medium distance - medium blue
-                span.style.setProperty('color', '#4080ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px #4080ff`, 'important');
+                span.style.setProperty('color', '#ff00ff', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 15}px rgb(255, 64, 182)`, 'important');
             } else {
-                // Far but still affected - light blue
-                span.style.setProperty('color', '#6090ff', 'important');
-                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px #6090ff`, 'important');
+                span.style.setProperty('color', '#9400ff', 'important');
+                span.style.setProperty('text-shadow', `0 0 ${intensity * 10}px rgb(141, 96, 255)`, 'important');
             }
         }
     }
