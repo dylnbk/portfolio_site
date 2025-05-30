@@ -216,7 +216,7 @@
     width: 95%;
     margin: 0 auto;
     padding: 0 10px;
-    top: 20vh;
+    top: 170px;
     height: calc(100vh - 190px);
   }
   
@@ -1140,6 +1140,10 @@ pre .char-span {
 }
 
 @media (max-width: 380px) {
+
+  .content-section {
+    top: 140px;
+  }
 
   form {
     height: calc(100% - 255px);
