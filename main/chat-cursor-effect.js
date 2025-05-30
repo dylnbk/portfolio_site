@@ -27,6 +27,11 @@ class ChatCursorEffect {
         this.boundMutationObserverCallback = this.handleMutations.bind(this);
         this.boundHandleScroll = this.handleScroll.bind(this); // For scroll events
 
+        // Bound touch event handlers
+        this.boundHandleTouchStart = this.handleTouchStart.bind(this);
+        this.boundHandleTouchMove = this.handleTouchMove.bind(this);
+        this.boundHandleTouchEnd = this.handleTouchEnd.bind(this);
+
         this.mutationObserver = null;
         
         // Wait for DOM ready before initializing
@@ -52,6 +57,10 @@ class ChatCursorEffect {
         window.addEventListener('resize', this.boundHandleResize);
         if (this.chatboxElement) { // Check as it might not be found
             this.chatboxElement.addEventListener('scroll', this.boundHandleScroll);
+            // Add touch event listeners
+            this.chatboxElement.addEventListener('touchstart', this.boundHandleTouchStart, { passive: true });
+            this.chatboxElement.addEventListener('touchmove', this.boundHandleTouchMove, { passive: true });
+            this.chatboxElement.addEventListener('touchend', this.boundHandleTouchEnd);
         }
 
         // Initial processing of existing messages
@@ -156,6 +165,55 @@ class ChatCursorEffect {
     handleMouseLeave() {
         if (!this.isEnabled) return;
         // Reset all character colors when mouse leaves chatbox
+        this.characterPositions.forEach(({ span }) => {
+            span.style.color = '';
+            span.style.textShadow = '';
+        });
+    }
+
+    handleTouchStart(event) {
+        if (!this.isEnabled || !event.touches || event.touches.length === 0) return;
+        const now = performance.now();
+        if (now - this.lastUpdate < this.updateThreshold) return;
+        
+        this.mouseX = event.touches[0].clientX;
+        this.mouseY = event.touches[0].clientY;
+        this.lastUpdate = now;
+        
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+        }
+        
+        this.animationFrameId = requestAnimationFrame(() => {
+            this.updateCharacterColors();
+        });
+    }
+
+    handleTouchMove(event) {
+        if (!this.isEnabled || !event.touches || event.touches.length === 0) return;
+        const now = performance.now();
+        // No need to check threshold again if touchstart already triggered,
+        // but good for standalone touchmove if touchstart was missed or for consistency.
+        // However, for continuous effect, we might want to update more frequently than mouse if possible,
+        // or ensure the same throttling applies. Let's keep it consistent with mouseMove.
+        if (now - this.lastUpdate < this.updateThreshold) return;
+
+        this.mouseX = event.touches[0].clientX;
+        this.mouseY = event.touches[0].clientY;
+        this.lastUpdate = now;
+        
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+        }
+        
+        this.animationFrameId = requestAnimationFrame(() => {
+            this.updateCharacterColors();
+        });
+    }
+
+    handleTouchEnd() {
+        if (!this.isEnabled) return;
+        // Reset all character colors when touch ends, similar to mouseleave
         this.characterPositions.forEach(({ span }) => {
             span.style.color = '';
             span.style.textShadow = '';
@@ -345,6 +403,10 @@ class ChatCursorEffect {
                 this.chatboxElement.removeEventListener('mousemove', this.boundHandleMouseMove);
                 this.chatboxElement.removeEventListener('mouseleave', this.boundHandleMouseLeave);
                 this.chatboxElement.removeEventListener('scroll', this.boundHandleScroll);
+                // Remove touch event listeners
+                this.chatboxElement.removeEventListener('touchstart', this.boundHandleTouchStart);
+                this.chatboxElement.removeEventListener('touchmove', this.boundHandleTouchMove);
+                this.chatboxElement.removeEventListener('touchend', this.boundHandleTouchEnd);
             }
             window.removeEventListener('resize', this.boundHandleResize);
             if (this.mutationObserver) {

@@ -30,6 +30,11 @@ export class MouseInteraction {
         this.isInitialized = false;
         this.initializationTime = 0;
         
+        // Bind touch handlers
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+
         this.initialize();
     }
 
@@ -78,6 +83,10 @@ export class MouseInteraction {
         window.addEventListener('resize', () => {
             this.updateGridDimensions();
         });
+        // Touch event listeners
+        window.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+        window.addEventListener('touchend', this.handleTouchEnd);
     }
 
     /**
@@ -93,6 +102,52 @@ export class MouseInteraction {
         this.lastMouseMove = performance.now();
         
         this.updateExcitement();
+    }
+
+    /**
+     * Handle touch start
+     * @param {TouchEvent} event - Touch event
+     */
+    handleTouchStart(event) {
+        if (event.touches.length > 0) {
+            const touch = event.touches[0];
+            this.mousePosition.x = touch.clientX;
+            this.mousePosition.y = touch.clientY;
+            
+            this.isMouseActive = true;
+            this.lastMouseMove = performance.now(); // Use same variable as mouse for inactivity check
+            
+            this.updateExcitement();
+        }
+    }
+
+    /**
+     * Handle touch move
+     * @param {TouchEvent} event - Touch event
+     */
+    handleTouchMove(event) {
+        if (event.touches.length > 0) {
+            const touch = event.touches[0];
+            this.mousePosition.x = touch.clientX;
+            this.mousePosition.y = touch.clientY;
+
+            this.isMouseActive = true;
+            this.lastMouseMove = performance.now();
+            
+            this.updateExcitement();
+        }
+    }
+
+    /**
+     * Handle touch end
+     * @param {TouchEvent} event - Touch event
+     */
+    handleTouchEnd(event) {
+        // Check if there are no more active touches
+        if (event.touches.length === 0) {
+            this.isMouseActive = false;
+            // Let natural decay handle excitement, similar to mouseleave
+        }
     }
 
     /**
@@ -229,6 +284,11 @@ export class MouseInteraction {
         window.removeEventListener('mousemove', this.handleMouseMove);
         document.removeEventListener('mouseenter', () => {});
         document.removeEventListener('mouseleave', () => {});
+
+        // Remove touch event listeners
+        window.removeEventListener('touchstart', this.handleTouchStart);
+        window.removeEventListener('touchmove', this.handleTouchMove);
+        window.removeEventListener('touchend', this.handleTouchEnd);
         
         // Clear excitement map
         this.excitementMap.clear();
