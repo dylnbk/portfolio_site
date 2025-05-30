@@ -175,7 +175,7 @@ export class ASCIIBackgroundManager {
         const gridWorldWidth = gridDimensions.width * gridDimensions.cellSize;
         const gridWorldHeight = gridDimensions.height * gridDimensions.cellSize;
         
-        const frustumWidth = gridWorldWidth * 1; // Add 10% padding
+        const frustumWidth = gridWorldWidth * 1;
         const frustumHeight = gridWorldHeight * 1;
         
         // Use the larger dimension to ensure everything fits
