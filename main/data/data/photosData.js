@@ -6,10 +6,10 @@
 export default {
   contentType: 'photos',
   files: [
-    '/content/photos/2025-05-29-sample-photograph.md',
-    '/content/photos/2025-05-30-street-photography-evening.md',
-    '/content/photos/2025-05-30-nature-macro-detail.md',
-    '/content/photos/2025-05-30-urban-sunset-skyline.md'
+    './content/photos/2025-05-29-sample-photograph.md',
+    './content/photos/2025-05-30-street-photography-evening.md',
+    './content/photos/2025-05-30-nature-macro-detail.md',
+    './content/photos/2025-05-30-urban-sunset-skyline.md'
   ],
   metadata: {
     section: 'PHOTOS',

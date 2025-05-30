@@ -92,10 +92,10 @@ class PortfolioContentManager {
 
   loadStylesheets() {
     const stylesheets = [
-      '/components/shared/shared-styles.css',
-      '/components/music/music-styles.css',
-      '/components/gallery/gallery-styles.css',
-      '/components/code/code-styles.css'
+      './components/shared/shared-styles.css',
+      './components/music/music-styles.css',
+      './components/gallery/gallery-styles.css',
+      './components/code/code-styles.css'
     ];
 
     stylesheets.forEach(href => {
