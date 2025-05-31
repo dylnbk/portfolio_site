@@ -13,7 +13,38 @@
       gtag('config', 'G-RW9L5MPTH9');
     </script>
     <meta charset="UTF-8" />
-    <style>html{visibility: hidden;opacity:0;}</style>
+    <style>
+      /* Loading screen to prevent content flash */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000000;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s ease-out;
+      }
+      
+      #loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      /* Hide main content until loading is complete */
+      body:not(.loaded) .content {
+        opacity: 0;
+        visibility: hidden;
+      }
+      
+      body:not(.loaded) #container {
+        opacity: 0;
+        visibility: hidden;
+      }
+    </style>
     <link type="image/png" sizes="32x32" rel="icon" href="love-32.png">
     
     <!-- SEO Meta Tags -->
@@ -44,6 +75,9 @@
   </head>
   
   <body data-theme="dark">
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen"></div>
     
     <!-- Theme Toggle Button -->
     <button class="theme-toggle" id="themeToggle">Dark</button>
@@ -112,6 +146,9 @@
     <script type="module" src="/speech/speechController.js"></script>
     <script type="module" src="/speech/realtimeSpeechController.js"></script>
     
+    <!-- Loading coordinator -->
+    <script type="module" src="/loading-coordinator.js"></script>
+    
     <!-- Chat cursor effect -->
     <script type="module" src="/chat-cursor-effect.js"></script>
     
@@ -168,14 +205,7 @@
       // Initialize theme button
       updateThemeButton();
 
-      // fade in
-
-      $('#heading').delay(100).animate({"opacity": "1"}, 2000);
-      $('#navbar').delay(1750).animate({"display": "block"}, 1000);
-      $('#toggle-button').delay(1000).animate({"opacity": "1"}, 1000);
-      $('.initial-message').delay(800).animate({"opacity": "1"}, 2500);
-      $('.material-symbols-outlined').delay(800).animate({"opacity": "1"}, 2500);
-      $('.chat-input').delay(800).animate({"opacity": "1"}, 2500);
+      // Animation timing now handled by loading coordinator
 
 
       const mediaQuery = window.matchMedia('(min-width: 800px)');
