@@ -20,6 +20,21 @@ class LoadingSpinner {
     return spinner;
   }
 
+  static createMicro() {
+    const spinner = document.createElement('div');
+    spinner.className = 'loading-spinner--micro';
+    
+    spinner.innerHTML = `
+      <div class="loading-spinner__dots loading-spinner__dots--micro">
+        <div class="loading-spinner__dot loading-spinner__dot--micro"></div>
+        <div class="loading-spinner__dot loading-spinner__dot--micro"></div>
+        <div class="loading-spinner__dot loading-spinner__dot--micro"></div>
+      </div>
+    `;
+    
+    return spinner;
+  }
+
   static createInline(text = 'Loading...') {
     const spinner = document.createElement('span');
     spinner.className = 'loading-spinner--inline';
@@ -29,7 +44,7 @@ class LoadingSpinner {
 
   static remove(container) {
     if (!container) return;
-    const spinners = container.querySelectorAll('.loading-spinner, .loading-spinner--inline');
+    const spinners = container.querySelectorAll('.loading-spinner, .loading-spinner--inline, .loading-spinner--micro');
     spinners.forEach(spinner => spinner.remove());
   }
 

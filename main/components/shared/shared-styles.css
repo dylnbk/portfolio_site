@@ -68,6 +68,36 @@
   padding: 20px;
 }
 
+.loading-spinner--micro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+}
+
+.loading-spinner__dots--micro {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+}
+
+.loading-spinner__dot--micro {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--clr-text-primary);
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-spinner__dot--micro:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-spinner__dot--micro:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
 /* ===== ERROR STATES ===== */
 .loading-error {
   display: flex;

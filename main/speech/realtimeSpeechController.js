@@ -2,6 +2,8 @@
  * Realtime Speech Controller - OpenAI Realtime API with WebRTC
  * Provides true end-to-end speech-to-speech functionality
  */
+import LoadingSpinner from '../components/shared/LoadingSpinner.js';
+
 class RealtimeSpeechController {
     constructor() {
         this.isActive = false;
@@ -11,6 +13,7 @@ class RealtimeSpeechController {
         this.audioElement = null;
         this.micToggle = null;
         this.localStream = null;
+        this.currentSpinner = null;
         
         this.initializeUI();
     }
@@ -205,6 +208,9 @@ class RealtimeSpeechController {
             this.audioElement.remove();
             this.audioElement = null;
         }
+
+        // Clean up spinner
+        this.removeSpinner();
     }
 
     /**
@@ -240,6 +246,9 @@ class RealtimeSpeechController {
     updateUI(state) {
         if (!this.micToggle) return;
 
+        // Get mic icon element
+        const micIcon = this.micToggle.querySelector('.mic-icon');
+
         // Remove all state classes
         this.micToggle.classList.remove('active', 'connecting', 'error');
 
@@ -247,19 +256,62 @@ class RealtimeSpeechController {
             case 'connecting':
                 this.micToggle.classList.add('connecting');
                 this.micToggle.title = 'Connecting to voice session...';
+                
+                // Hide mic icon and show spinner
+                if (micIcon) {
+                    micIcon.style.display = 'none';
+                }
+                
+                // Remove any existing spinner first
+                this.removeSpinner();
+                
+                // Create and insert micro spinner
+                this.currentSpinner = LoadingSpinner.createMicro();
+                this.micToggle.appendChild(this.currentSpinner);
                 break;
+                
             case 'active':
                 this.micToggle.classList.add('active');
                 this.micToggle.title = 'Voice session active - Click to stop';
+                
+                // Remove spinner and restore mic icon
+                this.removeSpinner();
+                if (micIcon) {
+                    micIcon.style.display = '';
+                }
                 break;
+                
             case 'error':
                 this.micToggle.classList.add('error');
                 this.micToggle.title = 'Voice session error - Click to retry';
+                
+                // Remove spinner and restore mic icon
+                this.removeSpinner();
+                if (micIcon) {
+                    micIcon.style.display = '';
+                }
                 break;
+                
             case 'inactive':
             default:
                 this.micToggle.title = 'Click to start voice conversation';
+                
+                // Remove spinner and restore mic icon
+                this.removeSpinner();
+                if (micIcon) {
+                    micIcon.style.display = '';
+                }
                 break;
+        }
+    }
+
+    /**
+     * Remove the current spinner if it exists
+     */
+    removeSpinner() {
+        if (this.currentSpinner) {
+            this.currentSpinner.remove();
+            this.currentSpinner = null;
         }
     }
 

@@ -30,7 +30,7 @@
   
   /* Text colors */
   --clr-text-primary: rgb(248, 248, 248);
-  --clr-text-secondary: rgba(207, 207, 207, 0.807);
+  --clr-text-secondary: rgba(207, 207, 207, 0.8);
   --clr-text-accent: #ffffff;
   --clr-text-header: #000000;
   
@@ -157,24 +157,22 @@
 #send-btn {
   width: 35px;
   transition: all .2s ease-in-out;
-  filter: brightness(0) saturate(100%) invert(80%);
+  filter: brightness(0) saturate(100%) invert(50%);
 }
 
 #send-btn:hover {
   cursor: pointer;
-  transform: scale(1.1, 1.1);
-  filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.9));
+  filter: brightness(0) saturate(100%) invert(100%);
 }
 
 /* Light mode send button */
 [data-theme="light"] #send-btn {
-  filter: brightness(0) saturate(100%);
+  filter: brightness(0) saturate(100%) invert(50%);
 }
 
 [data-theme="light"] #send-btn:hover {
   cursor: pointer;
-  filter: brightness(0) saturate(100%) drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.9));
-  transform: scale(1.15, 1.15);
+  filter: brightness(0) saturate(100%) invert(0%);
 }
 
 #contact {
@@ -648,14 +646,14 @@ ul.chatbox {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  border-radius: 20px;
+  border-radius: 15px;
   transition: background-color 0.3s ease;
 }
 
 .chatbot .chat-input:hover,
 .chatbot .chat-input.clicked {
   outline: solid 2px var(--clr-border-accent);
-  border-radius: 20px;
+  border-radius: 15px;
 }
 
 .chat-input textarea {
@@ -679,10 +677,10 @@ ul.chatbox {
   font-family: 'Inconsolata', monospace;
   background: transparent;
   border: none;
-  color: var(--clr-text-secondary);
+  color: gray;
   font-size: 32px;
-  transition: 2s;
-  padding: 5px 15px 5px 15px;
+  padding: 5px 5px 5px 5px;
+  margin-right: 10px;
   letter-spacing: -1px;
 }
 
@@ -698,91 +696,54 @@ ul.chatbox {
   cursor: pointer;
   padding: 4px;
   border-radius: 6px;
-  transition: all 0.2s ease-in-out;
-  color: var(--clr-text-secondary);
   border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
 }
 
 .mic-toggle:hover {
-  transform: scale(1.2);
-  filter: brightness(1.1) drop-shadow(0px 0px 1px var(--clr-text-accent));
+  color: var(--clr-text-primary);
 }
 
 /* Inactive state - default styling */
 .mic-toggle.inactive {
-  color: var(--clr-text-secondary);
+  color: rgb(100, 100, 100);
   background: transparent;
 }
 
-/* Active/Listening state - strong white background with black icon in dark mode */
+/* Active/Listening state */
 .mic-toggle.active {
-  color: #000000;
-  background: #ffffff;
-  border-color: #ffffff;
+  color: var(--clr-text-accent);
   animation: mic-listening 3s ease-in-out infinite;
-}
-
-/* Processing state - strong highlighting */
-.mic-toggle.processing {
-  color: #000000;
-  background: #ffffff;
-  border-color: #ffffff;
-  animation: mic-processing 1.5s ease-in-out infinite;
 }
 
 /* Speaking state - strong highlighting */
 .mic-toggle.speaking {
-  color: #000000;
-  background: #ffffff;
   border-color: #ffffff;
   animation: mic-speaking 0.8s ease-in-out infinite alternate;
 }
 
 /* Connecting state - strong highlighting */
 .mic-toggle.connecting {
-  color: #000000;
-  background: #ffffff;
-  border-color: #ffffff;
+  background: transparent;
   animation: mic-connecting 1s ease-in-out infinite;
 }
 
 /* Error state - subtle indication without harsh colors */
 .mic-toggle.error {
-  color: var(--clr-text-secondary);
-  background: rgb(180, 0, 0);
-  border-color: var(--clr-border-primary);
+  color: red;
   opacity: 0.2;
 }
 
 .mic-icon {
-  width: 23px;
-  height: 23px;
+  width: 25px;
+  height: 25px;
   fill: currentColor;
   transition: transform 0.2s ease-in-out;
 }
 
-/* Light mode specific adjustments - black background with white icon */
+/* Light mode specific adjustments */
 [data-theme="light"] .mic-toggle.active {
   color: #ffffff;
-  background: #000000;
-  border-color: #000000;
-}
-
-[data-theme="light"] .mic-toggle.processing {
-  color: #ffffff;
-  background: #000000;
-  border-color: #000000;
-}
-
-[data-theme="light"] .mic-toggle.speaking {
-  color: #ffffff;
-  background: #000000;
-  border-color: #000000;
-}
-
-[data-theme="light"] .mic-toggle.connecting {
-  color: #ffffff;
-  background: #000000;
   border-color: #000000;
 }
 
@@ -791,11 +752,12 @@ ul.chatbox {
   0%, 100% {
     transform: scale(1);
     opacity: 1;
+    color: rgb(10, 200, 130);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1);
     opacity: 0.9;
-    background-color: rgb(10, 200, 130);
+    color: var(--clr-text-accent);
   }
 }
 
