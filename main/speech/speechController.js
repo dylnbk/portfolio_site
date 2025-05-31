@@ -31,11 +31,9 @@ class SpeechController {
     console.log('SpeechController: Initializing UI...');
     this.micToggle = document.getElementById('micToggle');
     if (this.micToggle) {
-      console.log('SpeechController: Microphone element found, adding click listener');
-      this.micToggle.addEventListener('click', () => {
-        console.log('SpeechController: Microphone clicked!');
-        this.toggle();
-      });
+      console.log('SpeechController: Microphone element found (RealtimeSpeechController will handle clicks)');
+      // Note: micToggle click events are now handled exclusively by RealtimeSpeechController
+      // SpeechController should be activated through alternative mechanisms if needed
     } else {
       console.warn('SpeechController: Microphone element not found!');
     }
