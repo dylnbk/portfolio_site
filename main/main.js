@@ -21,10 +21,20 @@ function initializeASCIIBackground() {
       // Initialize ASCII background manager
       asciiBackgroundManager = new ASCIIBackgroundManager(container);
       console.log('ASCII Background System initialized successfully');
+      
+      // Notify loading coordinator
+      if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('ascii-background');
+      }
     } catch (error) {
       console.error('Failed to initialize ASCII Background System:', error);
       // Fallback to simple background colors
       initializeFallbackBackground();
+      
+      // Still notify coordinator even with fallback
+      if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('ascii-background');
+      }
     }
   }
 }

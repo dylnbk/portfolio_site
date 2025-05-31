@@ -44,8 +44,18 @@ class PortfolioContentManager {
     // Load content loader
     import('./data/contentLoader.js').then(() => {
       console.log('Content loader initialized');
+      
+      // Notify loading coordinator that portfolio content is ready
+      if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('portfolio-content');
+      }
     }).catch(error => {
       console.error('Failed to load content loader:', error);
+      
+      // Still notify coordinator even if content loader fails
+      if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('portfolio-content');
+      }
     });
   }
 

@@ -750,13 +750,11 @@ ul.chatbox {
 /* Smooth, professional animations */
 @keyframes mic-listening {
   0%, 100% {
-    transform: scale(1);
-    opacity: 1;
+    transform: scale(1.1);
     color: rgb(10, 200, 130);
   }
   50% {
     transform: scale(1);
-    opacity: 0.9;
     color: var(--clr-text-accent);
   }
 }
@@ -799,11 +797,47 @@ ul.chatbox {
   font-weight: bold;
   text-decoration: underline;
   color: var(--clr-text-primary);
+  /* Prevent links from breaking across lines */
+  white-space: nowrap;
+  /* Try to keep links together */
+  word-break: keep-all;
+  /* Add some spacing around links to encourage line breaks before/after */
+  display: inline-block;
+  /* Small margin to encourage natural line breaks */
+  margin: 0 2px;
 }
 
 /* Hover effect for links */
 .chatbox a:hover {
   text-decoration: none;
+}
+
+/* Encourage line breaks before/after links in paragraphs */
+.chatbox p {
+  /* Allow flexible word wrapping around links */
+  word-wrap: break-word;
+  /* But be more conservative with breaking */
+  overflow-wrap: break-word;
+  /* Adjust line height slightly for better spacing with links */
+  line-height: 1.5;
+}
+
+/* Special handling for long URLs that might still need to break */
+.chatbox a[href*="http"] {
+  /* For very long URLs, allow breaking at specific characters */
+  word-break: break-all;
+  /* But prefer to break at natural points */
+  overflow-wrap: anywhere;
+  /* Ensure we don't make short links break unnecessarily */
+  min-width: fit-content;
+}
+
+/* For URLs that are too long, we can break them more gracefully */
+.chatbox a[href*="http"]:before {
+  /* Add a subtle line-break opportunity before long URLs */
+  content: "";
+  display: inline-block;
+  width: 0;
 }
 
 /* ===== CURSOR HOVER EFFECT STYLES ===== */
@@ -1171,10 +1205,7 @@ pre .char-span {
   }
 }
 
-html {
-  visibility: visible;
-  opacity: 1;
-}
+/* Loading mechanism now handled by JavaScript coordination */
 
 /* ===== REALTIME SPEECH CONTROLLER STYLES ===== */
 /* These styles are now integrated above with the main microphone toggle styles */

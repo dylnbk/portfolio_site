@@ -166,8 +166,11 @@ const generateResponse = async (chatElement, onFirstChunk) => {
                             // Sanitize the HTML to prevent XSS
                             const sanitizedHTML = DOMPurify.sanitize(markdownHTML);
 
+                            // Process links to open in new tabs
+                            const processedHTML = processLinksForNewTab(sanitizedHTML);
+
                             // Update the message element's HTML
-                            messageElement.innerHTML = sanitizedHTML;
+                            messageElement.innerHTML = processedHTML;
                             
                             // Reapply cursor effect for streaming updates
                             if (chatCursorEffect) {
@@ -310,6 +313,26 @@ function escapeHTML(str) {
 }
 
 /**
+ * Process HTML content to make all links open in new tabs with security attributes
+ * @param {string} html - The HTML content to process
+ * @returns {string} - The processed HTML with link attributes added
+ */
+function processLinksForNewTab(html) {
+    // Create a temporary div to parse the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Find all anchor tags and add target and rel attributes
+    const links = tempDiv.querySelectorAll('a');
+    links.forEach(link => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+    });
+    
+    return tempDiv.innerHTML;
+}
+
+/**
  * Adjust the height of the input textarea based on its content.
  */
 chatInput.addEventListener("input", () => {
@@ -361,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize cursor effect system
             if (window.ChatCursorEffect) {
                 chatCursorEffect = new window.ChatCursorEffect();
+                // Update global reference for other modules
+                window.chatCursorEffect = chatCursorEffect;
                 console.log('Chat cursor effect initialized successfully');
             } else {
                 console.warn('ChatCursorEffect not available');
@@ -368,6 +393,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Display welcome message after cursor effect is initialized
             displayWelcomeMessage();
+            
+            // Notify loading coordinator that chat, speech controllers, and cursor effect are ready
+            notifyLoadingCoordinator();
         } catch (error) {
             console.error('Failed to initialize controllers:', error);
             // Ensure chat still works without enhancements
@@ -377,6 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Still display welcome message even if enhancements fail
             displayWelcomeMessage();
+            
+            // Still notify loading coordinator even if enhancements fail
+            notifyLoadingCoordinator();
         }
     }, 500);
 });
@@ -400,3 +431,21 @@ const displayWelcomeMessage = () => {
     // Fade in the welcome message using jQuery (matching site's fade-in pattern)
     $(welcomeChatLi).delay(800).animate({"opacity": "1"}, 2500);
 };
+
+/**
+ * Notify loading coordinator that chat components are ready
+ */
+const notifyLoadingCoordinator = () => {
+    if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('chat-init');
+        window.loadingCoordinator.componentReady('speech-controllers');
+        window.loadingCoordinator.componentReady('chat-cursor-effect');
+        console.log('Chat components ready - loading coordinator notified');
+    }
+};
+
+// Make chat functions globally accessible for RealtimeSpeechController
+window.createChatLi = createChatLi;
+window.escapeHTML = escapeHTML;
+window.processLinksForNewTab = processLinksForNewTab;
+// Note: window.chatCursorEffect is set when the cursor effect is actually initialized
