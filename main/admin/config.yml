@@ -17,9 +17,9 @@ collections:
       - { label: "Album", name: "album", widget: "string", required: false }
       - { label: "Release Date", name: "releaseDate", widget: "datetime" }
       - { label: "Genre", name: "genre", widget: "select", options: ["Electronic", "Rock", "Jazz", "Classical", "Hip-Hop", "Pop", "Ambient", "Experimental", "Folk", "Blues", "Other"] }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Audio File", name: "audioFile", widget: "file", media_folder: "/main/assets/uploads/music" }
-      - { label: "Cover Image", name: "coverImage", widget: "image", media_folder: "/main/assets/uploads/covers", required: false }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Audio File", name: "audioFile", widget: "file", media_folder: "/assets/uploads/music" }
+      - { label: "Cover Image", name: "coverImage", widget: "image", media_folder: "/assets/uploads/covers", required: false }
       - { label: "Duration", name: "duration", widget: "string", hint: "Format: MM:SS" }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Tags", name: "tags", widget: "list", required: false }
@@ -40,9 +40,9 @@ collections:
       - { label: "Creation Date", name: "creationDate", widget: "datetime" }
       - { label: "Medium", name: "medium", widget: "select", options: ["Digital", "Oil", "Acrylic", "Watercolor", "Pencil", "Charcoal", "Mixed Media", "Photography", "Sculpture", "Other"] }
       - { label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "e.g., 24x36 inches or 1920x1080 pixels" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "image", media_folder: "/main/assets/uploads/gallery" }
-      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/main/assets/uploads/gallery", required: false }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Image", name: "image", widget: "image", media_folder: "/assets/uploads/gallery" }
+      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/assets/uploads/gallery", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Available for Sale", name: "forSale", widget: "boolean", default: false }
       - { label: "Price", name: "price", widget: "string", required: false }
@@ -66,9 +66,9 @@ collections:
           { label: "ISO", name: "iso", widget: "string", required: false },
           { label: "Focal Length", name: "focalLength", widget: "string", required: false }
         ]}
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Photo", name: "photo", widget: "image", media_folder: "/main/assets/uploads/gallery" }
-      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/main/assets/uploads/gallery", required: false }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Photo", name: "photo", widget: "image", media_folder: "/assets/uploads/gallery" }
+      - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "/assets/uploads/gallery", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Tags", name: "tags", widget: "list", required: false }
       - { label: "EXIF Data", name: "exifData", widget: "text", required: false, hint: "Additional technical details" }
@@ -83,13 +83,13 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Project Type", name: "projectType", widget: "select", options: ["Web App", "Mobile App", "Desktop App", "Library", "Tool", "Game", "API", "Website", "Other"] }
       - { label: "Technologies", name: "technologies", widget: "list", hint: "e.g., React, Node.js, Python" }
-      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Description", name: "description", widget: "text", required: false }
       - { label: "Long Description", name: "longDescription", widget: "markdown" }
       - { label: "Repository URL", name: "repositoryUrl", widget: "string", required: false }
       - { label: "Live Demo URL", name: "liveDemoUrl", widget: "string", required: false }
       - { label: "Status", name: "status", widget: "select", options: ["In Progress", "Completed", "On Hold", "Archived"], default: "In Progress" }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
-      - { label: "Screenshot", name: "screenshot", widget: "image", media_folder: "/main/assets/uploads/projects", required: false }
+      - { label: "Screenshot", name: "screenshot", widget: "image", media_folder: "/assets/uploads/projects", required: false }
       - { label: "Gallery", name: "gallery", widget: "list", field: { label: "Image", name: "image", widget: "image", media_folder: "/main/assets/uploads/projects" }, required: false }
       - { label: "Tags", name: "tags", widget: "list", required: false }
       - { label: "Challenges", name: "challenges", widget: "markdown", required: false }
