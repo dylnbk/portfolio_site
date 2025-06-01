@@ -1,10 +1,10 @@
 ---
-title: bcUAIgysSa
+title: nPF4k98sh
 artist: dyln.bk
 album: Demo Collection
 releaseDate: 2025-05-29T19:38:00.000Z
 genre: Electronic
-description: "#Instrumental"
+description: "#Sampling"
 audioFile: /assets/uploads/music/sample-music.wav
 duration: 3:45
 featured: false
