@@ -1,17 +1,17 @@
 ---
-title: "Sample Music Track"
-artist: "Dylan Portfolio"
-album: "Demo Collection"
-releaseDate: "2025-05-29T19:38:00.000Z"
-genre: "Electronic"
-description: "A sample electronic music track."
-audioFile: "/assets/uploads/music/sample-music.wav"
-duration: "3:45"
-featured: true
+title: bcUAIgysSa
+artist: dyln.bk
+album: Demo Collection
+releaseDate: 2025-05-29T19:38:00.000Z
+genre: Electronic
+description: "#Instrumental"
+audioFile: /assets/uploads/music/sample-music.wav
+duration: 3:45
+featured: false
 tags:
-  - "demo"
-  - "electronic"
-  - "sample"
+  - demo
+  - electronic
+  - sample
 streamingLinks:
   spotify: ""
   appleMusic: ""
