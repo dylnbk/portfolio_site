@@ -713,7 +713,7 @@ ul.chatbox {
 /* Active/Listening state */
 .mic-toggle.active {
   color: var(--clr-text-accent);
-  animation: mic-listening 3s ease-in-out infinite;
+  animation: mic-listening 2s ease-in-out infinite;
 }
 
 /* Speaking state - strong highlighting */
@@ -749,13 +749,13 @@ ul.chatbox {
 
 /* Smooth, professional animations */
 @keyframes mic-listening {
-  0%, 100% {
-    transform: scale(1.1);
-    color: rgb(10, 200, 130);
+  0%, 20%, 80%, 100% {
+    transform: scale(1);
+    color: rgb(5, 200, 120);
   }
   50% {
-    transform: scale(1);
-    color: var(--clr-text-accent);
+    transform: scale(0.8);
+    color: transparent;
   }
 }
 
