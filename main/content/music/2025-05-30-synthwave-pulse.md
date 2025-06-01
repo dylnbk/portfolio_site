@@ -1,19 +1,19 @@
 ---
-title: "Synthwave Pulse"
-artist: "Dylan Portfolio"
-album: "Neon Frequencies"
-releaseDate: "2025-05-30T15:45:00.000Z"
-genre: "Synthwave"
-description: "An energetic synthwave track."
-audioFile: "/assets/uploads/music/synthwave-pulse.mp3"
-duration: "3:28"
-featured: true
+title: bcAIgysSa
+artist: dyln.bk
+album: Neon Frequencies
+releaseDate: 2025-05-30T15:45:00.000Z
+genre: Synthwave
+description: "#Instrumental"
+audioFile: /assets/uploads/music/synthwave-pulse.mp3
+duration: 3:28
+featured: false
 tags:
-  - "synthwave"
-  - "retro"
-  - "electronic"
-  - "80s"
-  - "analog"
+  - synthwave
+  - retro
+  - electronic
+  - 80s
+  - analog
 streamingLinks:
   spotify: ""
   appleMusic: ""
