@@ -10,6 +10,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .image-gallery__grid {
@@ -19,7 +20,7 @@
 
 /* ===== LAYOUT SWITCHER ===== */
 .gallery-layout-switcher {
-  position: fixed;
+  position: absolute;
   left: 50%;
   transform: translateX(-50%);
   width: 25px;
@@ -32,7 +33,7 @@
   background: none;
   border: none;
   padding: 0;
-  bottom: 75px;
+  bottom: 20px;
   background-color: var(--clr-bg-tertiary);
   border: solid 1px var(--clr-border-secondary);
   border-radius: 5px;
