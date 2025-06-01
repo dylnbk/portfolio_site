@@ -24,8 +24,10 @@ class ImageGallery {
   init() {
     this.container.innerHTML = `
       <div class="image-gallery">
-        <div class="image-gallery__grid gallery-layout--${this.layoutMode}-col" id="imageGrid">
-          ${LoadingSpinner.createInline('Loading images...').outerHTML}
+        <div class="image-gallery__container">
+          <div class="image-gallery__grid gallery-layout--${this.layoutMode}-col" id="imageGrid">
+            ${LoadingSpinner.createInline('Loading images...').outerHTML}
+          </div>
         </div>
         <div class="gallery-layout-switcher" id="layoutSwitcher">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +38,7 @@ class ImageGallery {
     `;
     
     this.setupLayoutSwitcher();
+    this.setupGridRecalculation();
   }
 
   async loadImages(images) {
@@ -118,7 +121,7 @@ class ImageGallery {
         loading="lazy"
         decoding="async"
         style="opacity:${isInitial ? '0' : '0'}; transition: opacity 0.3s ease; cursor: pointer;"
-        onload="this.style.opacity=1; this.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded');"
+        onload="this.style.opacity=1; this.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
         onerror="this.src='${this.getPlaceholderImage()}'; this.style.opacity=1;"
       >
     `;
@@ -250,6 +253,8 @@ class ImageGallery {
           img.classList.remove('gallery-item__image--thumbnail');
           img.classList.add('gallery-item__image--full');
           img.style.opacity = '1';
+          // Trigger grid recalculation after full image loads
+          img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
         }, 100);
       };
       
@@ -351,6 +356,22 @@ class ImageGallery {
         this.cycleLayoutMode();
       });
     }
+  }
+
+  // Setup grid recalculation on image load to prevent overlap issues
+  setupGridRecalculation() {
+    this.container.addEventListener('imageLoaded', (event) => {
+      const gridEl = this.container.querySelector('#imageGrid');
+      if (gridEl && (gridEl.classList.contains('gallery-layout--2-col') || gridEl.classList.contains('gallery-layout--3-col'))) {
+        // Force grid layout recalculation by briefly changing display property
+        const display = gridEl.style.display;
+        gridEl.style.display = 'none';
+        // Use requestAnimationFrame to ensure the display change is processed
+        requestAnimationFrame(() => {
+          gridEl.style.display = display || '';
+        });
+      }
+    });
   }
 
   // Cycle between 1, 2, and 3 column layouts
