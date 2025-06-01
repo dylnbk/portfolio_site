@@ -1,18 +1,18 @@
 ---
-title: "Ambient Journey"
-artist: "Dylan Portfolio"
-album: "Atmospheric Explorations"
-releaseDate: "2025-05-30T11:30:00.000Z"
-genre: "Ambient"
-description: "A meditative ambient composition."
-audioFile: "/assets/uploads/music/ambient-journey.mp3"
-duration: "4:12"
+title: dSYge23bm
+artist: dyln.bk
+album: Atmospheric Explorations
+releaseDate: 2025-05-30T11:30:00.000Z
+genre: Ambient
+description: "#Instrumental"
+audioFile: /assets/uploads/music/ambient-journey.mp3
+duration: 4:12
 featured: false
 tags:
-  - "ambient"
-  - "meditation"
-  - "atmospheric"
-  - "synthesizer"
+  - ambient
+  - meditation
+  - atmospheric
+  - synthesizer
 streamingLinks:
   spotify: ""
   appleMusic: ""
