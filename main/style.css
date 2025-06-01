@@ -391,7 +391,7 @@ a:not(.project-modal__link):hover::after {
   z-index: -1;
 }
 
-[data-theme="light"] a:hover {
+[data-theme="light"] a:not(.project-modal__link):hover {
   color: white !important;
   position: relative;
   z-index: 1;
