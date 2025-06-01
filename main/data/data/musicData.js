@@ -8,7 +8,8 @@ export default {
   files: [
     './content/music/2025-05-29-sample-music-track.md',
     './content/music/2025-05-30-ambient-journey.md',
-    './content/music/2025-05-30-synthwave-pulse.md'
+    './content/music/2025-05-30-synthwave-pulse.md',
+    './content/music/2025-06-01-u6dy2osdl.md'
   ],
   metadata: {
     section: 'MUSIC',
