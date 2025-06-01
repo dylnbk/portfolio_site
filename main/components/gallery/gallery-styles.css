@@ -499,12 +499,12 @@
   /* Adjust grid layouts for mobile */
   .gallery-layout--2-col {
     column-gap: 10px;
-    row-gap: 2px;
+    row-gap: 10px;
   }
   
   .gallery-layout--3-col {
     column-gap: 8px;
-    row-gap: 2px;
+    row-gap: 8px;
   }
 }
 
