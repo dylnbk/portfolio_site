@@ -540,7 +540,7 @@
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 440px) {
   .gallery-layout--3-col .gallery-item__title {
     font-size: 0.18em;
   }
