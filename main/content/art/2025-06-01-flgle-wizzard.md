@@ -1,0 +1,9 @@
+---
+title: Flgle Wizzard
+creationDate: 2025-06-01T16:25:00.000Z
+medium: Digital
+description: " "
+image: /main/assets/uploads/gallery/wzzrd.png
+featured: false
+forSale: false
+---
