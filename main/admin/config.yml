@@ -67,7 +67,7 @@ collections:
           { label: "Focal Length", name: "focalLength", widget: "string", required: false }
         ]}
       - { label: "Description", name: "description", widget: "text", required: false }
-      - { label: "Photo", name: "photo", widget: "image", media_folder: "main/assets/uploads/gallery" }
+      - { label: "Photo", name: "image", widget: "image", media_folder: "main/assets/uploads/gallery" }
       - { label: "Thumbnail", name: "thumbnail", widget: "image", media_folder: "main/assets/uploads/gallery", required: false }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Tags", name: "tags", widget: "list", required: false }
