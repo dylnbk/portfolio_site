@@ -3,7 +3,7 @@ const { resolve } = require('path')
 const { defineConfig } = require('vite')
 
 module.exports = defineConfig({
-  publicDir: 'main/assets',
+  publicDir: 'assets',
   build: {
     rollupOptions: {
       input: {
