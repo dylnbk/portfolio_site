@@ -24,6 +24,7 @@
 .image-gallery__grid {
   /* Remove overflow-y: auto to prevent grid track size calculation conflicts */
   min-height: min-content;
+  padding-bottom: 5px;
 }
 
 /* ===== LAYOUT SWITCHER ===== */
