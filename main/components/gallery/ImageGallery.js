@@ -52,8 +52,9 @@ class ImageGallery {
     // Create initial DOM elements for viewport-based rendering
     this.renderInitialBatch(gridEl);
     
-    // Setup intersection observer for lazy loading
+    // Setup intersection observers for progressive loading
     this.setupIntersectionObserver();
+    this.setupThumbnailObserver();
   }
 
   renderInitialBatch(gridEl) {
@@ -68,8 +69,6 @@ class ImageGallery {
 
     // Add click handlers for rendered items
     this.addEventListeners(gridEl, 0, initialItems);
-
-    // No additional setup needed for initial images since they load directly
 
     // Create placeholder elements for remaining items
     if (this.images.length > initialItems) {
@@ -103,12 +102,13 @@ class ImageGallery {
   createPictureElement(imageUrl, thumbnailUrl, title, isInitial = false) {
     const alt = title || 'Gallery image';
     
-    // Simplified approach: load full resolution directly
+    // Simple approach: all images start hidden and fade in when loaded
     return `
       <img
         class="gallery-item__image"
-        ${isInitial ? `src="${imageUrl}"` : ''}
+        ${isInitial ? `src="${thumbnailUrl}"` : ''}
         data-src="${imageUrl}"
+        data-thumbnail="${thumbnailUrl}"
         alt="${alt}"
         loading="lazy"
         decoding="async"
@@ -119,9 +119,9 @@ class ImageGallery {
   }
 
   generateThumbnailUrl(imageUrl) {
-    // For now, just use the original image since we don't have a thumbnail service
-    // In production, this would be a CDN endpoint that generates smaller images
-    return imageUrl;
+    // Generate thumbnail URL (200px width) - this would typically be handled by a CDN or image processing service
+    // For now, we'll use the original image with a query parameter hint
+    return imageUrl + '?w=200&q=60';
   }
 
   addEventListeners(gridEl, startIndex, endIndex) {
@@ -177,6 +177,28 @@ class ImageGallery {
     }
   }
 
+  setupThumbnailObserver() {
+    if ('IntersectionObserver' in window) {
+      // Observer for progressive image enhancement (thumbnail to full resolution)
+      this.thumbnailObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            this.enhanceImageToFullResolution(img);
+            this.thumbnailObserver.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '100px', // Start loading full resolution 100px before visible
+        threshold: 0.25
+      });
+
+      // Observe all thumbnail images
+      this.container.querySelectorAll('.gallery-item__image--thumbnail').forEach(img => {
+        this.thumbnailObserver.observe(img);
+      });
+    }
+  }
 
   renderGalleryItem(placeholderEl, index) {
     const image = this.images[index];
@@ -193,17 +215,47 @@ class ImageGallery {
     // Add event listeners for the new item
     this.addEventListeners(newItem.parentNode, index, index + 1);
     
-    // Setup simple loading for the new image
+    // Observe the new image for thumbnail enhancement
     const newImg = newItem.querySelector('.gallery-item__image');
-    if (newImg) {
-      const fullUrl = newImg.dataset.src;
-      if (fullUrl) {
-        // Load full resolution directly
-        newImg.src = fullUrl;
+    if (newImg && this.thumbnailObserver) {
+      // Start with thumbnail loading
+      const thumbnailUrl = newImg.dataset.thumbnail;
+      if (thumbnailUrl) {
+        newImg.src = thumbnailUrl;
+        newImg.classList.add('gallery-item__image--thumbnail');
+        this.thumbnailObserver.observe(newImg);
       }
     }
   }
 
+  enhanceImageToFullResolution(img) {
+    const fullResolutionSrc = img.dataset.src;
+    
+    if (fullResolutionSrc) {
+      // Create a new image to preload full resolution
+      const fullResImg = new Image();
+      fullResImg.onload = () => {
+        // Update source to full resolution
+        img.src = fullResolutionSrc;
+        img.removeAttribute('data-src');
+        
+        // Ensure the image fades in and shimmer fades out
+        img.classList.add('gallery-item__image--loaded');
+        img.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded');
+        
+        // Dispatch event for any necessary layout updates
+        img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
+      };
+      
+      fullResImg.onerror = () => {
+        // If full resolution fails, show error state but still fade in
+        img.classList.add('gallery-item__image--loaded', 'gallery-item__image--error');
+        img.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded');
+      };
+      
+      fullResImg.src = fullResolutionSrc;
+    }
+  }
 
   openLightbox(index) {
     if (index < 0 || index >= this.images.length) return;
@@ -249,6 +301,10 @@ class ImageGallery {
     if (this.intersectionObserver) {
       this.intersectionObserver.disconnect();
       this.intersectionObserver = null;
+    }
+    if (this.thumbnailObserver) {
+      this.thumbnailObserver.disconnect();
+      this.thumbnailObserver = null;
     }
   }
 

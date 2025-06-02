@@ -192,21 +192,9 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  /* Minimal fallback height, will be removed when loaded */
-  min-height: 150px;
+  min-height: 200px;
   background: var(--clr-surface-tonal-a10);
-  /* Ensure container adapts to image dimensions */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Remove size constraints when image is loaded */
-.gallery-item__image-container--loaded {
-  min-height: 0;
-  background: transparent;
-  /* Container now adapts to image size only */
-  display: block;
+  /* Default shimmer effect for all containers */
 }
 
 .gallery-item__image-container::before {
@@ -218,16 +206,16 @@
   bottom: 0;
   background: linear-gradient(
     90deg,
-    transparent 30%,
-    rgba(248, 248, 248, 0.3) 50%,
-    transparent 70%
+    transparent 25%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 2.8s infinite ease-in-out;
+  animation: shimmer 1.2s infinite;
   z-index: 2;
   /* Initially visible, will be hidden when image loads */
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-item__image-container--loaded::before {
@@ -242,7 +230,7 @@
   /* Start invisible, will fade in when loaded */
   opacity: 0;
   position: relative;
-  z-index: 3;
+  z-index: 1;
   /* Optimize image rendering */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -255,8 +243,6 @@
 
 .gallery-item__image--loaded {
   opacity: 1;
-  /* Ensure image displays at natural size */
-  object-fit: unset;
 }
 
 /* ===== PROGRESSIVE LOADING STATES ===== */
@@ -268,11 +254,10 @@
 
 .gallery-item__image--loading {
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
   position: relative;
   background: var(--clr-surface-tonal-a10);
-  /* Remove fixed min-height for better sizing */
-  min-height: 120px;
+  min-height: 200px;
 }
 
 .gallery-item__image--loading::before {
@@ -284,25 +269,25 @@
   bottom: 0;
   background: linear-gradient(
     90deg,
-    transparent 25%,
-    rgba(240, 240, 240, 0.4) 50%,
-    transparent 75%
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 3s infinite ease-in-out;
-  z-index: 2;
+  animation: shimmer 1.5s infinite;
+  z-index: 1;
 }
 
 .gallery-item__image--placeholder {
   background: var(--clr-surface-tonal-a10);
-  min-height: 150px; /* Reduced from 200px */
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--clr-text-secondary);
   font-size: 12px;
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -316,13 +301,13 @@
   bottom: 0;
   background: linear-gradient(
     90deg,
-    transparent 25%,
-    rgba(240, 240, 240, 0.35) 50%,
-    transparent 75%
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 3s infinite ease-in-out;
-  z-index: 2;
+  animation: shimmer 1.5s infinite;
+  z-index: 1;
 }
 
 .gallery-item__image--thumbnail {
@@ -363,9 +348,7 @@
   overflow: hidden;
   background: var(--clr-surface-tonal-a10);
   border: 1px solid var(--clr-border-secondary);
-  min-height: 200px; /* Reduced from 300px */
-  /* Allow flexible height */
-  height: auto;
+  min-height: 300px;
 }
 
 .gallery-item--placeholder::before {
@@ -377,21 +360,18 @@
   bottom: 0;
   background: linear-gradient(
     90deg,
-    transparent 30%,
-    rgba(248, 248, 248, 0.25) 50%,
-    transparent 70%
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 2.5s infinite ease-in-out;
-  z-index: 2;
+  animation: shimmer 1.5s infinite;
+  z-index: 1;
 }
 
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
-  }
-  50% {
-    background-position: 0% 0;
   }
   100% {
     background-position: 200% 0;
