@@ -74,7 +74,7 @@ class ImageGallery {
     if (this.images.length > initialItems) {
       const remainingHTML = this.images.slice(initialItems).map((image, index) => {
         const actualIndex = index + initialItems;
-        return `<div class="gallery-item gallery-item--placeholder" data-index="${actualIndex}" style="min-height: 300px; background: var(--clr-surface-tonal-a10); border: 1px dashed var(--clr-border-secondary); display: flex; align-items: center; justify-content: center; color: var(--clr-text-secondary); font-size: 12px;">Loading...</div>`;
+        return `<div class="gallery-item gallery-item--placeholder" data-index="${actualIndex}"></div>`;
       }).join('');
       
       gridEl.insertAdjacentHTML('beforeend', remainingHTML);
@@ -102,21 +102,18 @@ class ImageGallery {
   createPictureElement(imageUrl, thumbnailUrl, title, isInitial = false) {
     const alt = title || 'Gallery image';
     
-    // For progressive loading, start with thumbnail and upgrade to full resolution
-    const loadingClass = isInitial ? 'gallery-item__image--thumbnail' : 'gallery-item__image--placeholder';
-    
-    // Use simple img element since we don't have multiple format variants available
+    // Simple approach: all images start hidden and fade in when loaded
     return `
       <img
-        class="gallery-item__image ${loadingClass} gallery-item__image--loading"
+        class="gallery-item__image"
         ${isInitial ? `src="${thumbnailUrl}"` : ''}
         data-src="${imageUrl}"
         data-thumbnail="${thumbnailUrl}"
         alt="${alt}"
         loading="lazy"
         decoding="async"
-        onload="this.classList.remove('gallery-item__image--loading', 'gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
-        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.remove('gallery-item__image--loading'); this.classList.add('gallery-item__image--error');"
+        onload="this.classList.add('gallery-item__image--loaded'); this.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
+        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.add('gallery-item__image--loaded', 'gallery-item__image--error'); this.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded');"
       >
     `;
   }
@@ -238,23 +235,22 @@ class ImageGallery {
       // Create a new image to preload full resolution
       const fullResImg = new Image();
       fullResImg.onload = () => {
-        // Add transition class before changing source
-        img.classList.add('gallery-item__image--transitioning');
+        // Update source to full resolution
+        img.src = fullResolutionSrc;
+        img.removeAttribute('data-src');
         
-        setTimeout(() => {
-          img.src = fullResolutionSrc;
-          img.removeAttribute('data-src');
-          img.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--transitioning');
-          img.classList.add('gallery-item__image--full');
-          // Dispatch event for any necessary layout updates (but no forced recalculation)
-          img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
-        }, 50);
+        // Ensure the image fades in and shimmer fades out
+        img.classList.add('gallery-item__image--loaded');
+        img.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded');
+        
+        // Dispatch event for any necessary layout updates
+        img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
       };
       
       fullResImg.onerror = () => {
-        // If full resolution fails, keep thumbnail
-        img.classList.remove('gallery-item__image--thumbnail');
-        img.classList.add('gallery-item__image--error');
+        // If full resolution fails, show error state but still fade in
+        img.classList.add('gallery-item__image--loaded', 'gallery-item__image--error');
+        img.closest('.gallery-item__image-container').classList.add('gallery-item__image-container--loaded');
       };
       
       fullResImg.src = fullResolutionSrc;
