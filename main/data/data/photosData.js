@@ -10,6 +10,8 @@ export default {
     './content/photos/2025-05-30-nature-macro-detail.md',
     './content/photos/2025-05-30-street-photography-evening.md',
     './content/photos/2025-05-30-urban-sunset-skyline.md',
+    './content/photos/2025-06-02-ho-chi-minh-vietnam-1.md',
+    './content/photos/2025-06-02-ho-chi-minh-vietnam.md',
     './content/photos/2025-06-02-kuala-lumpur-malaysia.md',
     './content/photos/2025-06-02-kyoto-japan-1.md',
     './content/photos/2025-06-02-kyoto-japan.md',

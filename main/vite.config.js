@@ -3,7 +3,7 @@ const { resolve } = require('path')
 const { defineConfig } = require('vite')
 
 module.exports = defineConfig({
-  publicDir: false, // Disable automatic public dir copying to avoid conflict with copy.js
+  publicDir: 'assets', // Set assets as public directory for proper media handling
   build: {
     rollupOptions: {
       input: {
