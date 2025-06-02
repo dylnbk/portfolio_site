@@ -38,7 +38,6 @@ class ImageGallery {
     `;
     
     this.setupLayoutSwitcher();
-    this.setupGridRecalculation();
   }
 
   async loadImages(images) {
@@ -96,10 +95,6 @@ class ImageGallery {
         <div class="gallery-item__image-container">
           ${this.createPictureElement(imageUrl, thumbnailUrl, image.title, isInitial)}
         </div>
-        <div class="gallery-item__info">
-          <h3 class="gallery-item__title">${image.title || 'Untitled'}</h3>
-          ${image.description ? `<p class="gallery-item__description">${this.truncateText(image.description, 120)}</p>` : ''}
-        </div>
       </div>
     `;
   }
@@ -113,16 +108,15 @@ class ImageGallery {
     // Use simple img element since we don't have multiple format variants available
     return `
       <img
-        class="gallery-item__image ${loadingClass}"
+        class="gallery-item__image ${loadingClass} gallery-item__image--loading"
         ${isInitial ? `src="${thumbnailUrl}"` : ''}
         data-src="${imageUrl}"
         data-thumbnail="${thumbnailUrl}"
         alt="${alt}"
         loading="lazy"
         decoding="async"
-        style="opacity:${isInitial ? '0' : '0'}; transition: opacity 0.3s ease; cursor: pointer;"
-        onload="this.style.opacity=1; this.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
-        onerror="this.src='${this.getPlaceholderImage()}'; this.style.opacity=1;"
+        onload="this.classList.remove('gallery-item__image--loading', 'gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
+        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.remove('gallery-item__image--loading'); this.classList.add('gallery-item__image--error');"
       >
     `;
   }
@@ -152,7 +146,8 @@ class ImageGallery {
         imageEl.addEventListener('error', () => {
           imageEl.src = this.getPlaceholderImage();
           imageEl.alt = 'Image not found';
-          imageEl.style.opacity = '1';
+          imageEl.classList.remove('gallery-item__image--loading');
+          imageEl.classList.add('gallery-item__image--error');
         });
       }
     }
@@ -243,19 +238,17 @@ class ImageGallery {
       // Create a new image to preload full resolution
       const fullResImg = new Image();
       fullResImg.onload = () => {
-        // Smooth transition from thumbnail to full resolution
-        img.style.transition = 'opacity 0.5s ease';
-        img.style.opacity = '0.7';
+        // Add transition class before changing source
+        img.classList.add('gallery-item__image--transitioning');
         
         setTimeout(() => {
           img.src = fullResolutionSrc;
           img.removeAttribute('data-src');
-          img.classList.remove('gallery-item__image--thumbnail');
+          img.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--transitioning');
           img.classList.add('gallery-item__image--full');
-          img.style.opacity = '1';
-          // Trigger grid recalculation after full image loads
+          // Dispatch event for any necessary layout updates (but no forced recalculation)
           img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
-        }, 100);
+        }, 50);
       };
       
       fullResImg.onerror = () => {
@@ -358,21 +351,6 @@ class ImageGallery {
     }
   }
 
-  // Setup grid recalculation on image load to prevent overlap issues
-  setupGridRecalculation() {
-    this.container.addEventListener('imageLoaded', (event) => {
-      const gridEl = this.container.querySelector('#imageGrid');
-      if (gridEl && (gridEl.classList.contains('gallery-layout--2-col') || gridEl.classList.contains('gallery-layout--3-col'))) {
-        // Force grid layout recalculation by briefly changing display property
-        const display = gridEl.style.display;
-        gridEl.style.display = 'none';
-        // Use requestAnimationFrame to ensure the display change is processed
-        requestAnimationFrame(() => {
-          gridEl.style.display = display || '';
-        });
-      }
-    });
-  }
 
   // Cycle between 1, 2, and 3 column layouts
   cycleLayoutMode() {

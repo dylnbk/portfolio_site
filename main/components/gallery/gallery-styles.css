@@ -11,6 +11,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  /* CSS containment for better performance */
+  contain: layout style;
 }
 
 /* New scrollable container wrapper */
@@ -25,6 +27,10 @@
   /* Remove overflow-y: auto to prevent grid track size calculation conflicts */
   min-height: min-content;
   padding-bottom: 5px;
+  /* CSS containment for better layout performance */
+  contain: layout;
+  /* Hardware acceleration for smoother scrolling */
+  will-change: transform;
 }
 
 /* ===== LAYOUT SWITCHER ===== */
@@ -86,6 +92,8 @@
 /* ===== GRID LAYOUTS ===== */
 .gallery-layout--1-col {
   display: block;
+  /* CSS containment for single column layout */
+  contain: layout;
 }
 
 .gallery-layout--2-col {
@@ -95,6 +103,10 @@
   column-gap: 15px;
   row-gap: 15px;
   align-items: start;
+  /* CSS containment for grid layouts */
+  contain: layout;
+  /* Optimize grid performance */
+  will-change: contents;
 }
 
 .gallery-layout--3-col {
@@ -104,6 +116,10 @@
   column-gap: 12px;
   row-gap: 12px;
   align-items: start;
+  /* CSS containment for grid layouts */
+  contain: layout;
+  /* Optimize grid performance */
+  will-change: contents;
 }
 
 .gallery-layout--3-col .gallery-item__title {
@@ -156,11 +172,15 @@
   border-radius: 8px;
   background: var(--clr-bg-primary);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   height: fit-content;
+  /* CSS containment for individual items */
+  contain: layout style;
+  /* Optimize for transform animations */
+  will-change: transform;
 }
 
 .gallery-item:hover {
@@ -178,7 +198,14 @@
   width: 100%;
   height: auto;
   display: block;
-  transition: all 0.3s ease;
+  /* Optimize image rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Remove general transition, use specific ones */
+  transition: opacity 0.3s ease, filter 0.5s ease, transform 0.5s ease;
 }
 
 /* ===== PROGRESSIVE LOADING STATES ===== */
@@ -186,6 +213,11 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+.gallery-item__image--loading {
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-item__image--placeholder {
@@ -196,28 +228,38 @@
   justify-content: center;
   color: var(--clr-text-secondary);
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-item__image--thumbnail {
   filter: blur(1px);
   transform: scale(1.02);
-  transition: all 0.5s ease;
+  opacity: 0;
+  transition: opacity 0.3s ease, filter 0.5s ease, transform 0.5s ease;
+}
+
+.gallery-item__image--transitioning {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-item__image--full {
   filter: none;
   transform: scale(1);
-  transition: all 0.5s ease;
+  opacity: 1;
+  transition: opacity 0.3s ease, filter 0.5s ease, transform 0.5s ease;
 }
 
 .gallery-item__image--loaded {
-  opacity: 1 !important;
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-item__image--error {
   opacity: 0.6;
   filter: grayscale(1);
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 /* ===== PLACEHOLDER ITEMS ===== */
