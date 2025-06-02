@@ -205,12 +205,158 @@ class ContentLoader {
         };
       }
     } catch (error) {
-      console.warn(`Could not load data file for ${contentType}, falling back to directory scan`, error);
+      console.warn(`Could not load data file for ${contentType}, falling back to runtime discovery`, error);
     }
 
-    // Fallback: try to scan the content directory
-    // This is a simplified version since we can't easily scan directories in the browser
-    throw new Error(`No content data file found for ${contentType}. Please ensure ${contentType}Data.js exists.`);
+    // Fallback: try runtime content discovery via Netlify function
+    return await this._discoverContentRuntime(contentType);
+  }
+
+  /**
+   * Runtime content discovery fallback
+   * Uses Netlify function to scan content directories when static data files are unavailable
+   */
+  async _discoverContentRuntime(contentType) {
+    try {
+      console.log(`🔍 Discovering ${contentType} content at runtime...`);
+      
+      // Try to call the Netlify function for content scanning
+      const response = await fetch(`/.netlify/functions/scanContent?type=${contentType}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.files && data.files.length > 0) {
+          console.log(`✅ Found ${data.files.length} ${contentType} files via runtime discovery`);
+          
+          // Load each discovered file
+          const loadPromises = data.files.map(file => this.loadMarkdownFile(file));
+          const content = await Promise.all(loadPromises);
+          
+          // Sort by date (newest first)
+          content.sort((a, b) => {
+            const dateA = new Date(a.releaseDate || a.date || a.createdDate || 0);
+            const dateB = new Date(b.releaseDate || b.date || b.createdDate || 0);
+            return dateB - dateA;
+          });
+          
+          return {
+            items: content,
+            total: content.length,
+            contentType,
+            discoveryMethod: 'runtime'
+          };
+        }
+      }
+      
+      console.warn(`⚠️ Runtime discovery failed for ${contentType}, trying direct file access`);
+      
+      // Final fallback: try to access some common file patterns directly
+      return await this._attemptDirectFileAccess(contentType);
+      
+    } catch (error) {
+      console.error(`❌ Runtime content discovery failed for ${contentType}:`, error);
+      
+      // Last resort: return empty structure to prevent app crashes
+      return {
+        items: [],
+        total: 0,
+        contentType,
+        discoveryMethod: 'failed',
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Attempt to access content files directly using common patterns
+   * This is a last resort when all other discovery methods fail
+   */
+  async _attemptDirectFileAccess(contentType) {
+    console.log(`🎯 Attempting direct file access for ${contentType}...`);
+    
+    const content = [];
+    const today = new Date();
+    const patterns = [];
+    
+    // Generate some common file patterns to try
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
+      const dateStr = date.toISOString().split('T')[0];
+      patterns.push(`content/${contentType}/${dateStr}-`);
+    }
+    
+    // Try to load files using common naming patterns
+    const fileChecks = [];
+    const commonSuffixes = ['sample', 'new', 'untitled', 'test', '1', '2', '3'];
+    
+    for (const pattern of patterns) {
+      for (const suffix of commonSuffixes) {
+        const filepath = `${pattern}${suffix}.md`;
+        fileChecks.push(this._tryLoadFile(filepath));
+      }
+    }
+    
+    const results = await Promise.allSettled(fileChecks);
+    const successfulLoads = results
+      .filter(result => result.status === 'fulfilled' && result.value)
+      .map(result => result.value);
+    
+    if (successfulLoads.length > 0) {
+      console.log(`✅ Direct access found ${successfulLoads.length} ${contentType} files`);
+      
+      // Sort by date (newest first)
+      successfulLoads.sort((a, b) => {
+        const dateA = new Date(a.releaseDate || a.date || a.createdDate || 0);
+        const dateB = new Date(b.releaseDate || b.date || b.createdDate || 0);
+        return dateB - dateA;
+      });
+    }
+    
+    return {
+      items: successfulLoads,
+      total: successfulLoads.length,
+      contentType,
+      discoveryMethod: 'direct-access'
+    };
+  }
+
+  /**
+   * Try to load a single file, return null if it fails
+   */
+  async _tryLoadFile(filepath) {
+    try {
+      const response = await fetch(filepath);
+      if (!response.ok) return null;
+      
+      const content = await response.text();
+      const { frontmatter, content: markdownContent } = this.parseFrontmatter(content);
+      
+      // Parse markdown content to HTML
+      const htmlContent = marked.parse(markdownContent);
+      const sanitizedContent = DOMPurify.sanitize(htmlContent);
+      
+      return {
+        ...frontmatter,
+        content: sanitizedContent,
+        rawContent: markdownContent,
+        filepath
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Refresh content for a specific type (clears cache and reloads)
+   */
+  async refreshContent(contentType) {
+    this.clearCache(contentType);
+    return await this.loadContentType(contentType);
   }
 
   /**

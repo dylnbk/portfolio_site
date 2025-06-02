@@ -2,12 +2,26 @@
   "name": "npm-init-vite",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:watch": "concurrently \"npm run content:watch\" \"vite\"",
     "build": "node scripts/generateContentData.js && vite build && node copy.js",
-    "preview": "vite preview"
+    "build:prod": "npm run content:generate && vite build --mode production && node copy.js",
+    "preview": "vite preview",
+    "content:generate": "node scripts/generateContentData.js",
+    "content:watch": "nodemon --watch content --ext md --exec \"npm run content:generate\"",
+    "content:refresh": "node scripts/generateContentData.js && echo 'Content data refreshed!'",
+    "content:test": "node scripts/contentManager.js test",
+    "content:test-full": "node scripts/contentManager.js full-test",
+    "content:cleanup": "node scripts/contentManager.js cleanup",
+    "netlify:dev": "netlify dev",
+    "postinstall": "npm run content:generate"
   },
   "devDependencies": {
+    "chokidar": "^3.5.3",
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.20",
     "shelljs": "^0.8.5",
     "vite": "^2.8.0",
     "vite-plugin-copy": "^0.1.6"
