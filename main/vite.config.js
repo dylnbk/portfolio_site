@@ -1,14 +1,13 @@
 // vite.config.js
-import { resolve } from 'path'
-import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from 'node:url'
+const { resolve } = require('path')
+const { defineConfig } = require('vite')
 
-export default defineConfig({
+module.exports = defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(fileURLToPath(new URL('.', import.meta.url)), 'index.html'),
-        contact: resolve(fileURLToPath(new URL('.', import.meta.url)), 'contact/contact.html')
+        main: resolve(__dirname, 'index.html'),
+        contact: resolve(__dirname, 'contact/contact.html')
       }
     }
   }
