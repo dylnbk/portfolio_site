@@ -11,7 +11,10 @@ export default {
     './content/photos/2025-05-30-street-photography-evening.md',
     './content/photos/2025-05-30-urban-sunset-skyline.md',
     './content/photos/2025-06-02-kuala-lumpur-malaysia.md',
+    './content/photos/2025-06-02-kyoto-japan-1.md',
     './content/photos/2025-06-02-kyoto-japan.md',
+    './content/photos/2025-06-02-osaka-japan.md',
+    './content/photos/2025-06-02-phnom-penh-cambodia.md',
     './content/photos/2025-06-02-siem-reap-cambodia.md'
   ],
   metadata: {

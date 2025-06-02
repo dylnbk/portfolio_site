@@ -11,3 +11,15 @@
   from = "/admin/*"
   to = "/admin/index.html"
   status = 200
+
+# Ensure assets are served correctly
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# Handle media files for CMS
+[[redirects]]
+  from = "/assets/uploads/*"
+  to = "/assets/uploads/:splat"
+  status = 200

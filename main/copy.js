@@ -11,7 +11,6 @@ shell.cp('-R', 'ascii-background', 'dist/')
 shell.cp('-R', 'speech', 'dist/')
 shell.cp('-R', 'cursor-effects', 'dist/')
 shell.cp('-R', 'text-effects', 'dist/')
-shell.cp('-R', 'uploads', 'dist/')
 shell.cp('-R', 'contact', 'dist/')
 
 console.log('Successfully copied all necessary folders to dist/ for full deployment')
