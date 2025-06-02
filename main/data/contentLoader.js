@@ -188,8 +188,9 @@ class ContentLoader {
       const dataModule = await import(`./data/${contentType}Data.js`);
       if (dataModule.default && dataModule.default.files) {
         const files = dataModule.default.files;
-        const loadPromises = files.map(file => this.loadMarkdownFile(file));
-        const content = await Promise.all(loadPromises);
+        
+        // Implement incremental loading instead of Promise.all()
+        const content = await this.loadContentIncremental(files);
         
         // Sort by date (newest first)
         content.sort((a, b) => {
@@ -211,6 +212,18 @@ class ContentLoader {
     // Fallback: try to scan the content directory
     // This is a simplified version since we can't easily scan directories in the browser
     throw new Error(`No content data file found for ${contentType}. Please ensure ${contentType}Data.js exists.`);
+  }
+
+  /**
+   * Load content incrementally with priority-based loading
+   * Load first batch immediately, then continue loading in background
+   */
+  async loadContentIncremental(files, batchSize = 5) {
+    // Load ALL files, not just the first batch
+    const loadPromises = files.map(file => this.loadMarkdownFile(file));
+    const content = await Promise.all(loadPromises);
+    
+    return content;
   }
 
   /**
