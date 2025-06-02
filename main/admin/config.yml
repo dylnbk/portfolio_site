@@ -5,16 +5,16 @@ backend:
 media_folder: "main/assets/uploads"
 public_folder: "/assets/uploads"
 
-# Publishing and workflow settings
+# Publishing and workflow setting
 publish_mode: editorial_workflow
 show_preview_links: true
 
 # Site URL for preview
-site_url: https://your-portfolio-site.netlify.app
-display_url: https://your-portfolio-site.netlify.app
+site_url: https://dylnbk.netlify.app
+display_url: https://dylnbk.page
 
 # Logo and branding
-logo_url: https://your-portfolio-site.netlify.app/love-32.png
+logo_url: https://dylnbk.page/love-32.png
 
 # Editor settings
 editor:
