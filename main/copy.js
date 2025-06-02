@@ -1,4 +1,4 @@
-import shell from 'shelljs'
+const shell = require('shelljs')
 
 // copy all necessary folders for full functionality after build completes
 shell.cp('-R', 'netlify', 'dist/')
