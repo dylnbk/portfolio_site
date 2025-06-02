@@ -74,7 +74,7 @@ class ImageGallery {
     if (this.images.length > initialItems) {
       const remainingHTML = this.images.slice(initialItems).map((image, index) => {
         const actualIndex = index + initialItems;
-        return `<div class="gallery-item gallery-item--placeholder" data-index="${actualIndex}" style="min-height: 300px; background: var(--clr-surface-tonal-a10); border: 2px dotted var(--clr-border-secondary); display: flex; align-items: center; justify-content: center; color: var(--clr-text-secondary); font-size: 12px;">Loading...</div>`;
+        return `<div class="gallery-item gallery-item--placeholder" data-index="${actualIndex}" style="min-height: 300px; background: var(--clr-surface-tonal-a10); border: 1px dashed var(--clr-border-secondary); display: flex; align-items: center; justify-content: center; color: var(--clr-text-secondary); font-size: 12px;">Loading...</div>`;
       }).join('');
       
       gridEl.insertAdjacentHTML('beforeend', remainingHTML);

@@ -267,17 +267,14 @@
   animation: placeholderPulse 2s ease-in-out infinite;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 0 12px 2px rgba(207, 207, 207, 0.15);
 }
 
 @keyframes placeholderPulse {
   0%, 100% {
     opacity: 0.6;
-    box-shadow: 0 0 12px 2px rgba(207, 207, 207, 0.1);
   }
   50% {
     opacity: 0.8;
-    box-shadow: 0 0 16px 3px rgba(207, 207, 207, 0.2);
   }
 }
 
