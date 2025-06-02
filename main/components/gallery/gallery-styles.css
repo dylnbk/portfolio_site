@@ -194,7 +194,7 @@
   overflow: hidden;
   /* Minimal fallback height, will be removed when loaded */
   min-height: 150px;
-  background: var(--clr-surface-tonal-a10);
+  background-color: #d8d8db6f;
   /* Ensure container adapts to image dimensions */
   display: flex;
   align-items: center;
@@ -270,7 +270,7 @@
   opacity: 0;
   transition: opacity 0.4s ease;
   position: relative;
-  background: var(--clr-surface-tonal-a10);
+  background-color: #d8d8db6f;
   /* Remove fixed min-height for better sizing */
   min-height: 120px;
 }
@@ -285,7 +285,7 @@
   background: linear-gradient(
     90deg,
     transparent 25%,
-    rgba(240, 240, 240, 0.4) 50%,
+    rgba(240, 240, 240, 0.1) 50%,
     transparent 75%
   );
   background-size: 200% 100%;
@@ -294,7 +294,7 @@
 }
 
 .gallery-item__image--placeholder {
-  background: var(--clr-surface-tonal-a10);
+  background-color: #d8d8db6f;
   min-height: 150px; /* Reduced from 200px */
   display: flex;
   align-items: center;
@@ -361,7 +361,7 @@
   margin-bottom: 20px;
   position: relative;
   overflow: hidden;
-  background: var(--clr-surface-tonal-a10);
+  background-color: #d8d8db6f;
   border: 1px solid var(--clr-border-secondary);
   min-height: 200px; /* Reduced from 300px */
   /* Allow flexible height */
