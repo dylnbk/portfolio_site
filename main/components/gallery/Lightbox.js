@@ -10,6 +10,7 @@ class Lightbox {
     this.images = [];
     this.currentIndex = -1;
     this.overlay = null;
+    this.currentImageElement = null;
     
     this.init();
   }
@@ -77,7 +78,14 @@ class Lightbox {
   }
 
   open(imageData, allImages = [], startIndex = 0) {
-    this.images = allImages;
+    // Store only essential image data to minimize memory usage
+    this.images = allImages.map(img => ({
+      imageFile: img.imageFile || img.image,
+      title: img.title,
+      description: img.description,
+      date: img.date || img.createdDate,
+      alt: img.alt
+    }));
     this.currentIndex = startIndex;
     this.currentImage = imageData;
     
@@ -103,11 +111,18 @@ class Lightbox {
       this.overlay.style.display = 'none';
       this.isOpen = false;
       document.body.style.overflow = '';
+      
+      // Critical memory cleanup
+      this.cleanupImageMemory();
+      this.clearImageReferences();
     }, 300);
   }
 
   showPrevious() {
     if (this.currentIndex > 0) {
+      // Cleanup current image before switching
+      this.cleanupCurrentImage();
+      
       this.currentIndex--;
       this.currentImage = this.images[this.currentIndex];
       this.updateImage();
@@ -117,6 +132,9 @@ class Lightbox {
 
   showNext() {
     if (this.currentIndex < this.images.length - 1) {
+      // Cleanup current image before switching
+      this.cleanupCurrentImage();
+      
       this.currentIndex++;
       this.currentImage = this.images[this.currentIndex];
       this.updateImage();
@@ -133,9 +151,22 @@ class Lightbox {
     const date = this.overlay.querySelector('.lightbox__date');
     const counter = this.overlay.querySelector('.lightbox__counter');
     
-    // Update image
-    img.src = this.currentImage.imageFile || this.currentImage.image;
-    img.alt = this.currentImage.title || this.currentImage.alt || '';
+    // Store reference to current image element for cleanup
+    this.currentImageElement = img;
+    
+    // Clear previous image source to free memory before loading new one
+    if (img.src) {
+      img.src = '';
+      // Force garbage collection opportunity
+      img.removeAttribute('src');
+    }
+    
+    // Update image with memory-conscious loading
+    const imageUrl = this.currentImage.imageFile || this.currentImage.image;
+    if (imageUrl) {
+      img.src = imageUrl;
+      img.alt = this.currentImage.title || this.currentImage.alt || '';
+    }
     
     // Update text content
     title.textContent = this.currentImage.title || 'Untitled';
@@ -167,11 +198,63 @@ class Lightbox {
   }
 
   destroy() {
+    // Comprehensive cleanup before destroying
+    this.cleanupImageMemory();
+    this.clearImageReferences();
+    
     if (this.overlay && this.overlay.parentNode) {
       this.overlay.parentNode.removeChild(this.overlay);
     }
     this.isOpen = false;
     document.body.style.overflow = '';
+    
+    // Clear all references
+    this.overlay = null;
+    this.currentImageElement = null;
+  }
+
+  /**
+   * Clean up current image to free memory when switching images
+   */
+  cleanupCurrentImage() {
+    if (this.currentImageElement && this.currentImageElement.src) {
+      this.currentImageElement.src = '';
+      this.currentImageElement.removeAttribute('src');
+    }
+  }
+
+  /**
+   * Comprehensive memory cleanup for images
+   */
+  cleanupImageMemory() {
+    const img = this.overlay ? this.overlay.querySelector('.lightbox__image') : null;
+    if (img) {
+      // Clear the image source to free memory
+      img.src = '';
+      img.removeAttribute('src');
+      img.alt = '';
+      
+      // Clear any cached image data
+      if (img.complete) {
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      }
+    }
+    this.currentImageElement = null;
+  }
+
+  /**
+   * Clear all image references to help garbage collection
+   */
+  clearImageReferences() {
+    // Clear the images array to free memory
+    this.images = [];
+    this.currentImage = null;
+    this.currentIndex = -1;
+    
+    // Force garbage collection opportunity
+    if (window.gc && typeof window.gc === 'function') {
+      setTimeout(() => window.gc(), 100);
+    }
   }
 }
 

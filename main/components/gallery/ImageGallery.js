@@ -13,7 +13,6 @@ class ImageGallery {
     this.images = [];
     this.lightbox = new Lightbox();
     this.intersectionObserver = null;
-    this.thumbnailObserver = null;
     this.visibleItemsCount = 0;
     this.itemsPerBatch = 5; // Initial viewport items
     this.layoutMode = 1; // 1, 2, or 3 columns
@@ -52,9 +51,8 @@ class ImageGallery {
     // Create initial DOM elements for viewport-based rendering
     this.renderInitialBatch(gridEl);
     
-    // Setup intersection observers for progressive loading
+    // Setup intersection observer for progressive loading
     this.setupIntersectionObserver();
-    this.setupThumbnailObserver();
   }
 
   renderInitialBatch(gridEl) {
@@ -83,49 +81,34 @@ class ImageGallery {
 
   createImageHTML(image, index, isInitial = false) {
     const imageUrl = image.imageFile || image.image;
-    const thumbnailUrl = this.generateThumbnailUrl(imageUrl);
-    
-    // For initial load, show thumbnail immediately and prepare full resolution for lazy loading
-    const srcAttribute = isInitial ? `src="${thumbnailUrl}"` : '';
-    const dataSrcAttribute = `data-src="${imageUrl}"`;
-    const dataThumbnailAttribute = `data-thumbnail="${thumbnailUrl}"`;
     
     return `
       <div class="gallery-item" data-index="${index}">
         <div class="gallery-item__image-container">
-          ${this.createPictureElement(imageUrl, thumbnailUrl, image.title, isInitial)}
+          ${this.createPictureElement(imageUrl, image.title, isInitial)}
         </div>
       </div>
     `;
   }
 
-  createPictureElement(imageUrl, thumbnailUrl, title, isInitial = false) {
+  createPictureElement(imageUrl, title, isInitial = false) {
     const alt = title || 'Gallery image';
+    const loadingClass = isInitial ? 'gallery-item__image--visible' : 'gallery-item__image--placeholder';
     
-    // For progressive loading, start with thumbnail and upgrade to full resolution
-    const loadingClass = isInitial ? 'gallery-item__image--thumbnail' : 'gallery-item__image--placeholder';
-    
-    // Use simple img element since we don't have multiple format variants available
     return `
       <img
-        class="gallery-item__image ${loadingClass} gallery-item__image--loading"
-        ${isInitial ? `src="${thumbnailUrl}"` : ''}
+        class="gallery-item__image ${loadingClass}"
+        ${isInitial ? `src="${imageUrl}"` : ''}
         data-src="${imageUrl}"
-        data-thumbnail="${thumbnailUrl}"
         alt="${alt}"
         loading="lazy"
         decoding="async"
-        onload="this.classList.remove('gallery-item__image--loading', 'gallery-item__image--thumbnail', 'gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
-        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.remove('gallery-item__image--loading'); this.classList.add('gallery-item__image--error');"
+        onload="this.classList.remove('gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
+        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.add('gallery-item__image--error');"
       >
     `;
   }
 
-  generateThumbnailUrl(imageUrl) {
-    // Generate thumbnail URL (200px width) - this would typically be handled by a CDN or image processing service
-    // For now, we'll use the original image with a query parameter hint
-    return imageUrl + '?w=200&q=60';
-  }
 
   addEventListeners(gridEl, startIndex, endIndex) {
     const items = gridEl.querySelectorAll('.gallery-item');
@@ -146,7 +129,6 @@ class ImageGallery {
         imageEl.addEventListener('error', () => {
           imageEl.src = this.getPlaceholderImage();
           imageEl.alt = 'Image not found';
-          imageEl.classList.remove('gallery-item__image--loading');
           imageEl.classList.add('gallery-item__image--error');
         });
       }
@@ -155,16 +137,27 @@ class ImageGallery {
 
   setupIntersectionObserver() {
     if ('IntersectionObserver' in window) {
-      // Observer for placeholder items to render them into full gallery items
+      // Single observer for both placeholder items and image loading
       this.intersectionObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const placeholderEl = entry.target;
-            const index = parseInt(placeholderEl.dataset.index);
+            const target = entry.target;
             
-            if (placeholderEl.classList.contains('gallery-item--placeholder')) {
-              this.renderGalleryItem(placeholderEl, index);
-              this.intersectionObserver.unobserve(placeholderEl);
+            // Handle placeholder gallery items
+            if (target.classList.contains('gallery-item--placeholder')) {
+              const index = parseInt(target.dataset.index);
+              this.renderGalleryItem(target, index);
+              this.intersectionObserver.unobserve(target);
+            }
+            
+            // Handle image loading
+            if (target.classList.contains('gallery-item__image--placeholder')) {
+              const imageUrl = target.dataset.src;
+              if (imageUrl) {
+                target.src = imageUrl;
+                target.classList.remove('gallery-item__image--placeholder');
+                this.intersectionObserver.unobserve(target);
+              }
             }
           }
         });
@@ -173,35 +166,13 @@ class ImageGallery {
         threshold: 0.1
       });
 
-      // Observe all placeholder items
-      this.container.querySelectorAll('.gallery-item--placeholder').forEach(placeholder => {
-        this.intersectionObserver.observe(placeholder);
+      // Observe all placeholder items and images
+      this.container.querySelectorAll('.gallery-item--placeholder, .gallery-item__image--placeholder').forEach(element => {
+        this.intersectionObserver.observe(element);
       });
     }
   }
 
-  setupThumbnailObserver() {
-    if ('IntersectionObserver' in window) {
-      // Observer for progressive image enhancement (thumbnail to full resolution)
-      this.thumbnailObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            this.enhanceImageToFullResolution(img);
-            this.thumbnailObserver.unobserve(img);
-          }
-        });
-      }, {
-        rootMargin: '100px', // Start loading full resolution 100px before visible
-        threshold: 0.25
-      });
-
-      // Observe all thumbnail images
-      this.container.querySelectorAll('.gallery-item__image--thumbnail').forEach(img => {
-        this.thumbnailObserver.observe(img);
-      });
-    }
-  }
 
   renderGalleryItem(placeholderEl, index) {
     const image = this.images[index];
@@ -218,48 +189,13 @@ class ImageGallery {
     // Add event listeners for the new item
     this.addEventListeners(newItem.parentNode, index, index + 1);
     
-    // Observe the new image for thumbnail enhancement
-    const newImg = newItem.querySelector('.gallery-item__image');
-    if (newImg && this.thumbnailObserver) {
-      // Start with thumbnail loading
-      const thumbnailUrl = newImg.dataset.thumbnail;
-      if (thumbnailUrl) {
-        newImg.src = thumbnailUrl;
-        newImg.classList.add('gallery-item__image--thumbnail');
-        this.thumbnailObserver.observe(newImg);
-      }
+    // Observe the new image for lazy loading
+    const newImg = newItem.querySelector('.gallery-item__image--placeholder');
+    if (newImg && this.intersectionObserver) {
+      this.intersectionObserver.observe(newImg);
     }
   }
 
-  enhanceImageToFullResolution(img) {
-    const fullResolutionSrc = img.dataset.src;
-    
-    if (fullResolutionSrc) {
-      // Create a new image to preload full resolution
-      const fullResImg = new Image();
-      fullResImg.onload = () => {
-        // Add transition class before changing source
-        img.classList.add('gallery-item__image--transitioning');
-        
-        setTimeout(() => {
-          img.src = fullResolutionSrc;
-          img.removeAttribute('data-src');
-          img.classList.remove('gallery-item__image--thumbnail', 'gallery-item__image--transitioning');
-          img.classList.add('gallery-item__image--full');
-          // Dispatch event for any necessary layout updates (but no forced recalculation)
-          img.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: img } }));
-        }, 50);
-      };
-      
-      fullResImg.onerror = () => {
-        // If full resolution fails, keep thumbnail
-        img.classList.remove('gallery-item__image--thumbnail');
-        img.classList.add('gallery-item__image--error');
-      };
-      
-      fullResImg.src = fullResolutionSrc;
-    }
-  }
 
   openLightbox(index) {
     if (index < 0 || index >= this.images.length) return;
@@ -305,10 +241,6 @@ class ImageGallery {
     if (this.intersectionObserver) {
       this.intersectionObserver.disconnect();
       this.intersectionObserver = null;
-    }
-    if (this.thumbnailObserver) {
-      this.thumbnailObserver.disconnect();
-      this.thumbnailObserver = null;
     }
   }
 
