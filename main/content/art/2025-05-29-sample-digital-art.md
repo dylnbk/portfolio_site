@@ -4,7 +4,7 @@ creationDate: "2025-05-29T19:38:00.000Z"
 medium: "Digital"
 dimensions: "1920x1080 pixels"
 description: ""
-image: "/assets/uploads/gallery/sample-art.png"
+image: "/assets/uploads/gallery/sample-art.jpg"
 featured: true
 forSale: false
 price: ""

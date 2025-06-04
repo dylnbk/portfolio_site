@@ -4,7 +4,7 @@ creationDate: "2025-05-30T14:22:00.000Z"
 medium: "Digital Painting"
 dimensions: "1080x1350 pixels"
 description: ""
-image: "/assets/uploads/gallery/art-portrait-3.png"
+image: "/assets/uploads/gallery/art-portrait-3.jpg"
 featured: true
 forSale: true
 price: "$200"
