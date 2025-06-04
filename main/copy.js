@@ -9,7 +9,6 @@ shell.cp('-R', 'components', 'dist/')
 shell.cp('-R', 'data', 'dist/')
 shell.cp('-R', 'ascii-background', 'dist/')
 shell.cp('-R', 'speech', 'dist/')
-shell.cp('-R', 'cursor-effects', 'dist/')
 shell.cp('-R', 'text-effects', 'dist/')
 shell.cp('-R', 'contact', 'dist/')
 

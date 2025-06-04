@@ -4,7 +4,7 @@ creationDate: "2025-05-30T16:45:00.000Z"
 medium: "Digital Concept Art"
 dimensions: "3840x2160 pixels"
 description: ""
-image: "/assets/uploads/gallery/art-landscape-4.png"
+image: "/assets/uploads/gallery/art-landscape-4.jpg"
 featured: false
 forSale: true
 price: "$300"

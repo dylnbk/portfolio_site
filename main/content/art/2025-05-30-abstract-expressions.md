@@ -4,7 +4,7 @@ creationDate: "2025-05-30T10:15:00.000Z"
 medium: "Mixed Digital Media"
 dimensions: "2560x1440 pixels"
 description: ""
-image: "/assets/uploads/gallery/art-abstract-2.png"
+image: "/assets/uploads/gallery/art-abstract-2.jpg"
 featured: false
 forSale: true
 price: "$150"
