@@ -91,13 +91,19 @@ class LoadingCoordinator {
     }
     
     triggerContentAnimations() {
-        // Trigger the existing jQuery animations
-        $('#heading').delay(100).animate({"opacity": "1"}, 2000);
-        $('#navbar').delay(1750).animate({"display": "block"}, 1000);
-        $('#toggle-button').delay(1000).animate({"opacity": "1"}, 1000);
-        $('.initial-message').delay(800).animate({"opacity": "1"}, 2500);
-        $('.material-symbols-outlined').delay(800).animate({"opacity": "1"}, 2500);
-        $('.chat-input').delay(800).animate({"opacity": "1"}, 2500);
+        // Coordinated animation phases with synchronized timing
+        
+        // Phase 1: Content reveal (0ms delay) - Main heading appears first
+        $('#heading').delay(0).animate({"opacity": "1"}, 1000);
+        
+        // Phase 2: Navigation (200ms delay) - Navigation elements appear together
+        $('#navbar').delay(200).animate({"opacity": "1"}, 1000);
+        $('#toggle-button').delay(200).animate({"opacity": "1"}, 1000);
+        
+        // Phase 3: Interactive elements (400ms delay) - Chat components appear together
+        $('.initial-message').delay(400).animate({"opacity": "1"}, 1000);
+        $('.material-symbols-outlined').delay(400).animate({"opacity": "1"}, 1000);
+        $('.chat-input').delay(400).animate({"opacity": "1"}, 1000);
     }
     
     forceShowContent() {

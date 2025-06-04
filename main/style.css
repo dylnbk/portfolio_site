@@ -35,8 +35,8 @@
   --clr-text-header: #000000;
   
   /* Border colors */
-  --clr-border-primary: rgba(154, 154, 154, 0.486);
-  --clr-border-secondary: #cfcfcf5e;
+  --clr-border-primary: rgba(154, 154, 154, 0.5);
+  --clr-border-secondary: #a9a9a936;
   --clr-border-accent: #636363;
   
   /* Background colors */
@@ -84,8 +84,8 @@
   --clr-text-header: #ffffff;
   
   /* Border colors */
-  --clr-border-primary: rgba(46, 46, 46, 0.486);
-  --clr-border-secondary: #31313150;
+  --clr-border-primary: rgba(46, 46, 46, 0.4);
+  --clr-border-secondary: #8080804e;
   --clr-border-accent: #4a4856;
   
   /* Background colors */
@@ -151,7 +151,13 @@
   color: var(--clr-text-secondary);
   font-size: 24px;
   opacity: 0;
-  animation: fadeIn 2s ease-in-out forwards, slide 1s ease-in;
+  transform: translateY(-20px);
+}
+
+/* Slide animation triggered when loaded */
+body.loaded #slide {
+  animation: slide 1s ease-out forwards, fadeIn 1s ease-out forwards;
+  animation-delay: 0.6s; /* Phase 3: After navigation */
 }
 
 #send-btn {
@@ -446,6 +452,7 @@ h1::before {
   );
   -webkit-background-clip: text;
   background-clip: text;
+  opacity: 0;
   }
 
 h1::after {
@@ -458,6 +465,7 @@ h1::after {
   );
   -webkit-background-clip: text;
   background-clip: text;
+  opacity: 0;
   }
 
 h1:hover::before {
@@ -470,6 +478,7 @@ h1:hover::before {
     var(--clr-text-accent) 2px,
     var(--clr-text-accent) 4px
   );
+  opacity: 1;
 }
 
 h1:hover::after {
@@ -485,6 +494,7 @@ h1:hover::after {
     var(--clr-text-header) 2px,
     var(--clr-text-header) 4px
   );
+  opacity: 1;
 }
 
 .content {
@@ -505,12 +515,17 @@ h1:hover::after {
   right: 0;
   margin: 0 auto;
   display: flex;
-  opacity: 1;
+  opacity: 0;
   gap: 5em;
   width: 0%;
   border-top: 1px solid var(--clr-border-primary);
   text-align: center;
-  animation: line 1.5s linear forwards, fadeIn 2.5s ease-in-out forwards;
+}
+
+/* Line drawing animation triggered when loaded */
+body.loaded .line {
+  animation: line 1.5s linear forwards, fadeIn 1.5s ease-in forwards;
+  animation-delay: 0.4s; /* Phase 2.5: Between navigation and content */
 }
 
 ::-webkit-scrollbar {
@@ -519,18 +534,18 @@ h1:hover::after {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f100;
+  background: #da050500;
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #bcbdbd24; 
   border-radius: 10px;
+  background: var(--clr-border-secondary); 
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #96969684; 
+  background: var(--clr-border-primary);
 }
 
 pre, code {
@@ -1074,7 +1089,12 @@ pre .char-span {
   .line {
     max-width: 88%;
     top: 115px;
+  }
+
+  /* Mobile line animation - use shorter line for mobile */
+  body.loaded .line {
     animation: line-short 1.5s linear forwards, fadeIn 1.5s ease-in forwards;
+    animation-delay: 0.4s; /* Same timing as desktop */
   }
 
   .chatbox .incoming span {
@@ -1105,12 +1125,19 @@ pre .char-span {
     display: none; /* Initially hiding the navbar */
     flex-direction: column;
     /* styling for animation */
-    animation: fadeIn 1s ease-in-out, slide 0.5s ease-in-out;
     background-color: var(--clr-bg-navbar);
     height: 100%;
     align-items: center;
     justify-content: space-evenly;
     margin: 0 !important;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  /* Mobile navbar animation triggered when loaded */
+  body.loaded #navbar {
+    animation: slideIn 1s ease-out forwards, fadeIn 1s ease-out forwards;
+    animation-delay: 0.2s; /* Phase 2: With other navigation */
   }
 
   ul#navbar li {
