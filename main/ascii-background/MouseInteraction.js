@@ -17,8 +17,8 @@ export class MouseInteraction {
         this.baseInfluenceRadius = 80; // Base radius
         this.mobileInfluenceRadius = 40; // Smaller radius for mobile
         this.influenceRadius = this.isMobileView() ? this.mobileInfluenceRadius : this.baseInfluenceRadius; // Larger radius for more intense sparkle
-        this.maxChaosMultiplier = 6; // Higher chaos for more intense sparkle
-        this.mouseInactiveTimeout = 2000; // ms before mouse is considered inactive
+        this.maxChaosMultiplier = 8; // Higher chaos for more intense sparkle
+        this.mouseInactiveTimeout = 6000; // ms before mouse is considered inactive
         
         // Grid mapping
         this.gridDimensions = null;
