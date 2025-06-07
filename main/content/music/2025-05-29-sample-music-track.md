@@ -5,7 +5,7 @@ album: Demo Collection
 releaseDate: 2025-05-29T19:38:00.000Z
 genre: Electronic
 description: "#Sampling"
-audioFile: /assets/uploads/music/sample-music.wav
+audioFile: /assets/uploads/music/sample-music.mp3
 duration: 3:45
 featured: false
 tags:
