@@ -14,11 +14,11 @@ export class MouseInteraction {
         this.lastMouseMove = 0;
         
         // Configuration - enhanced intensity with longer decay
-        this.baseInfluenceRadius = 140; // Base radius
-        this.mobileInfluenceRadius = 70; // Smaller radius for mobile
+        this.baseInfluenceRadius = 80; // Base radius
+        this.mobileInfluenceRadius = 40; // Smaller radius for mobile
         this.influenceRadius = this.isMobileView() ? this.mobileInfluenceRadius : this.baseInfluenceRadius; // Larger radius for more intense sparkle
-        this.maxChaosMultiplier = 4; // Higher chaos for more intense sparkle
-        this.mouseInactiveTimeout = 2000; // ms before mouse is considered inactive
+        this.maxChaosMultiplier = 8; // Higher chaos for more intense sparkle
+        this.mouseInactiveTimeout = 6000; // ms before mouse is considered inactive
         
         // Grid mapping
         this.gridDimensions = null;
@@ -26,7 +26,7 @@ export class MouseInteraction {
         
         // Excitement state
         this.excitementMap = new Map(); // Grid position -> excitement level
-        this.excitementDecay = 0.97; // Longer decay for trailing effect
+        this.excitementDecay = 0.95; // Longer decay for trailing effect
         
         // State management for consistent initialization
         this.isInitialized = false;
