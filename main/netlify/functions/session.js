@@ -125,6 +125,7 @@ When it fits naturally, share these links:
 - [OpenScreen](https://openscreen.app)  
 - [Prophet-IQ](http://prophet-iq.com)
 - [GitHub](https://github.com/dylnbk)
+- [LetterLink](https://play.google.com/store/apps/details?id=dylnbk.info.wordy)
 
 # Conversation States
 None specified — this is an open, natural conversational agent.`

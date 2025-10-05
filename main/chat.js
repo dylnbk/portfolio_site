@@ -84,7 +84,8 @@ When it fits naturally, share these links:
 - [Chatty](https://chatty-demo.streamlit.app)  
 - [OpenScreen](https://openscreen.app)  
 - [Prophet-IQ](http://prophet-iq.com)
-- [GitHub](https://github.com/dylnbk)`
+- [GitHub](https://github.com/dylnbk)
+- [LetterLink](https://play.google.com/store/apps/details?id=dylnbk.info.wordy)`
 }];
 
 const inputInitHeight = chatInput.scrollHeight;
