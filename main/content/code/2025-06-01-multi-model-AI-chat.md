@@ -1,5 +1,5 @@
 ---
-title: "Multi-AI Model Chat App"
+title: "Multi Model AI Chat App"
 date: "2025-06-01T12:00:00.000Z"
 projectType: "Web Application"
 technologies:

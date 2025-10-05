@@ -1,5 +1,5 @@
 ---
-title: "OpenScreen AI-Powered Video Screening"
+title: "OpenScreen AI Powered Video Screening"
 date: "2025-10-05T10:00:00.000Z"
 projectType: "Full-Stack App"
 technologies:
