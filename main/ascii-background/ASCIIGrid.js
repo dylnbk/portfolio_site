@@ -123,7 +123,7 @@ export class ASCIIGrid {
                 }
                 
                 // Apply mouse excitement effects to density threshold for intense sparkle
-                let threshold = 0.06; // Lower base threshold for more visible characters
+                let threshold = 0.01; // Lower base threshold for more visible characters
                 if (mouseInteraction) {
                     const excitement = mouseInteraction.getExcitementLevel(x, y);
                     threshold = Math.max(0.01, threshold - excitement * 0.05); // Allow more characters to show
@@ -137,7 +137,7 @@ export class ASCIIGrid {
                     // Apply chaos effects from mouse interaction
                     if (mouseInteraction) {
                         const chaosMultiplier = mouseInteraction.getChaosMultiplier(x, y);
-                        if (chaosMultiplier > 1 && Math.random() < (chaosMultiplier - 1) * 0.1) {
+                        if (chaosMultiplier > 1 && Math.random() < (chaosMultiplier - 1) * 0.075) {
                             // Random character substitution for chaos effect
                             character = this.characterSet.getRandomCharacter();
                         }

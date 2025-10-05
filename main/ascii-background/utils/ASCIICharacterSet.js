@@ -6,14 +6,24 @@
 export class ASCIICharacterSet {
     constructor() {
         // ASCII characters ordered by visual density (light to dark)
+        // Enhanced set for better visual shimmer and gradation
         this.characters = [
-            ' ', '.', ':', ';', '+', '*', '?', '%', 'S', '#', '@'
+            ' ', '`', '·', '.', '˙', ',', "'", ':', '·', ';', '¨', '"', 
+            '°', '-', '=', '+', '~', 'i', 'l', 'o', '*', 'x', 'v', '?', 
+            'c', 'z', 'e', 'a', 'X', 'O', '%', 'Y', 'H', 'M', 'W', 'S', 
+            '#', '░', '@'
         ];
         
         // Additional characters for chaos/random effects
+        // Expanded set for more visual variety and shimmer
         this.chaosCharacters = [
             '!', '|', '/', '\\', '^', '~', '<', '>', '{', '}', '[', ']', 
-            '=', '-', '_', '&', '$', '€', '£', '¥', '§', '©', '®', '™'
+            '=', '-', '_', '&', '$', '€', '£', '¥', '§', '©', '®', '™',
+            '¿', '¡', '±', '×', '÷', '≈', '≠', '∴', '∵', '∞', '∑', '∏',
+            '◊', '◌', '○', '●', '□', '△', '▽', '◇', '◆', '▲', '▼',
+            '→', '←', '↑', '↓', '↔', '↕', '┼', '┤', '├', '┬', '┴', '┌',
+            '└', '┐', '┘', '│', '─', '╱', '╲', '╳', '※', '☆', '★', '♦',
+            '♠', '♣', '♥', '¤', '¢', '⌐', '¬', 'µ', '¶', '·', 'º', 'ª'
         ];
         
         // All available characters
