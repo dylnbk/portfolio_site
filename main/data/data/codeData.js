@@ -7,10 +7,12 @@ export default {
   contentType: 'code',
   files: [
     './content/code/2025-05-29-portfolio-cms-integration.md',
-    './content/code/2025-05-30-nodejs-api-gateway.md',
-    './content/code/2025-05-30-python-ml-analytics.md',
-    './content/code/2025-05-30-react-native-fitness-app.md',
-    './content/code/2025-05-30-react-task-manager.md'
+    './content/code/2025-10-05-openscreen-video-assessments.md',
+    './content/code/2025-06-01-multi-model-AI-chat.md',
+    './content/code/2025-08-20-simple-bespoke-inventory-management.md',
+    './content/code/2025-09-01-internal-kb-chat.md',
+    './content/code/2024-06-29-letterlink.md',
+    './content/code/2025-10-05-prophetiq.md'
   ],
   metadata: {
     section: 'CODE',

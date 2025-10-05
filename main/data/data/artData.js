@@ -11,7 +11,9 @@ export default {
     './content/art/2025-05-30-digital-portrait-study.md',
     './content/art/2025-05-30-ethereal-landscape.md',
     './content/art/2025-06-01-flgle-wizzard.md',
-    './content/art/2025-06-02-wvs.md'
+    './content/art/2025-06-02-wvs.md',
+    './content/art/2025-06-07-limone.md',
+    './content/art/2025-06-07-window.md'
   ],
   metadata: {
     section: 'ART',
