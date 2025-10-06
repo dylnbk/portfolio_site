@@ -463,10 +463,17 @@ class PortfolioContentManager {
   closeMobileNav() {
     const mediaQuery = window.matchMedia('(min-width: 800px)');
     if (!mediaQuery.matches) {
-      // Mobile view - close navigation
-      document.getElementById("navbar").style.display = "none";
+      // Mobile view - close navigation with fade out
+      const navbar = document.getElementById("navbar");
+      navbar.classList.remove("menu-open");
+      navbar.classList.add("menu-closing");
+      // Wait for fade out transition before hiding (0.5s transition + small buffer)
+      setTimeout(() => {
+        navbar.style.display = "none";
+        navbar.classList.remove("menu-closing");
+        document.getElementById("slide").style.height = "0%";
+      }, 550);
       document.getElementById("toggle-button").style.display = "block";
-      document.getElementById("slide").style.height = "0%";
     }
   }
 

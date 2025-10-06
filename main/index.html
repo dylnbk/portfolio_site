@@ -211,13 +211,27 @@
       const mediaQuery = window.matchMedia('(min-width: 800px)');
 
       function closeNav() {
-        document.getElementById("navbar").style.display = "none";
+        const navbar = document.getElementById("navbar");
+        navbar.classList.remove("menu-open");
+        navbar.classList.add("menu-closing");
+        // Wait for fade out transition before hiding (0.5s transition + small buffer)
+        setTimeout(() => {
+          navbar.style.display = "none";
+          navbar.classList.remove("menu-closing");
+          document.getElementById("slide").style.height = "0%";
+        }, 550);
         document.getElementById("toggle-button").style.display = "block";
-        document.getElementById("slide").style.height = "0%";
       }
 
       function openNav() {
-        document.getElementById("navbar").style.display = "flex";
+        const navbar = document.getElementById("navbar");
+        // Remove closing class if it exists
+        navbar.classList.remove("menu-closing");
+        navbar.style.display = "flex";
+        // Force reflow to ensure transition works
+        navbar.offsetHeight;
+        // Add class to trigger fade-in
+        navbar.classList.add("menu-open");
         document.getElementById("toggle-button").style.display = "none";
         document.getElementById("slide").style.height = "100dvh";
       }
@@ -265,9 +279,7 @@
             } else {
               document.querySelector('form').style.display = 'block';
               document.querySelector('.chatbot').style.display = 'none';
-              document.getElementById("slide").style.height = "0%";
-              document.getElementById("navbar").style.display = "none";
-              document.getElementById("toggle-button").style.display = "block";
+              closeNav();
             }
           }
         });
@@ -283,9 +295,7 @@
             } else {
               document.querySelector('form').style.display = 'none';
               document.querySelector('.chatbot').style.display = 'block';
-              document.getElementById("slide").style.height = "0%";
-              document.getElementById("navbar").style.display = "none";
-              document.getElementById("toggle-button").style.display = "block";
+              closeNav();
             }
           }
         });

@@ -47,8 +47,8 @@ exports.handler = async function(event, context) {
 **Projects & Experience (all solo dev)**
 
 *   **Mobile App:** Developed and published "LetterLink," a word puzzle game, on the Google Play Store.
-*   **Automated Trading:** Built and deployed “ProphetIQ”, an automated trading platform, using Replit. He is currently beta-testing automated trading bots.
-*   **Video Screening:** Latest project is an open-source screening tool called “OpenScreen” that allows users to create video assessment campaigns for education, training, recruitment, and more, integrated with AI for automated evaluations.
+*   **Automated Trading:** Built and deployed “ProphetIQ”, an automated trading platform, using Replit. He is currently rebuilding the platform with a new architecture.
+*   **Video Screening:** Latest finished project is an open-source screening tool called “OpenScreen” that allows users to create video assessment campaigns for education, training, recruitment, and more, integrated with AI for automated evaluations.
 *   **AI Experimentation:** Actively builds and experiments with AI tools and extensively uses LLM platforms like Gemini, GPT, and Claude. He has experience with various APIs, including those for popular AI platforms.
 *   **Freelance Work:** Develops custom web applications, managing the full project lifecycle.
 *   **Check Code:** Check out the code tab in the menu to see more projects.
@@ -61,7 +61,7 @@ exports.handler = async function(event, context) {
 **Personal Interests & Background**
 
 *   **Creative Pursuits:** Enjoys photography, illustration, and music production. He has experience with Adobe Photoshop, Premier Pro, and audio workstations like Fruity Loops, Logic & Ableton.
-*   **Hobbies:** Plays the piano, enjoys good quality coffee, and loves animals, especially dogs.
+*   **Hobbies:** Plays the piano, enjoys good quality coffee, and loves nature.
 *   **Personal Details:** He is from the UK Lake District, is half French, and speaks French conversationally.
 *   **Travel:** Has traveled extensively through Europe, Africa, and Asia.
 
@@ -85,7 +85,7 @@ exports.handler = async function(event, context) {
     *   Acts as the primary point of contact for customer inquiries and issue resolution.
     *   Handles a high volume of customer interactions, including sales, refunds, and cancellations.
 *   **Quality Assurance at 1st Central Insurance** (June 2017 - July 2019)
-    *   Promoted after one year for exceptional customer service and in-depth subject matter knowledge.
+    *   Required in-depth subject matter knowledge.
     *   Played a key role in migrating to new quality control measures, resulting in improved audit scores.
     *   Provided constructive feedback to agents and consistently exceeded individual and team targets.
 
