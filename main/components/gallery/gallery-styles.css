@@ -185,11 +185,19 @@
   position: relative;
   width: 100%;
   overflow: hidden;
+  /* Aspect ratio set inline per image */
+  background: linear-gradient(135deg, var(--clr-surface-tonal-a10) 0%, var(--clr-surface-tonal-a20) 100%);
+  /* Ensure container takes full space while maintaining aspect ratio */
+  display: block;
 }
 
 .gallery-item__image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
   /* Optimize image rendering */
   image-rendering: -webkit-optimize-contrast;
@@ -197,6 +205,36 @@
   /* Hardware acceleration only when needed */
   transform: translateZ(0);
   backface-visibility: hidden;
+  transition: filter 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* ===== BLUR PLACEHOLDER WRAPPER ===== */
+.gallery-item__blur-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--clr-surface-tonal-a10) 0%, var(--clr-surface-tonal-a30) 100%);
+  /* Animated gradient for loading effect */
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Stop animation when loaded */
+.gallery-item__blur-wrapper--loaded {
+  animation: none;
+  background: transparent;
 }
 
 /* ===== PROGRESSIVE LOADING STATES ===== */
@@ -206,24 +244,32 @@
   height: auto;
 }
 
-/* ===== SIMPLIFIED LOADING STATES ===== */
+/* ===== SIMPLIFIED LOADING STATES WITH BLUR ===== */
 .gallery-item__image--placeholder {
   opacity: 0;
+  /* Will fade in once src is set */
 }
 
 .gallery-item__image--visible {
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease-out, filter 0.5s ease-out;
 }
 
 .gallery-item__image--loaded {
   opacity: 1;
-  transition: opacity 0.3s ease;
+  filter: blur(0px);
+  transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+}
+
+/* Blur effect while loading - creates the placeholder blur */
+.gallery-item__image:not(.gallery-item__image--loaded):not(.gallery-item__image--error) {
+  filter: blur(20px);
+  transform: scale(1.1);
 }
 
 .gallery-item__image--error {
   opacity: 0.6;
-  filter: grayscale(1);
+  filter: grayscale(1) blur(0);
 }
 
 /* ===== PLACEHOLDER ITEMS ===== */
@@ -320,6 +366,20 @@
   max-height: 70vh;
   object-fit: contain;
   display: block;
+  transition: filter 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+/* Lightbox loading state with blur */
+.lightbox__image--loading {
+  filter: blur(20px);
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+.lightbox__image--loaded {
+  filter: blur(0px);
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lightbox__info {

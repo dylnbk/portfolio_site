@@ -161,11 +161,21 @@ class Lightbox {
       img.removeAttribute('src');
     }
     
+    // Add loading class for blur effect
+    img.classList.add('lightbox__image--loading');
+    img.classList.remove('lightbox__image--loaded');
+    
     // Update image with memory-conscious loading
     const imageUrl = this.currentImage.imageFile || this.currentImage.image;
     if (imageUrl) {
       img.src = imageUrl;
       img.alt = this.currentImage.title || this.currentImage.alt || '';
+      
+      // Remove loading class when image loads
+      img.onload = () => {
+        img.classList.remove('lightbox__image--loading');
+        img.classList.add('lightbox__image--loaded');
+      };
     }
     
     // Update text content

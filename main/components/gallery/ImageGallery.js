@@ -48,11 +48,37 @@ class ImageGallery {
       return;
     }
 
+    // Preload aspect ratios for initial batch (non-blocking)
+    this.preloadAspectRatios(images.slice(0, this.itemsPerBatch));
+
     // Create initial DOM elements for viewport-based rendering
     this.renderInitialBatch(gridEl);
     
     // Setup intersection observer for progressive loading
     this.setupIntersectionObserver();
+  }
+
+  /**
+   * Preload aspect ratios for images to improve placeholder accuracy
+   * Non-blocking, runs in background
+   */
+  preloadAspectRatios(images) {
+    images.forEach((image, index) => {
+      if (!image.aspectRatio) {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = `${img.naturalWidth}/${img.naturalHeight}`;
+          image.aspectRatio = ratio;
+          
+          // Update the DOM element if it exists
+          const itemEl = this.container.querySelector(`[data-index="${index}"] .gallery-item__image-container`);
+          if (itemEl) {
+            itemEl.style.aspectRatio = ratio;
+          }
+        };
+        img.src = image.imageFile || image.image;
+      }
+    });
   }
 
   renderInitialBatch(gridEl) {
@@ -81,10 +107,12 @@ class ImageGallery {
 
   createImageHTML(image, index, isInitial = false) {
     const imageUrl = image.imageFile || image.image;
+    // Default aspect ratio if not specified (can be customized per image)
+    const aspectRatio = image.aspectRatio || '4/3';
     
     return `
       <div class="gallery-item" data-index="${index}">
-        <div class="gallery-item__image-container">
+        <div class="gallery-item__image-container" style="aspect-ratio: ${aspectRatio};">
           ${this.createPictureElement(imageUrl, image.title, isInitial)}
         </div>
       </div>
@@ -96,16 +124,18 @@ class ImageGallery {
     const loadingClass = isInitial ? 'gallery-item__image--visible' : 'gallery-item__image--placeholder';
     
     return `
-      <img
-        class="gallery-item__image ${loadingClass}"
-        ${isInitial ? `src="${imageUrl}"` : ''}
-        data-src="${imageUrl}"
-        alt="${alt}"
-        loading="lazy"
-        decoding="async"
-        onload="this.classList.remove('gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.image-gallery').dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
-        onerror="this.src='${this.getPlaceholderImage()}'; this.classList.add('gallery-item__image--error');"
-      >
+      <div class="gallery-item__blur-wrapper">
+        <img
+          class="gallery-item__image ${loadingClass}"
+          ${isInitial ? `src="${imageUrl}"` : ''}
+          data-src="${imageUrl}"
+          alt="${alt}"
+          loading="lazy"
+          decoding="async"
+          onload="this.classList.remove('gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.gallery-item__blur-wrapper')?.classList.add('gallery-item__blur-wrapper--loaded'); this.closest('.image-gallery')?.dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
+          onerror="this.src='${this.getPlaceholderImage()}'; this.classList.add('gallery-item__image--error');"
+        >
+      </div>
     `;
   }
 
