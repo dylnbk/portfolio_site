@@ -8,7 +8,7 @@ class LoadingCoordinator {
         this.readyComponents = new Set();
         this.requiredComponents = [
             'dom',
-            'ascii-background',
+            // 'ascii-background', // REMOVED: ASCII background now lazy loads after critical content
             'portfolio-content',
             'chat-init',
             'speech-controllers',
@@ -37,7 +37,7 @@ class LoadingCoordinator {
                 console.warn('Loading timeout reached, forcing content display');
                 this.forceShowContent();
             }
-        }, 2000);
+        }, 1500); // Reduced from 2000ms to 1500ms for faster initial display
     }
     
     componentReady(componentName) {

@@ -49,8 +49,12 @@ export class ASCIIBackgroundManager {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
         const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isSlowConnection = navigator.connection && 
+            (navigator.connection.effectiveType === 'slow-2g' || 
+             navigator.connection.effectiveType === '2g' ||
+             navigator.connection.saveData);
         
-        if (isReducedMotion) return 'low';
+        if (isReducedMotion || isSlowConnection) return 'low';
         if (isMobile || isLowEndDevice) return 'medium';
         return 'high';
     }
@@ -61,11 +65,12 @@ export class ASCIIBackgroundManager {
      */
     detectOptimalFPS() {
         const mode = this.detectPerformanceMode();
+        // Reduced FPS targets for better performance
         switch (mode) {
-            case 'low': return 30;
-            case 'medium': return 45;
-            case 'high': return 60;
-            default: return 60;
+            case 'low': return 24;
+            case 'medium': return 36;
+            case 'high': return 48; // Reduced from 60 for better performance
+            default: return 48;
         }
     }
 
@@ -145,10 +150,12 @@ export class ASCIIBackgroundManager {
         // Create renderer with performance-based settings
         this.renderer = new THREE.WebGLRenderer({
             alpha: true,
-            antialias: false,
+            antialias: false, // Disabled for performance
             powerPreference: "high-performance",
-            stencil: false,
-            depth: false
+            stencil: false, // Not needed, improves performance
+            depth: false, // Not needed for 2D ASCII, improves performance
+            preserveDrawingBuffer: false, // Better performance
+            failIfMajorPerformanceCaveat: false // Don't fail on low-end devices
         });
         
         this.renderer.setSize(viewportWidth, viewportHeight);

@@ -3,6 +3,8 @@
  * Handles markdown processing and content loading for all portfolio sections
  */
 
+import { loadExternalDependencies } from '../utils/externalDependencies.js';
+
 class ContentLoader {
   constructor() {
     this.cache = new Map();
@@ -13,36 +15,18 @@ class ContentLoader {
 
   /**
    * Wait for external dependencies (marked, DOMPurify) to load
+   * Now uses the external dependencies loader utility
    */
   async waitForDependencies() {
-    const checkDependencies = () => {
-      return typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined';
-    };
-
-    if (checkDependencies()) {
+    try {
+      await loadExternalDependencies();
       this.dependenciesReady = true;
-      return;
+      console.log('ContentLoader: Dependencies ready');
+    } catch (error) {
+      console.error('ContentLoader: Failed to load dependencies', error);
+      // Continue anyway, features that need these will fail gracefully
+      this.dependenciesReady = false;
     }
-
-    // Poll for dependencies with timeout
-    const maxWait = 5000; // 5 seconds
-    const interval = 50;
-    let elapsed = 0;
-
-    return new Promise((resolve) => {
-      const check = setInterval(() => {
-        elapsed += interval;
-        if (checkDependencies()) {
-          this.dependenciesReady = true;
-          clearInterval(check);
-          resolve();
-        } else if (elapsed >= maxWait) {
-          console.error('Timeout waiting for marked/DOMPurify dependencies');
-          clearInterval(check);
-          resolve();
-        }
-      }, interval);
-    });
   }
 
   /**

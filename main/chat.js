@@ -1,8 +1,16 @@
+import { loadExternalDependencies } from './utils/externalDependencies.js';
+
 const chatbox = document.querySelector(".chatbox");
 const chatInput = document.querySelector(".chat-input textarea");
 const sendChatBtn = document.querySelector("#send-btn");
 
 let userMessage = null;
+
+// Preload external dependencies (marked.js, DOMPurify) when chat module loads
+// This ensures they're ready when user sends a message
+loadExternalDependencies().catch(err => {
+  console.warn('Failed to preload chat dependencies:', err);
+});
 let messages = [{
     role: "system",
     content: `## Critical information:

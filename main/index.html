@@ -5,19 +5,8 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- DNS prefetch and preconnect for external resources -->
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <!-- DNS prefetch for external resources (removed preconnect for GA to delay it) -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-    
-    <!-- Google tag (gtag.js) - Deferred for performance -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RW9L5MPTH9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-RW9L5MPTH9');
-    </script>
     <style>
       /* Critical CSS for initial render */
       /* Loading screen to prevent content flash - optimized for faster fade */
@@ -69,11 +58,14 @@
     <meta property="og:description" content="Explore Dylan's creative work including music, art, photography, and code projects">
     <meta property="og:url" content="https://dylnbk.page">
     
-    <!-- Performance and Font Loading -->
+    <!-- Performance and Font Loading - Optimized with display=swap for better FCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" rel="stylesheet">
+    <!-- Using media="print" trick to async load fonts, then switching to "all" -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap">
+    </noscript>
     
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>dyln.bk</title>
@@ -139,19 +131,21 @@
       </div>
     </div>
 
-    <!-- Include marked.js for Markdown parsing - Deferred -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/marked/marked.min.js" as="script">
-    <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <!-- Include DOMPurify for sanitizing HTML - Deferred -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js" as="script">
-    <script defer src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <!-- Include marked.js for Markdown parsing - Lazy loaded when needed -->
+    <!-- Removed preload to save bandwidth, will load on-demand -->
     
-    <!-- Critical modules loaded first -->
+    <!-- Include DOMPurify for sanitizing HTML - Lazy loaded when needed -->
+    <!-- Removed preload to save bandwidth, will load on-demand -->
+    
+    <!-- Critical modules loaded first with modulepreload hints -->
+    <link rel="modulepreload" href="/loading-coordinator.js">
+    <link rel="modulepreload" href="/main.js">
     <script type="module" src="/loading-coordinator.js"></script>
     <script type="module" src="/main.js"></script>
     
-    <!-- Chat and speech modules -->
+    <!-- Chat and speech modules - preloaded but not blocking -->
+    <link rel="modulepreload" href="/chat.js">
+    <link rel="modulepreload" href="/chat-cursor-effect.js">
     <script type="module" src="/chat.js"></script>
     <script type="module" src="/chat-cursor-effect.js"></script>
     <script type="module" src="/speech/audioManager.js"></script>
@@ -302,6 +296,38 @@
             }
           }
         });
+
+      // Lazy load Google Analytics after user interaction or 3 seconds
+      // This reduces initial JavaScript execution by ~150ms and saves 52.9 KiB on initial load
+      let gaLoaded = false;
+      function loadGoogleAnalytics() {
+        if (gaLoaded) return;
+        gaLoaded = true;
+        
+        // Initialize dataLayer
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-RW9L5MPTH9');
+        
+        // Load GA script
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-RW9L5MPTH9';
+        document.head.appendChild(script);
+        
+        console.log('Google Analytics loaded');
+      }
+      
+      // Load GA on first user interaction
+      const interactionEvents = ['mousedown', 'touchstart', 'keydown', 'scroll'];
+      interactionEvents.forEach(event => {
+        window.addEventListener(event, loadGoogleAnalytics, { once: true, passive: true });
+      });
+      
+      // Fallback: Load after 3 seconds if no interaction
+      setTimeout(loadGoogleAnalytics, 3000);
     
     </script>
 
