@@ -20,7 +20,7 @@
     </script>
     <style>
       /* Critical CSS for initial render */
-      /* Loading screen to prevent content flash */
+      /* Loading screen to prevent content flash - optimized for faster fade */
       #loading-screen {
         position: fixed;
         top: 0;
@@ -32,7 +32,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.8s ease-out;
+        transition: opacity 0.3s ease-out;
       }
       
       #loading-screen.fade-out {

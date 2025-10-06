@@ -18,8 +18,8 @@ function initializeASCIIBackground() {
   
   if (container && !asciiBackgroundManager) {
     // Defer background initialization to improve initial page load
-    // Background starts after a short delay to prioritize critical content
-    const initDelay = 100; // milliseconds
+    // Background starts with minimal delay to prioritize critical content while staying smooth
+    const initDelay = 50; // milliseconds - reduced for faster initialization
     
     setTimeout(() => {
       try {

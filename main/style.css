@@ -154,10 +154,10 @@
   transform: translateY(-20px);
 }
 
-/* Slide animation triggered when loaded */
+/* Slide animation triggered when loaded - faster and smoother */
 body.loaded #slide {
-  animation: slide 1s ease-out forwards, fadeIn 1s ease-out forwards;
-  animation-delay: 0.6s; /* Phase 3: After navigation */
+  animation: slide 0.5s ease-out forwards, fadeIn 0.5s ease-out forwards;
+  animation-delay: 0.2s; /* Phase 3: Quick succession after navigation */
 }
 
 #send-btn {
@@ -522,10 +522,10 @@ h1:hover::after {
   text-align: center;
 }
 
-/* Line drawing animation triggered when loaded */
+/* Line drawing animation triggered when loaded - faster and smoother */
 body.loaded .line {
-  animation: line 1.5s linear forwards, fadeIn 1.5s ease-in forwards;
-  animation-delay: 0.4s; /* Phase 2.5: Between navigation and content */
+  animation: line 0.8s ease-out forwards, fadeIn 0.8s ease-out forwards;
+  animation-delay: 0.15s; /* Phase 2.5: Quick transition between navigation and content */
 }
 
 ::-webkit-scrollbar {
@@ -1091,10 +1091,10 @@ pre .char-span {
     top: 115px;
   }
 
-  /* Mobile line animation - use shorter line for mobile */
+  /* Mobile line animation - faster and smoother for mobile */
   body.loaded .line {
-    animation: line-short 1.5s linear forwards, fadeIn 1.5s ease-in forwards;
-    animation-delay: 0.4s; /* Same timing as desktop */
+    animation: line-short 0.8s ease-out forwards, fadeIn 0.8s ease-out forwards;
+    animation-delay: 0.15s; /* Quick transition matching desktop */
   }
 
   .chatbox .incoming span {
@@ -1135,10 +1135,10 @@ pre .char-span {
     transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Mobile navbar animation triggered when loaded */
+  /* Mobile navbar animation triggered when loaded - faster and smoother */
   body.loaded #navbar {
-    animation: slideIn 1s ease-out forwards, fadeIn 1s ease-out forwards;
-    animation-delay: 0.2s; /* Phase 2: With other navigation */
+    animation: slideIn 0.5s ease-out forwards, fadeIn 0.5s ease-out forwards;
+    animation-delay: 0.1s; /* Phase 2: Quick appearance with other navigation */
   }
   
   /* Navbar visible state when opened via menu button */
