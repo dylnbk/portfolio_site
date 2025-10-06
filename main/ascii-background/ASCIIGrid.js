@@ -23,6 +23,9 @@ export class ASCIIGrid {
         this.fontFamily = 'Inconsolata, monospace';
         this.fontSize = 12;
         
+        // Performance: Reusable matrix for instance updates (avoid GC pressure)
+        this._tempMatrix = new THREE.Matrix4();
+        
         this.initializeGrid();
     }
 
@@ -74,15 +77,18 @@ export class ASCIIGrid {
      */
     createCharacterTexture(character) {
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d', { 
+            alpha: true,
+            willReadFrequently: false 
+        });
         
-        // Set canvas size
-        const size = 64; // Higher resolution for better quality
+        // Reduced size for better performance (32x32 is sufficient for ASCII chars)
+        const size = 32;
         canvas.width = size;
         canvas.height = size;
         
         // Configure font
-        context.font = `${size * 0.8}px ${this.fontFamily}`;
+        context.font = `${size * 0.75}px ${this.fontFamily}`;
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillStyle = '#ffffff';
@@ -93,11 +99,12 @@ export class ASCIIGrid {
         // Draw character
         context.fillText(character, size / 2, size / 2);
         
-        // Create texture
+        // Create texture with performance optimizations
         const texture = new THREE.CanvasTexture(canvas);
         texture.generateMipmaps = false;
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
+        texture.needsUpdate = true;
         
         return texture;
     }
@@ -179,11 +186,10 @@ export class ASCIIGrid {
             const defaultColor = this.colorManager.getThreeJSASCIIColor();
             instancedMesh.material.color.setHex(defaultColor);
             
-            // Update instance matrices
-            const matrix = new THREE.Matrix4();
+            // Update instance matrices using pooled matrix (reduces GC pressure)
             instances.forEach((instance, index) => {
-                matrix.makeTranslation(instance.x, instance.y, instance.z);
-                instancedMesh.setMatrixAt(index, matrix);
+                this._tempMatrix.makeTranslation(instance.x, instance.y, instance.z);
+                instancedMesh.setMatrixAt(index, this._tempMatrix);
             });
             
             instancedMesh.instanceMatrix.needsUpdate = true;

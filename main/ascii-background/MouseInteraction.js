@@ -4,21 +4,26 @@
  */
 
 export class MouseInteraction {
-    constructor(container, asciiGrid) {
+    constructor(container, asciiGrid, performanceMode = 'high') {
         this.container = container;
         this.asciiGrid = asciiGrid;
+        this.performanceMode = performanceMode;
         
         // Mouse state
         this.mousePosition = { x: 0, y: 0 };
         this.isMouseActive = false;
         this.lastMouseMove = 0;
+        this.lastMouseUpdate = 0; // For throttling
         
         // Configuration - enhanced intensity with longer decay
         this.baseInfluenceRadius = 80; // Base radius
         this.mobileInfluenceRadius = 40; // Smaller radius for mobile
-        this.influenceRadius = this.isMobileView() ? this.mobileInfluenceRadius : this.baseInfluenceRadius; // Larger radius for more intense sparkle
+        this.influenceRadius = this.isMobileView() ? this.mobileInfluenceRadius : this.baseInfluenceRadius;
         this.maxChaosMultiplier = 8; // Higher chaos for more intense sparkle
         this.mouseInactiveTimeout = 6000; // ms before mouse is considered inactive
+        
+        // Performance-based throttling (ms between updates)
+        this.updateThrottle = this.getUpdateThrottle(performanceMode);
         
         // Grid mapping
         this.gridDimensions = null;
@@ -38,6 +43,20 @@ export class MouseInteraction {
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
         this.initialize();
+    }
+
+    /**
+     * Get update throttle based on performance mode
+     * @param {string} mode - Performance mode
+     * @returns {number} Throttle in milliseconds
+     */
+    getUpdateThrottle(mode) {
+        switch (mode) {
+            case 'low': return 50;     // 20 updates/sec max
+            case 'medium': return 33;  // 30 updates/sec max
+            case 'high': return 16;    // 60 updates/sec max
+            default: return 16;
+        }
     }
 
     /**
@@ -105,12 +124,20 @@ export class MouseInteraction {
      * @param {MouseEvent} event - Mouse event
      */
     handleMouseMove(event) {
+        const now = performance.now();
+        
+        // Throttle updates based on performance mode
+        if (now - this.lastMouseUpdate < this.updateThrottle) {
+            return;
+        }
+        
         // Use viewport coordinates directly since canvas is now fixed positioned
         this.mousePosition.x = event.clientX;
         this.mousePosition.y = event.clientY;
         
         this.isMouseActive = true;
-        this.lastMouseMove = performance.now();
+        this.lastMouseMove = now;
+        this.lastMouseUpdate = now;
         
         this.updateExcitement();
     }
@@ -138,12 +165,20 @@ export class MouseInteraction {
      */
     handleTouchMove(event) {
         if (event.touches.length > 0) {
+            const now = performance.now();
+            
+            // Throttle updates based on performance mode
+            if (now - this.lastMouseUpdate < this.updateThrottle) {
+                return;
+            }
+            
             const touch = event.touches[0];
             this.mousePosition.x = touch.clientX;
             this.mousePosition.y = touch.clientY;
 
             this.isMouseActive = true;
-            this.lastMouseMove = performance.now();
+            this.lastMouseMove = now;
+            this.lastMouseUpdate = now;
             
             this.updateExcitement();
         }

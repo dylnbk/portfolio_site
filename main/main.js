@@ -12,29 +12,41 @@ const themeBackgrounds = {
   party: '#000000' // Party mode uses black background as requested
 };
 
-// Initialize ASCII background system
+// Initialize ASCII background system with lazy loading
 function initializeASCIIBackground() {
   const container = document.getElementById('container');
   
   if (container && !asciiBackgroundManager) {
-    try {
-      // Initialize ASCII background manager
-      asciiBackgroundManager = new ASCIIBackgroundManager(container);
-      console.log('ASCII Background System initialized successfully');
-      
-      // Notify loading coordinator
-      if (window.loadingCoordinator) {
-        window.loadingCoordinator.componentReady('ascii-background');
+    // Defer background initialization to improve initial page load
+    // Background starts after a short delay to prioritize critical content
+    const initDelay = 100; // milliseconds
+    
+    setTimeout(() => {
+      try {
+        // Initialize ASCII background manager
+        asciiBackgroundManager = new ASCIIBackgroundManager(container);
+        console.log('ASCII Background System initialized successfully');
+        
+        // Notify loading coordinator
+        if (window.loadingCoordinator) {
+          window.loadingCoordinator.componentReady('ascii-background');
+        }
+      } catch (error) {
+        console.error('Failed to initialize ASCII Background System:', error);
+        // Fallback to simple background colors
+        initializeFallbackBackground();
+        
+        // Still notify coordinator even with fallback
+        if (window.loadingCoordinator) {
+          window.loadingCoordinator.componentReady('ascii-background');
+        }
       }
-    } catch (error) {
-      console.error('Failed to initialize ASCII Background System:', error);
-      // Fallback to simple background colors
-      initializeFallbackBackground();
-      
-      // Still notify coordinator even with fallback
-      if (window.loadingCoordinator) {
-        window.loadingCoordinator.componentReady('ascii-background');
-      }
+    }, initDelay);
+    
+    // Notify coordinator immediately that background is "loading"
+    // This prevents blocking page load
+    if (window.loadingCoordinator) {
+      window.loadingCoordinator.componentReady('ascii-background');
     }
   }
 }

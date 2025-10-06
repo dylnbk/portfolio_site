@@ -23,10 +23,16 @@ export class ASCIIBackgroundManager {
         this.lastTime = 0;
         this.isRunning = false;
         
-        // Performance monitoring
+        // Performance monitoring and adaptive FPS
         this.frameCount = 0;
-        this.targetFPS = 60;
+        this.targetFPS = this.detectOptimalFPS();
         this.frameInterval = 1000 / this.targetFPS;
+        this.performanceMode = this.detectPerformanceMode();
+        
+        // FPS tracking for adaptive adjustment
+        this.fpsHistory = [];
+        this.lastFPSCheck = 0;
+        this.fpsCheckInterval = 2000; // Check FPS every 2 seconds
         
         // Resize handling
         this.resizeTimeout = null;
@@ -36,9 +42,39 @@ export class ASCIIBackgroundManager {
     }
 
     /**
+     * Detect performance mode based on device capabilities
+     * @returns {string} 'low', 'medium', or 'high'
+     */
+    detectPerformanceMode() {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+        const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (isReducedMotion) return 'low';
+        if (isMobile || isLowEndDevice) return 'medium';
+        return 'high';
+    }
+
+    /**
+     * Detect optimal FPS based on device capabilities
+     * @returns {number} Target FPS
+     */
+    detectOptimalFPS() {
+        const mode = this.detectPerformanceMode();
+        switch (mode) {
+            case 'low': return 30;
+            case 'medium': return 45;
+            case 'high': return 60;
+            default: return 60;
+        }
+    }
+
+    /**
      * Initialize the ASCII background system
      */
     initialize() {
+        console.log(`ASCII Background: Performance mode = ${this.performanceMode}, Target FPS = ${this.targetFPS}`);
+        
         this.ensureFullViewport();
         this.setupColorManager();
         this.setupThreeJS();
@@ -106,15 +142,27 @@ export class ASCIIBackgroundManager {
         
         this.camera.position.z = 10;
         
-        // Create renderer
+        // Create renderer with performance-based settings
         this.renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: false,
-            powerPreference: "high-performance"
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: false
         });
         
         this.renderer.setSize(viewportWidth, viewportHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Adaptive pixel ratio based on performance mode
+        let pixelRatio = window.devicePixelRatio;
+        if (this.performanceMode === 'low') {
+            pixelRatio = Math.min(pixelRatio, 1);
+        } else if (this.performanceMode === 'medium') {
+            pixelRatio = Math.min(pixelRatio, 1.5);
+        } else {
+            pixelRatio = Math.min(pixelRatio, 2);
+        }
+        this.renderer.setPixelRatio(pixelRatio);
         this.renderer.setClearColor(0x000000, 0); // Transparent background
         
         // Append to container
@@ -155,10 +203,11 @@ export class ASCIIBackgroundManager {
      * Set up interaction systems (mouse)
      */
     setupInteractionSystems() {
-        // Set up mouse interaction
+        // Set up mouse interaction with performance mode
         this.mouseInteraction = new MouseInteraction(
             this.container,
-            this.asciiGrid
+            this.asciiGrid,
+            this.performanceMode
         );
     }
 
