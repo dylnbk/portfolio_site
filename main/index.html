@@ -3,17 +3,23 @@
 <html lang="en">
 
   <head>
-    <!-- Google tag (gtag.js) -->
+    <meta charset="UTF-8" />
+    
+    <!-- DNS prefetch and preconnect for external resources -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    
+    <!-- Google tag (gtag.js) - Deferred for performance -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RW9L5MPTH9"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-RW9L5MPTH9');
     </script>
-    <meta charset="UTF-8" />
     <style>
+      /* Critical CSS for initial render */
       /* Loading screen to prevent content flash */
       #loading-screen {
         position: fixed;
@@ -44,8 +50,13 @@
         opacity: 0;
         visibility: hidden;
       }
+      
+      /* Prevent FOUT (Flash of Unstyled Text) */
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+      }
     </style>
-    <link type="image/png" sizes="32x32" rel="icon" href="love-32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="love-32.png">
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Dylan's Portfolio - Explore music, art, photography, and code projects.">
@@ -61,15 +72,9 @@
     <!-- Performance and Font Loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" rel="stylesheet">
     
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>dyln.bk</title>
   </head>
@@ -134,26 +139,25 @@
       </div>
     </div>
 
-    <!-- Include marked.js for Markdown parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Include marked.js for Markdown parsing - Deferred -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/marked/marked.min.js" as="script">
+    <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- Include DOMPurify for sanitizing HTML -->
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <!-- Include DOMPurify for sanitizing HTML - Deferred -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js" as="script">
+    <script defer src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
     
-    <!-- Speech modules -->
+    <!-- Critical modules loaded first -->
+    <script type="module" src="/loading-coordinator.js"></script>
+    <script type="module" src="/main.js"></script>
+    
+    <!-- Chat and speech modules -->
+    <script type="module" src="/chat.js"></script>
+    <script type="module" src="/chat-cursor-effect.js"></script>
     <script type="module" src="/speech/audioManager.js"></script>
     <script type="module" src="/speech/speechSynthesis.js"></script>
     <script type="module" src="/speech/speechController.js"></script>
     <script type="module" src="/speech/realtimeSpeechController.js"></script>
-    
-    <!-- Loading coordinator -->
-    <script type="module" src="/loading-coordinator.js"></script>
-    
-    <!-- Chat cursor effect -->
-    <script type="module" src="/chat-cursor-effect.js"></script>
-    
-    <script type="module" src="/main.js"></script>
-    <script type="module" src="/chat.js"></script>
     <script>
 
       // Theme switching functionality
@@ -248,9 +252,8 @@
       });
 
       // rainbow text on click
-
-      $('h1').on('click', function() {
-        $(this).toggleClass('wordsClick');
+      document.querySelector('h1').addEventListener('click', function() {
+        this.classList.toggle('wordsClick');
       });
 
       var chatInput = document.querySelector('.chatbot .chat-input');

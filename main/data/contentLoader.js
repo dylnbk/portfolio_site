@@ -7,6 +7,42 @@ class ContentLoader {
   constructor() {
     this.cache = new Map();
     this.loadingStates = new Map();
+    this.dependenciesReady = false;
+    this.waitForDependencies();
+  }
+
+  /**
+   * Wait for external dependencies (marked, DOMPurify) to load
+   */
+  async waitForDependencies() {
+    const checkDependencies = () => {
+      return typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined';
+    };
+
+    if (checkDependencies()) {
+      this.dependenciesReady = true;
+      return;
+    }
+
+    // Poll for dependencies with timeout
+    const maxWait = 5000; // 5 seconds
+    const interval = 50;
+    let elapsed = 0;
+
+    return new Promise((resolve) => {
+      const check = setInterval(() => {
+        elapsed += interval;
+        if (checkDependencies()) {
+          this.dependenciesReady = true;
+          clearInterval(check);
+          resolve();
+        } else if (elapsed >= maxWait) {
+          console.error('Timeout waiting for marked/DOMPurify dependencies');
+          clearInterval(check);
+          resolve();
+        }
+      }, interval);
+    });
   }
 
   /**
@@ -124,6 +160,11 @@ class ContentLoader {
    * Load and parse a single markdown file
    */
   async loadMarkdownFile(filepath) {
+    // Ensure dependencies are ready
+    if (!this.dependenciesReady) {
+      await this.waitForDependencies();
+    }
+
     try {
       const response = await fetch(filepath);
       if (!response.ok) {

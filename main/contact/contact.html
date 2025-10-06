@@ -17,11 +17,7 @@
     <link type="image/png" sizes="32x32" rel="icon" href="love-32.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>dyln.bk</title>
   </head>
@@ -79,14 +75,37 @@
     <script type="module" src="/contact/chat-contact.js"></script>
     <script>
 
-      // fade in
+      // fade in - vanilla JavaScript animations
+      
+      // Helper function to animate opacity
+      const animateOpacity = (element, delay, duration = 2000) => {
+        if (!element) return;
+        setTimeout(() => {
+          element.style.transition = `opacity ${duration}ms ease`;
+          element.style.opacity = '1';
+        }, delay);
+      };
 
-      $('#heading').delay(100).animate({"opacity": "1"}, 2000);
-      $('#navbar').delay(1750).animate({"display": "block"}, 1000);
-      $('#toggle-button').delay(1000).animate({"opacity": "1"}, 1000);
-      $('.initial-message').delay(800).animate({"opacity": "1"}, 2500);
-      $('.material-symbols-outlined').delay(800).animate({"opacity": "1"}, 2500);
-      $('.chat-input').delay(800).animate({"opacity": "1"}, 2500);
+      // Helper function to animate display
+      const animateDisplay = (element, delay, duration = 1000) => {
+        if (!element) return;
+        setTimeout(() => {
+          element.style.transition = `all ${duration}ms ease`;
+          element.style.display = 'block';
+        }, delay);
+      };
+      
+      animateOpacity(document.getElementById('heading'), 100, 2000);
+      animateDisplay(document.getElementById('navbar'), 1750, 1000);
+      animateOpacity(document.getElementById('toggle-button'), 1000, 1000);
+      
+      const initialMessage = document.querySelector('.initial-message');
+      const materialSymbols = document.querySelector('.material-symbols-outlined');
+      const chatInput = document.querySelector('.chat-input');
+      
+      animateOpacity(initialMessage, 800, 2500);
+      animateOpacity(materialSymbols, 800, 2500);
+      animateOpacity(chatInput, 800, 2500);
 
       const mediaQuery = window.matchMedia('(min-width: 800px)');
 
@@ -114,9 +133,8 @@
       });
 
       // rainbow text on click
-
-      $('h1').on('click', function() {
-        $(this).toggleClass('wordsClick');
+      document.querySelector('h1').addEventListener('click', function() {
+        this.classList.toggle('wordsClick');
       });
 
       var chatInput = document.querySelector('.chatbot .chat-input');

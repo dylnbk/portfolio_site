@@ -92,18 +92,32 @@ class LoadingCoordinator {
     
     triggerContentAnimations() {
         // Coordinated animation phases with synchronized timing
+        // Vanilla JS implementation replacing jQuery animations
+        
+        // Helper function to animate opacity
+        const animateOpacity = (element, delay, duration = 1000) => {
+            if (!element) return;
+            setTimeout(() => {
+                element.style.transition = `opacity ${duration}ms ease`;
+                element.style.opacity = '1';
+            }, delay);
+        };
         
         // Phase 1: Content reveal (0ms delay) - Main heading appears first
-        $('#heading').delay(0).animate({"opacity": "1"}, 1000);
+        animateOpacity(document.getElementById('heading'), 0);
         
         // Phase 2: Navigation (200ms delay) - Navigation elements appear together
-        $('#navbar').delay(200).animate({"opacity": "1"}, 1000);
-        $('#toggle-button').delay(200).animate({"opacity": "1"}, 1000);
+        animateOpacity(document.getElementById('navbar'), 200);
+        animateOpacity(document.getElementById('toggle-button'), 200);
         
         // Phase 3: Interactive elements (400ms delay) - Chat components appear together
-        $('.initial-message').delay(400).animate({"opacity": "1"}, 1000);
-        $('.material-symbols-outlined').delay(400).animate({"opacity": "1"}, 1000);
-        $('.chat-input').delay(400).animate({"opacity": "1"}, 1000);
+        const initialMessage = document.querySelector('.initial-message');
+        const materialSymbols = document.querySelector('.material-symbols-outlined');
+        const chatInput = document.querySelector('.chat-input');
+        
+        animateOpacity(initialMessage, 400);
+        animateOpacity(materialSymbols, 400);
+        animateOpacity(chatInput, 400);
     }
     
     forceShowContent() {

@@ -471,8 +471,11 @@ const displayWelcomeMessage = () => {
     chatbox.appendChild(welcomeChatLi);
     chatbox.scrollTo(0, chatbox.scrollHeight);
     
-    // Fade in the welcome message using jQuery (matching site's fade-in pattern)
-    $(welcomeChatLi).delay(800).animate({"opacity": "1"}, 2500);
+    // Fade in the welcome message (matching site's fade-in pattern)
+    setTimeout(() => {
+        welcomeChatLi.style.transition = 'opacity 2500ms ease';
+        welcomeChatLi.style.opacity = '1';
+    }, 800);
 };
 
 /**
