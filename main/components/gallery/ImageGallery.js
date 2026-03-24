@@ -16,7 +16,7 @@ class ImageGallery {
     this.intersectionObserver = null;
     this.visibleItemsCount = 0;
     this.itemsPerBatch = 5; // Initial viewport items
-    this.layoutMode = 1; // 1, 2, or 3 columns
+    this.layoutMode = window.innerWidth >= 650 ? 3 : 1;
     
     this.init();
   }
@@ -40,6 +40,14 @@ class ImageGallery {
     this.setupLayoutSwitcher();
   }
 
+  shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   getPreviewUrl(image) {
     return image.thumbnail || image.imageFile || image.image || '';
   }
@@ -51,7 +59,7 @@ class ImageGallery {
   }
 
   async loadImages(images) {
-    this.images = images;
+    this.images = this.shuffleArray([...images]);
     const gridEl = this.container.querySelector('#imageGrid');
     
     if (images.length === 0) {
