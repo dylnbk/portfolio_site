@@ -1,7 +1,9 @@
 /**
  * Lightbox Component
- * Simple fullscreen image viewer for gallery sections
+ * Fullscreen image and video viewer for gallery sections
  */
+
+import { getYoutubeVideoId, getYoutubeEmbedUrl } from '../../utils/youtubeUtils.js';
 
 class Lightbox {
   constructor() {
@@ -16,7 +18,6 @@ class Lightbox {
   }
 
   init() {
-    // Create lightbox overlay
     this.overlay = document.createElement('div');
     this.overlay.className = 'lightbox-overlay';
     this.overlay.style.display = 'none';
@@ -28,6 +29,10 @@ class Lightbox {
         <button class="lightbox__next" title="Next">›</button>
         <div class="lightbox__content">
           <img class="lightbox__image" alt="">
+          <video class="lightbox__video" playsinline controls></video>
+          <div class="lightbox__embed-wrap">
+            <iframe class="lightbox__iframe" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+          </div>
           <div class="lightbox__info">
             <h3 class="lightbox__title"></h3>
             <p class="lightbox__description"></p>
@@ -49,17 +54,14 @@ class Lightbox {
     const prevBtn = this.overlay.querySelector('.lightbox__prev');
     const nextBtn = this.overlay.querySelector('.lightbox__next');
     
-    // Close handlers
     closeBtn.addEventListener('click', () => this.close());
     this.overlay.addEventListener('click', (e) => {
       if (e.target === this.overlay) this.close();
     });
     
-    // Navigation handlers
     prevBtn.addEventListener('click', () => this.showPrevious());
     nextBtn.addEventListener('click', () => this.showNext());
     
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!this.isOpen) return;
       
@@ -78,16 +80,22 @@ class Lightbox {
   }
 
   open(imageData, allImages = [], startIndex = 0) {
-    // Store only essential image data to minimize memory usage
-    this.images = allImages.map(img => ({
-      imageFile: img.imageFile || img.image,
-      title: img.title,
-      description: img.description,
-      date: img.date || img.createdDate,
-      alt: img.alt
-    }));
+    this.images = allImages.map(img => {
+      const youtubeId = getYoutubeVideoId(img.youtubeUrl || '');
+      return {
+        imageFile: img.imageFile || img.image,
+        thumbnail: img.thumbnail,
+        video: img.video || '',
+        youtubeUrl: img.youtubeUrl || '',
+        youtubeId,
+        title: img.title,
+        description: img.description,
+        date: img.date || img.createdDate || img.creationDate || img.dateTaken || img.releaseDate,
+        alt: img.alt
+      };
+    });
     this.currentIndex = startIndex;
-    this.currentImage = imageData;
+    this.currentImage = this.images[this.currentIndex];
     
     this.updateImage();
     this.updateNavigation();
@@ -95,10 +103,8 @@ class Lightbox {
     this.overlay.style.display = 'flex';
     this.isOpen = true;
     
-    // Prevent body scrolling
     document.body.style.overflow = 'hidden';
     
-    // Fade in animation
     setTimeout(() => {
       this.overlay.classList.add('lightbox-overlay--active');
     }, 10);
@@ -112,7 +118,6 @@ class Lightbox {
       this.isOpen = false;
       document.body.style.overflow = '';
       
-      // Critical memory cleanup
       this.cleanupImageMemory();
       this.clearImageReferences();
     }, 300);
@@ -120,8 +125,7 @@ class Lightbox {
 
   showPrevious() {
     if (this.currentIndex > 0) {
-      // Cleanup current image before switching
-      this.cleanupCurrentImage();
+      this.cleanupCurrentMedia();
       
       this.currentIndex--;
       this.currentImage = this.images[this.currentIndex];
@@ -132,8 +136,7 @@ class Lightbox {
 
   showNext() {
     if (this.currentIndex < this.images.length - 1) {
-      // Cleanup current image before switching
-      this.cleanupCurrentImage();
+      this.cleanupCurrentMedia();
       
       this.currentIndex++;
       this.currentImage = this.images[this.currentIndex];
@@ -142,55 +145,107 @@ class Lightbox {
     }
   }
 
+  resetLightboxMedia() {
+    const img = this.overlay.querySelector('.lightbox__image');
+    const video = this.overlay.querySelector('.lightbox__video');
+    const embedWrap = this.overlay.querySelector('.lightbox__embed-wrap');
+    const iframe = this.overlay.querySelector('.lightbox__iframe');
+    if (iframe) {
+      iframe.removeAttribute('src');
+      iframe.src = '';
+    }
+    if (embedWrap) {
+      embedWrap.style.display = 'none';
+    }
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+    }
+    if (img) {
+      img.src = '';
+      img.removeAttribute('src');
+    }
+  }
+
   updateImage() {
     if (!this.currentImage) return;
     
     const img = this.overlay.querySelector('.lightbox__image');
+    const video = this.overlay.querySelector('.lightbox__video');
+    const embedWrap = this.overlay.querySelector('.lightbox__embed-wrap');
+    const iframe = this.overlay.querySelector('.lightbox__iframe');
     const title = this.overlay.querySelector('.lightbox__title');
     const description = this.overlay.querySelector('.lightbox__description');
-    const date = this.overlay.querySelector('.lightbox__date');
+    const dateEl = this.overlay.querySelector('.lightbox__date');
     const counter = this.overlay.querySelector('.lightbox__counter');
     
-    // Store reference to current image element for cleanup
     this.currentImageElement = img;
     
-    // Clear previous image source to free memory before loading new one
-    if (img.src) {
-      img.src = '';
-      // Force garbage collection opportunity
-      img.removeAttribute('src');
-    }
+    this.resetLightboxMedia();
     
-    // Add loading class for blur effect
-    img.classList.add('lightbox__image--loading');
-    img.classList.remove('lightbox__image--loaded');
+    const youtubeId = this.currentImage.youtubeId;
+    const videoUrl = this.currentImage.video;
+    const previewUrl = this.currentImage.thumbnail || this.currentImage.imageFile || this.currentImage.image;
     
-    // Update image with memory-conscious loading
-    const imageUrl = this.currentImage.imageFile || this.currentImage.image;
-    if (imageUrl) {
-      img.src = imageUrl;
-      img.alt = this.currentImage.title || this.currentImage.alt || '';
-      
-      // Remove loading class when image loads
-      img.onload = () => {
-        img.classList.remove('lightbox__image--loading');
-        img.classList.add('lightbox__image--loaded');
+    if (youtubeId && iframe && embedWrap) {
+      img.style.display = 'none';
+      img.classList.remove('lightbox__image--loading', 'lightbox__image--loaded');
+      video.style.display = 'none';
+      video.classList.remove('lightbox__image--loading', 'lightbox__image--loaded');
+      embedWrap.style.display = 'block';
+      iframe.src = getYoutubeEmbedUrl(youtubeId);
+      iframe.classList.add('lightbox__image--loaded');
+      iframe.classList.remove('lightbox__image--loading');
+    } else if (videoUrl) {
+      if (embedWrap) embedWrap.style.display = 'none';
+      if (iframe) iframe.removeAttribute('src');
+      img.style.display = 'none';
+      img.classList.remove('lightbox__image--loading', 'lightbox__image--loaded');
+      video.style.display = 'block';
+      video.classList.add('lightbox__image--loading');
+      video.classList.remove('lightbox__image--loaded');
+      if (previewUrl) {
+        video.poster = previewUrl;
+      }
+      video.src = videoUrl;
+      video.onloadeddata = () => {
+        video.classList.remove('lightbox__image--loading');
+        video.classList.add('lightbox__image--loaded');
       };
+    } else {
+      if (embedWrap) embedWrap.style.display = 'none';
+      if (iframe) iframe.removeAttribute('src');
+      video.style.display = 'none';
+      video.classList.remove('lightbox__image--loading', 'lightbox__image--loaded');
+      img.style.display = 'block';
+      
+      img.classList.add('lightbox__image--loading');
+      img.classList.remove('lightbox__image--loaded');
+      
+      const imageUrl = previewUrl;
+      if (imageUrl) {
+        img.src = imageUrl;
+        img.alt = this.currentImage.title || this.currentImage.alt || '';
+        
+        img.onload = () => {
+          img.classList.remove('lightbox__image--loading');
+          img.classList.add('lightbox__image--loaded');
+        };
+      }
     }
     
-    // Update text content
     title.textContent = this.currentImage.title || 'Untitled';
     description.textContent = this.currentImage.description || '';
     
-    // Format and display date
-    if (this.currentImage.date || this.currentImage.createdDate) {
-      const dateObj = new Date(this.currentImage.date || this.currentImage.createdDate);
-      date.textContent = dateObj.toLocaleDateString();
+    const rawDate = this.currentImage.date;
+    if (rawDate) {
+      const dateObj = new Date(rawDate);
+      dateEl.textContent = Number.isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString();
     } else {
-      date.textContent = '';
+      dateEl.textContent = '';
     }
     
-    // Update counter
     if (this.images.length > 1) {
       counter.textContent = `${this.currentIndex + 1} of ${this.images.length}`;
     } else {
@@ -202,13 +257,11 @@ class Lightbox {
     const prevBtn = this.overlay.querySelector('.lightbox__prev');
     const nextBtn = this.overlay.querySelector('.lightbox__next');
     
-    // Show/hide navigation buttons based on current position
     prevBtn.style.display = this.currentIndex > 0 ? 'block' : 'none';
     nextBtn.style.display = this.currentIndex < this.images.length - 1 ? 'block' : 'none';
   }
 
   destroy() {
-    // Comprehensive cleanup before destroying
     this.cleanupImageMemory();
     this.clearImageReferences();
     
@@ -218,33 +271,55 @@ class Lightbox {
     this.isOpen = false;
     document.body.style.overflow = '';
     
-    // Clear all references
     this.overlay = null;
     this.currentImageElement = null;
   }
 
-  /**
-   * Clean up current image to free memory when switching images
-   */
-  cleanupCurrentImage() {
-    if (this.currentImageElement && this.currentImageElement.src) {
-      this.currentImageElement.src = '';
-      this.currentImageElement.removeAttribute('src');
+  cleanupCurrentMedia() {
+    const video = this.overlay ? this.overlay.querySelector('.lightbox__video') : null;
+    const img = this.overlay ? this.overlay.querySelector('.lightbox__image') : null;
+    const iframe = this.overlay ? this.overlay.querySelector('.lightbox__iframe') : null;
+    const embedWrap = this.overlay ? this.overlay.querySelector('.lightbox__embed-wrap') : null;
+    if (iframe) {
+      iframe.removeAttribute('src');
+      iframe.src = '';
+    }
+    if (embedWrap) {
+      embedWrap.style.display = 'none';
+    }
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+    }
+    if (img && img.src) {
+      img.src = '';
+      img.removeAttribute('src');
     }
   }
 
-  /**
-   * Comprehensive memory cleanup for images
-   */
   cleanupImageMemory() {
     const img = this.overlay ? this.overlay.querySelector('.lightbox__image') : null;
+    const video = this.overlay ? this.overlay.querySelector('.lightbox__video') : null;
+    const iframe = this.overlay ? this.overlay.querySelector('.lightbox__iframe') : null;
+    const embedWrap = this.overlay ? this.overlay.querySelector('.lightbox__embed-wrap') : null;
+    if (iframe) {
+      iframe.removeAttribute('src');
+      iframe.src = '';
+    }
+    if (embedWrap) {
+      embedWrap.style.display = 'none';
+    }
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+    }
     if (img) {
-      // Clear the image source to free memory
       img.src = '';
       img.removeAttribute('src');
       img.alt = '';
       
-      // Clear any cached image data
       if (img.complete) {
         img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       }
@@ -252,23 +327,17 @@ class Lightbox {
     this.currentImageElement = null;
   }
 
-  /**
-   * Clear all image references to help garbage collection
-   */
   clearImageReferences() {
-    // Clear the images array to free memory
     this.images = [];
     this.currentImage = null;
     this.currentIndex = -1;
     
-    // Force garbage collection opportunity
     if (window.gc && typeof window.gc === 'function') {
       setTimeout(() => window.gc(), 100);
     }
   }
 }
 
-// Create global lightbox instance
 window.lightbox = new Lightbox();
 
 export default Lightbox;

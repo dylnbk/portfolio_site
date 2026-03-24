@@ -218,8 +218,12 @@ class ContentLoader {
         
         // Sort by date (newest first)
         content.sort((a, b) => {
-          const dateA = new Date(a.releaseDate || a.date || a.createdDate || 0);
-          const dateB = new Date(b.releaseDate || b.date || b.createdDate || 0);
+          const dateA = new Date(
+            a.releaseDate || a.date || a.createdDate || a.creationDate || a.dateTaken || 0
+          );
+          const dateB = new Date(
+            b.releaseDate || b.date || b.createdDate || b.creationDate || b.dateTaken || 0
+          );
           return dateB - dateA;
         });
         

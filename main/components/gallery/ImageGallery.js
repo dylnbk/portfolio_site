@@ -5,6 +5,7 @@
 
 import LoadingSpinner from '../shared/LoadingSpinner.js';
 import Lightbox from './Lightbox.js';
+import { getYoutubeVideoId, getYoutubeThumbnailUrl } from '../../utils/youtubeUtils.js';
 
 class ImageGallery {
   constructor(container, contentType) {
@@ -39,6 +40,16 @@ class ImageGallery {
     this.setupLayoutSwitcher();
   }
 
+  getPreviewUrl(image) {
+    return image.thumbnail || image.imageFile || image.image || '';
+  }
+
+  /** Grid poster for art pieces with YouTube: custom image if set, else YouTube default thumb. */
+  getYoutubeGridThumbUrl(image, videoId) {
+    const custom = this.getPreviewUrl(image);
+    return custom || getYoutubeThumbnailUrl(videoId);
+  }
+
   async loadImages(images) {
     this.images = images;
     const gridEl = this.container.querySelector('#imageGrid');
@@ -48,37 +59,8 @@ class ImageGallery {
       return;
     }
 
-    // Preload aspect ratios for initial batch (non-blocking)
-    this.preloadAspectRatios(images.slice(0, this.itemsPerBatch));
-
-    // Create initial DOM elements for viewport-based rendering
     this.renderInitialBatch(gridEl);
-    
-    // Setup intersection observer for progressive loading
     this.setupIntersectionObserver();
-  }
-
-  /**
-   * Preload aspect ratios for images to improve placeholder accuracy
-   * Non-blocking, runs in background
-   */
-  preloadAspectRatios(images) {
-    images.forEach((image, index) => {
-      if (!image.aspectRatio) {
-        const img = new Image();
-        img.onload = () => {
-          const ratio = `${img.naturalWidth}/${img.naturalHeight}`;
-          image.aspectRatio = ratio;
-          
-          // Update the DOM element if it exists
-          const itemEl = this.container.querySelector(`[data-index="${index}"] .gallery-item__image-container`);
-          if (itemEl) {
-            itemEl.style.aspectRatio = ratio;
-          }
-        };
-        img.src = image.imageFile || image.image;
-      }
-    });
   }
 
   renderInitialBatch(gridEl) {
@@ -91,10 +73,8 @@ class ImageGallery {
     gridEl.innerHTML = imageHTML;
     this.visibleItemsCount = initialItems;
 
-    // Add click handlers for rendered items
     this.addEventListeners(gridEl, 0, initialItems);
 
-    // Create placeholder elements for remaining items
     if (this.images.length > initialItems) {
       const remainingHTML = this.images.slice(initialItems).map((image, index) => {
         const actualIndex = index + initialItems;
@@ -106,20 +86,61 @@ class ImageGallery {
   }
 
   createImageHTML(image, index, isInitial = false) {
-    const imageUrl = image.imageFile || image.image;
-    // Default aspect ratio if not specified (can be customized per image)
-    const aspectRatio = image.aspectRatio || '4/3';
-    
+    const previewUrl = this.getPreviewUrl(image);
+    const videoUrl = image.video;
+    const youtubeId =
+      this.contentType === 'art' ? getYoutubeVideoId(image.youtubeUrl) : null;
+
+    let mediaInner;
+    if (youtubeId) {
+      const thumbUrl = this.getYoutubeGridThumbUrl(image, youtubeId);
+      mediaInner = this.createYoutubePosterElement(thumbUrl, image.title, isInitial);
+    } else if (videoUrl) {
+      mediaInner = this.createVideoElement(videoUrl, previewUrl, image.title, isInitial);
+    } else {
+      mediaInner = this.createPictureElement(previewUrl, image.title, isInitial);
+    }
+
+    const itemClass = youtubeId ? 'gallery-item gallery-item--youtube' : 'gallery-item';
+
     return `
-      <div class="gallery-item" data-index="${index}">
-        <div class="gallery-item__image-container" style="aspect-ratio: ${aspectRatio};">
-          ${this.createPictureElement(imageUrl, image.title, isInitial)}
+      <div class="${itemClass}" data-index="${index}">
+        <div class="gallery-item__image-container">
+          ${mediaInner}
         </div>
       </div>
     `;
   }
 
+  createYoutubePosterElement(imageUrl, title, isInitial = false) {
+    const url = imageUrl || this.getPlaceholderImage();
+    const alt = title ? `${title} (YouTube)` : 'YouTube video';
+    const loadingClass = isInitial ? 'gallery-item__image--visible' : 'gallery-item__image--placeholder';
+
+    return `
+      <div class="gallery-item__blur-wrapper gallery-item__blur-wrapper--youtube">
+        <img
+          class="gallery-item__image ${loadingClass}"
+          ${isInitial ? `src="${url}"` : ''}
+          data-src="${url}"
+          alt="${alt}"
+          loading="lazy"
+          decoding="async"
+          onload="this.classList.remove('gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.gallery-item__blur-wrapper')?.classList.add('gallery-item__blur-wrapper--loaded'); this.closest('.image-gallery')?.dispatchEvent(new CustomEvent('imageLoaded', { detail: { img: this } }));"
+          onerror="this.src='${this.getPlaceholderImage()}'; this.classList.add('gallery-item__image--error');"
+        >
+        <span class="gallery-item__yt-play" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="rgba(0,0,0,0.55)"/>
+            <path d="M22 18L40 28L22 38V18Z" fill="white"/>
+          </svg>
+        </span>
+      </div>
+    `;
+  }
+
   createPictureElement(imageUrl, title, isInitial = false) {
+    const url = imageUrl || this.getPlaceholderImage();
     const alt = title || 'Gallery image';
     const loadingClass = isInitial ? 'gallery-item__image--visible' : 'gallery-item__image--placeholder';
     
@@ -127,8 +148,8 @@ class ImageGallery {
       <div class="gallery-item__blur-wrapper">
         <img
           class="gallery-item__image ${loadingClass}"
-          ${isInitial ? `src="${imageUrl}"` : ''}
-          data-src="${imageUrl}"
+          ${isInitial ? `src="${url}"` : ''}
+          data-src="${url}"
           alt="${alt}"
           loading="lazy"
           decoding="async"
@@ -139,23 +160,46 @@ class ImageGallery {
     `;
   }
 
+  createVideoElement(videoUrl, posterUrl, title, isInitial = false) {
+    const loadingClass = isInitial ? 'gallery-item__image--visible' : 'gallery-item__image--placeholder';
+    const posterAttr = posterUrl ? `poster="${posterUrl}"` : '';
+    const srcAttr = isInitial && videoUrl ? `src="${videoUrl}"` : '';
+    const dataSrcAttr = videoUrl ? `data-src="${videoUrl}"` : '';
+
+    return `
+      <div class="gallery-item__blur-wrapper">
+        <video
+          class="gallery-item__image gallery-item__image--video ${loadingClass}"
+          ${srcAttr}
+          ${dataSrcAttr}
+          ${posterAttr}
+          muted
+          playsinline
+          preload="metadata"
+          aria-label="${title || 'Gallery video'}"
+          onloadeddata="this.classList.remove('gallery-item__image--placeholder'); this.classList.add('gallery-item__image--loaded'); this.closest('.gallery-item__blur-wrapper')?.classList.add('gallery-item__blur-wrapper--loaded');"
+        ></video>
+      </div>
+    `;
+  }
 
   addEventListeners(gridEl, startIndex, endIndex) {
     const items = gridEl.querySelectorAll('.gallery-item');
     
     for (let i = startIndex; i < Math.min(endIndex, items.length); i++) {
       const itemEl = items[i];
-      const imageEl = itemEl.querySelector('.gallery-item__image');
-      const index = parseInt(itemEl.dataset.index);
+      const index = parseInt(itemEl.dataset.index, 10);
       
-      if (imageEl && !itemEl.classList.contains('gallery-item--placeholder')) {
-        const openLightbox = () => {
-          this.openLightbox(index);
-        };
-        
-        imageEl.addEventListener('click', openLightbox);
-        
-        // Enhanced error handling
+      if (itemEl.classList.contains('gallery-item--placeholder')) continue;
+
+      const openLightbox = () => {
+        this.openLightbox(index);
+      };
+
+      itemEl.addEventListener('click', openLightbox);
+
+      const imageEl = itemEl.querySelector('.gallery-item__image');
+      if (imageEl && imageEl.tagName === 'IMG') {
         imageEl.addEventListener('error', () => {
           imageEl.src = this.getPlaceholderImage();
           imageEl.alt = 'Image not found';
@@ -167,24 +211,25 @@ class ImageGallery {
 
   setupIntersectionObserver() {
     if ('IntersectionObserver' in window) {
-      // Single observer for both placeholder items and image loading
       this.intersectionObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const target = entry.target;
             
-            // Handle placeholder gallery items
             if (target.classList.contains('gallery-item--placeholder')) {
-              const index = parseInt(target.dataset.index);
+              const index = parseInt(target.dataset.index, 10);
               this.renderGalleryItem(target, index);
               this.intersectionObserver.unobserve(target);
             }
             
-            // Handle image loading
             if (target.classList.contains('gallery-item__image--placeholder')) {
-              const imageUrl = target.dataset.src;
-              if (imageUrl) {
-                target.src = imageUrl;
+              const mediaUrl = target.dataset.src;
+              if (mediaUrl) {
+                if (target.tagName === 'VIDEO') {
+                  target.src = mediaUrl;
+                } else {
+                  target.src = mediaUrl;
+                }
                 target.classList.remove('gallery-item__image--placeholder');
                 this.intersectionObserver.unobserve(target);
               }
@@ -192,17 +237,15 @@ class ImageGallery {
           }
         });
       }, {
-        rootMargin: '200px', // Load items 200px before they become visible
+        rootMargin: '200px',
         threshold: 0.1
       });
 
-      // Observe all placeholder items and images
       this.container.querySelectorAll('.gallery-item--placeholder, .gallery-item__image--placeholder').forEach(element => {
         this.intersectionObserver.observe(element);
       });
     }
   }
-
 
   renderGalleryItem(placeholderEl, index) {
     const image = this.images[index];
@@ -213,19 +256,15 @@ class ImageGallery {
     tempDiv.innerHTML = imageHTML;
     const newItem = tempDiv.firstElementChild;
 
-    // Replace placeholder with actual gallery item
     placeholderEl.parentNode.replaceChild(newItem, placeholderEl);
     
-    // Add event listeners for the new item
     this.addEventListeners(newItem.parentNode, index, index + 1);
     
-    // Observe the new image for lazy loading
-    const newImg = newItem.querySelector('.gallery-item__image--placeholder');
-    if (newImg && this.intersectionObserver) {
-      this.intersectionObserver.observe(newImg);
+    const newMedia = newItem.querySelector('.gallery-item__image--placeholder');
+    if (newMedia && this.intersectionObserver) {
+      this.intersectionObserver.observe(newMedia);
     }
   }
-
 
   openLightbox(index) {
     if (index < 0 || index >= this.images.length) return;
@@ -253,7 +292,6 @@ class ImageGallery {
   }
 
   getPlaceholderImage() {
-    // Return a simple placeholder SVG
     return 'data:image/svg+xml;base64,' + btoa(`
       <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
         <rect width="100%" height="100%" fill="#f0f0f0"/>
@@ -274,7 +312,6 @@ class ImageGallery {
     }
   }
 
-  // Method to filter images by tag
   filterByTag(tag) {
     const gridEl = this.container.querySelector('#imageGrid');
     const items = gridEl.querySelectorAll('.gallery-item');
@@ -286,7 +323,6 @@ class ImageGallery {
     });
   }
 
-  // Method to get all unique tags from images
   getAllTags() {
     const allTags = new Set();
     this.images.forEach(image => {
@@ -297,13 +333,10 @@ class ImageGallery {
     return Array.from(allTags).sort();
   }
 
-  // Method to add tag filter UI - disabled for minimal design
   addTagFilter() {
-    // Keep minimal - no filter UI
     return;
   }
 
-  // Setup layout switcher functionality
   setupLayoutSwitcher() {
     const layoutSwitcher = this.container.querySelector('#layoutSwitcher');
     if (layoutSwitcher) {
@@ -313,16 +346,12 @@ class ImageGallery {
     }
   }
 
-
-  // Cycle between 1, 2, and 3 column layouts
   cycleLayoutMode() {
     const layoutSwitcher = this.container.querySelector('#layoutSwitcher');
     
-    // Add spin animation
     if (layoutSwitcher) {
       layoutSwitcher.classList.add('gallery-layout-switcher--spinning');
       
-      // Remove the spinning class after animation completes
       setTimeout(() => {
         layoutSwitcher.classList.remove('gallery-layout-switcher--spinning');
       }, 500);
@@ -332,13 +361,10 @@ class ImageGallery {
     this.updateGridLayout();
   }
 
-  // Update the grid layout class
   updateGridLayout() {
     const gridEl = this.container.querySelector('#imageGrid');
     if (gridEl) {
-      // Remove all layout classes
       gridEl.classList.remove('gallery-layout--1-col', 'gallery-layout--2-col', 'gallery-layout--3-col');
-      // Add the current layout class
       gridEl.classList.add(`gallery-layout--${this.layoutMode}-col`);
     }
   }

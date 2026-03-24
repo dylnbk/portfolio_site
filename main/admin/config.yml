@@ -38,11 +38,13 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Creation Date", name: "creationDate", widget: "datetime" }
-      - { label: "Medium", name: "medium", widget: "select", options: ["Digital", "Oil", "Acrylic", "Watercolor", "Pencil", "Charcoal", "Mixed Media", "Photography", "Sculpture", "Other"] }
+      - { label: "Medium", name: "medium", widget: "select", options: ["Digital", "Oil", "Acrylic", "Watercolor", "Pencil", "Charcoal", "Mixed Media", "Photography", "Sculpture", "Video", "Other"] }
       - { label: "Dimensions", name: "dimensions", widget: "string", required: false, hint: "e.g., 24x36 inches or 1920x1080 pixels" }
       - { label: "Description", name: "description", widget: "text", required: false }
-      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Main image for still works; for video works, use as poster or set Thumbnail instead" }
       - { label: "Thumbnail", name: "thumbnail", widget: "image", required: false }
+      - { label: "Video", name: "video", widget: "file", required: false, hint: "Optional .mp4 or .webm; keep files small for web. Use Image or Thumbnail as grid poster." }
+      - { label: "YouTube URL", name: "youtubeUrl", widget: "string", required: false, hint: "Optional embed: youtube.com/watch, youtu.be, or shorts. Uses Image/Thumbnail as poster if set; otherwise YouTube thumbnail." }
       - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Available for Sale", name: "forSale", widget: "boolean", default: false }
       - { label: "Price", name: "price", widget: "string", required: false }
