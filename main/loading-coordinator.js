@@ -10,9 +10,7 @@ class LoadingCoordinator {
             'dom',
             // 'ascii-background', // REMOVED: ASCII background now lazy loads after critical content
             'portfolio-content',
-            'chat-init',
-            'speech-controllers',
-            'chat-cursor-effect'
+            'chat-init'
         ];
         this.loadingScreen = null;
         this.isLoaded = false;

@@ -5,8 +5,6 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- DNS prefetch for external resources (removed preconnect for GA to delay it) -->
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <style>
       /* Critical CSS for initial render */
       /* Loading screen to prevent content flash - optimized for faster fade */
@@ -58,16 +56,15 @@
     <meta property="og:description" content="Explore Dylan's creative work including music, art, photography, and code projects">
     <meta property="og:url" content="https://dylnbk.page">
     
-    <!-- Performance and Font Loading - Optimized with display=swap for better FCP -->
+    <!-- display=swap keeps web fonts visible after load; optional was skipping them too often -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Using media="print" trick to async load fonts, then switching to "all" -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap" media="print" onload="this.media='all'">
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Inconsolata:wght@200&family=Ropa+Sans&display=swap">
     </noscript>
     
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>dyln.bk</title>
   </head>
   
@@ -98,9 +95,9 @@
           <li><a href="#" onclick="return false;">PHOTOS</a></li>
           <li><a href="#" onclick="return false;">CODE</a></li>
           <li><a href="#" onclick="return false;">CONTACT</a></li>
-          <li id="closebtn"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+          <li id="closebtn"><button type="button" class="closebtn" onclick="closeNav()" aria-label="Close navigation">&times;</button></li>
         </ul>
-        <span id="toggle-button" style="opacity: 0;"><img src="menu.svg" alt="Menu" onclick="openNav()"></span>
+        <span id="toggle-button" style="opacity: 0;"><img src="menu.svg" width="26" height="26" alt="Menu" onclick="openNav()"></span>
 
       </div>
 
@@ -117,7 +114,7 @@
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
               </svg>
             </span>
-            <span><img src="send.svg" alt="Send" id="send-btn"></span>
+            <span><img src="send.svg" width="35" height="35" alt="Send" id="send-btn"></span>
           </div>
         </div>
         <form name="contact" method="POST" action="/contact/contact" data-netlify="true">
@@ -131,27 +128,11 @@
       </div>
     </div>
 
-    <!-- Include marked.js for Markdown parsing - Lazy loaded when needed -->
-    <!-- Removed preload to save bandwidth, will load on-demand -->
-    
-    <!-- Include DOMPurify for sanitizing HTML - Lazy loaded when needed -->
-    <!-- Removed preload to save bandwidth, will load on-demand -->
-    
-    <!-- Critical modules loaded first with modulepreload hints -->
     <link rel="modulepreload" href="/loading-coordinator.js">
     <link rel="modulepreload" href="/main.js">
     <script type="module" src="/loading-coordinator.js"></script>
     <script type="module" src="/main.js"></script>
-    
-    <!-- Chat and speech modules - preloaded but not blocking -->
-    <link rel="modulepreload" href="/chat.js">
-    <link rel="modulepreload" href="/chat-cursor-effect.js">
     <script type="module" src="/chat.js"></script>
-    <script type="module" src="/chat-cursor-effect.js"></script>
-    <script type="module" src="/speech/audioManager.js"></script>
-    <script type="module" src="/speech/speechSynthesis.js"></script>
-    <script type="module" src="/speech/speechController.js"></script>
-    <script type="module" src="/speech/realtimeSpeechController.js"></script>
     <script>
 
       // Theme switching functionality
@@ -297,37 +278,32 @@
           }
         });
 
-      // Lazy load Google Analytics after user interaction or 3 seconds
-      // This reduces initial JavaScript execution by ~150ms and saves 52.9 KiB on initial load
       let gaLoaded = false;
       function loadGoogleAnalytics() {
         if (gaLoaded) return;
         gaLoaded = true;
         
-        // Initialize dataLayer
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         window.gtag = gtag;
         gtag('js', new Date());
         gtag('config', 'G-RW9L5MPTH9');
         
-        // Load GA script
         const script = document.createElement('script');
         script.async = true;
         script.src = 'https://www.googletagmanager.com/gtag/js?id=G-RW9L5MPTH9';
         document.head.appendChild(script);
-        
-        console.log('Google Analytics loaded');
       }
       
-      // Load GA on first user interaction
       const interactionEvents = ['mousedown', 'touchstart', 'keydown', 'scroll'];
       interactionEvents.forEach(event => {
         window.addEventListener(event, loadGoogleAnalytics, { once: true, passive: true });
       });
       
-      // Fallback: Load after 3 seconds if no interaction
-      setTimeout(loadGoogleAnalytics, 3000);
+      window.addEventListener('load', () => {
+        const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 500));
+        idle(() => loadGoogleAnalytics(), { timeout: 12000 });
+      });
     
     </script>
 

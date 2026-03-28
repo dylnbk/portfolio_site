@@ -19,6 +19,9 @@ module.exports = defineConfig({
             if (id.includes('three')) {
               return 'vendor-three';
             }
+            if (id.includes('marked') || id.includes('dompurify')) {
+              return 'vendor-markdown';
+            }
             // OpenAI should be lazy loaded with chat
             if (id.includes('openai')) {
               return 'vendor-openai';

@@ -8,11 +8,13 @@ const sendChatBtn = document.querySelector("#send-btn");
 
 let userMessage = null;
 
-// Preload external dependencies (marked.js, DOMPurify) when chat module loads
-// This ensures they're ready when user sends a message
-loadExternalDependencies().catch(err => {
-  console.warn('Failed to preload chat dependencies:', err);
-});
+// Preload markdown deps after first paint (idle) so they do not compete with LCP
+const scheduleIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+scheduleIdle(() => {
+  loadExternalDependencies().catch((err) => {
+    console.warn('Failed to preload chat dependencies:', err);
+  });
+}, { timeout: 5000 });
 let messages = [{
     role: "system",
     content: textSystemPrompt
@@ -33,7 +35,7 @@ let chatCursorEffect = null;
  * @param {string} className - The class name to apply ("incoming" or "outgoing").
  * @returns {HTMLElement} - The constructed <li> element.
  */
-const createChatLi = (message, className, { isHtml = false } = {}) => {
+const createChatLi = (message, className, { isHtml = false, skipCursorEffect = false } = {}) => {
     const chatLi = document.createElement("li");
     chatLi.classList.add("chat", className);
     const messageContent = document.createElement("div");
@@ -51,8 +53,7 @@ const createChatLi = (message, className, { isHtml = false } = {}) => {
 
     chatLi.appendChild(messageContent);
     
-    // Apply cursor effect to the new chat element
-    if (chatCursorEffect) {
+    if (!skipCursorEffect && chatCursorEffect) {
         chatCursorEffect.applyCursorEffect(chatLi);
     }
     
@@ -296,58 +297,54 @@ chatInput.addEventListener("keydown", (e) => {
  */
 sendChatBtn.addEventListener("click", handleChat);
 
+function notifyChatInitReady() {
+    if (window.loadingCoordinator) {
+        window.loadingCoordinator.componentReady('chat-init');
+    }
+}
+
 /**
- * Initialize speech controllers and cursor effect when DOM is loaded
+ * Cursor + speech: load after first paint so they do not block LCP / loading screen.
  */
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait a bit for all modules to load
-    setTimeout(() => {
-        try {
-            // Initialize new Realtime Speech Controller (primary)
-            if (window.RealtimeSpeechController) {
-                realtimeSpeechController = new window.RealtimeSpeechController();
-                console.log('Realtime speech controller initialized successfully');
-            } else {
-                console.warn('RealtimeSpeechController not available');
+async function initChatEnhancements() {
+    try {
+        await import('./chat-cursor-effect.js');
+        if (window.ChatCursorEffect) {
+            chatCursorEffect = new window.ChatCursorEffect();
+            window.chatCursorEffect = chatCursorEffect;
+            const welcome = document.querySelector('li.welcome-message');
+            if (welcome) {
+                chatCursorEffect.applyCursorEffect(welcome);
             }
-
-            // Initialize legacy speech controller as fallback
-            if (window.SpeechController) {
-                speechController = new window.SpeechController(handleSpeechMessage);
-                console.log('Legacy speech controller initialized as fallback');
-            } else {
-                console.warn('Legacy SpeechController not available');
-            }
-
-            // Initialize cursor effect system
-            if (window.ChatCursorEffect) {
-                chatCursorEffect = new window.ChatCursorEffect();
-                // Update global reference for other modules
-                window.chatCursorEffect = chatCursorEffect;
-                console.log('Chat cursor effect initialized successfully');
-            } else {
-                console.warn('ChatCursorEffect not available');
-            }
-            
-            // Display welcome message after cursor effect is initialized
-            displayWelcomeMessage();
-            
-            // Notify loading coordinator that chat, speech controllers, and cursor effect are ready
-            notifyLoadingCoordinator();
-        } catch (error) {
-            console.error('Failed to initialize controllers:', error);
-            // Ensure chat still works without enhancements
-            speechController = null;
-            realtimeSpeechController = null;
-            chatCursorEffect = null;
-            
-            // Still display welcome message even if enhancements fail
-            displayWelcomeMessage();
-            
-            // Still notify loading coordinator even if enhancements fail
-            notifyLoadingCoordinator();
         }
-    }, 500);
+    } catch (e) {
+        console.warn('Chat cursor effect failed to load:', e);
+    }
+
+    try {
+        await import('./speech/audioManager.js');
+        await import('./speech/speechSynthesis.js');
+        await import('./speech/speechController.js');
+        await import('./speech/realtimeSpeechController.js');
+        if (window.RealtimeSpeechController) {
+            realtimeSpeechController = new window.RealtimeSpeechController();
+        }
+        if (window.SpeechController) {
+            speechController = new window.SpeechController(handleSpeechMessage);
+        }
+    } catch (e) {
+        console.warn('Speech modules failed to load:', e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    displayWelcomeMessage();
+    notifyChatInitReady();
+
+    const runIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 300));
+    runIdle(() => {
+        initChatEnhancements().catch((err) => console.error('initChatEnhancements:', err));
+    }, { timeout: 4000 });
 });
 
 /**
@@ -356,33 +353,10 @@ document.addEventListener('DOMContentLoaded', () => {
 const displayWelcomeMessage = () => {
     const welcomeMessage = "Hi! Welcome to Dylan's site. I can answer any questions you have about Dylan, his skills, and experience. You can use text mode by simply writing normal messages, or have a realtime speech conversation by pressing the microphone icon.";
     
-    // Create welcome message as incoming (assistant) message
-    const welcomeChatLi = createChatLi(welcomeMessage, "incoming");
-    
-    // Add welcome-message class for initial styling
+    const welcomeChatLi = createChatLi(welcomeMessage, "incoming", { skipCursorEffect: true });
     welcomeChatLi.classList.add("welcome-message");
-    
-    // Append to chatbox
     chatbox.appendChild(welcomeChatLi);
     chatbox.scrollTo(0, chatbox.scrollHeight);
-    
-    // Fade in the welcome message (matching site's fade-in pattern)
-    setTimeout(() => {
-        welcomeChatLi.style.transition = 'opacity 2500ms ease';
-        welcomeChatLi.style.opacity = '1';
-    }, 800);
-};
-
-/**
- * Notify loading coordinator that chat components are ready
- */
-const notifyLoadingCoordinator = () => {
-    if (window.loadingCoordinator) {
-        window.loadingCoordinator.componentReady('chat-init');
-        window.loadingCoordinator.componentReady('speech-controllers');
-        window.loadingCoordinator.componentReady('chat-cursor-effect');
-        console.log('Chat components ready - loading coordinator notified');
-    }
 };
 
 // Make chat functions globally accessible for RealtimeSpeechController

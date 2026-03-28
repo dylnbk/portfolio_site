@@ -49,6 +49,8 @@
   --clr-cursor-hover-base: #ffffff;
   --clr-cursor-hover-accent: #00ffff;
   --clr-cursor-glow: rgba(255, 255, 255, 0.8);
+
+  --line-draw-width: 650px;
 }
 
 /* Light mode */
@@ -100,7 +102,7 @@
   --clr-cursor-glow: rgba(0, 102, 255, 0.6);
 }
 
-/* Theme toggle button */
+/* Theme toggle button — min size reduces layout shift when web fonts swap */
 .theme-toggle {
   position: fixed;
   top: 20px;
@@ -110,11 +112,14 @@
   border: 1px solid var(--clr-border-secondary);
   border-radius: 8px;
   padding: 8px 12px;
+  min-height: 38px;
+  min-width: 72px;
   color: var(--clr-text-secondary);
-  font-family: 'Inconsolata', monospace;
+  font-family: 'Inconsolata', system-ui, monospace;
   font-size: 14px;
+  line-height: 1.25;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
   backdrop-filter: blur(10px);
 }
 
@@ -154,10 +159,10 @@
   transform: translateY(-20px);
 }
 
-/* Slide animation triggered when loaded - faster and smoother */
+/* Single compositor-friendly animation (opacity + transform only) */
 body.loaded #slide {
-  animation: slide 0.5s ease-out forwards, fadeIn 0.5s ease-out forwards;
-  animation-delay: 0.2s; /* Phase 3: Quick succession after navigation */
+  animation: slideFadeIn 0.5s ease-out forwards;
+  animation-delay: 0.2s;
 }
 
 #send-btn {
@@ -517,15 +522,19 @@ h1:hover::after {
   display: flex;
   opacity: 0;
   gap: 5em;
-  width: 0%;
+  width: min(var(--line-draw-width), 88vw);
+  max-width: 88%;
   border-top: 1px solid var(--clr-border-primary);
   text-align: center;
+  transform: scaleX(0);
+  transform-origin: center;
+  will-change: transform, opacity;
 }
 
-/* Line drawing animation triggered when loaded - faster and smoother */
+/* Horizontal reveal via transform (GPU-friendly) */
 body.loaded .line {
-  animation: line 0.8s ease-out forwards, fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.15s; /* Phase 2.5: Quick transition between navigation and content */
+  animation: lineDraw 0.8s ease-out forwards;
+  animation-delay: 0.15s;
 }
 
 ::-webkit-scrollbar {
@@ -971,9 +980,9 @@ ul.chatbox {
   color: inherit;
 }
 
-/* Welcome message initial styling for fade-in effect */
+/* Welcome message: visible immediately for LCP (cursor effect applies after idle) */
 .welcome-message {
-  opacity: 0;
+  opacity: 1;
 }
 
 /* Light mode adjustments for character spans */
@@ -990,6 +999,13 @@ pre .char-span {
 .closebtn {
   font-size: 32px;
   display: none;
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
 }
 
 #closebtn {
@@ -1036,6 +1052,17 @@ pre .char-span {
   }
 }
 
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes slide {
   0%{
     transform: translateY(-20px);
@@ -1066,6 +1093,19 @@ pre .char-span {
 }
 
 
+@keyframes lineDraw {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Legacy names kept for contact page if referenced */
 @keyframes line {
   from {
     width: 0px;
@@ -1139,15 +1179,18 @@ pre .char-span {
     font-size: 0.85rem;
   }
 
+  :root {
+    --line-draw-width: 450px;
+  }
+
   .line {
     max-width: 88%;
     top: 115px;
   }
 
-  /* Mobile line animation - faster and smoother for mobile */
   body.loaded .line {
-    animation: line-short 0.8s ease-out forwards, fadeIn 0.8s ease-out forwards;
-    animation-delay: 0.15s; /* Quick transition matching desktop */
+    animation: lineDraw 0.8s ease-out forwards;
+    animation-delay: 0.15s;
   }
 
   .chatbox .incoming span {

@@ -11,36 +11,58 @@ const themeBackgrounds = {
   party: '#000000' // Party mode uses black background as requested
 };
 
-// Initialize ASCII background system with lazy loading via dynamic import
-// This significantly reduces initial JavaScript execution time
+let asciiInitHooked = false;
+
+/**
+ * Load Three.js ASCII background after first interaction, or after idle fallback,
+ * so initial main-thread work stays available for LCP and input.
+ */
 function initializeASCIIBackground() {
+  if (asciiInitHooked) return;
+  asciiInitHooked = true;
+
   const container = document.getElementById('container');
-  
-  if (container && !asciiBackgroundManager) {
-    // Use requestIdleCallback for better performance (fallback to setTimeout)
-    const scheduleInit = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-    
-    // Defer background initialization until after critical content loads
-    // Wait for page to be interactive and idle before loading heavy ASCII background
+  if (!container) return;
+
+  const scheduleInit = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+
+  let fallbackTimer = null;
+  const clearFallback = () => {
+    if (fallbackTimer != null) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
+  };
+
+  const startAscii = async () => {
+    if (asciiBackgroundManager) return;
+    try {
+      const { ASCIIBackgroundManager } = await import('./ascii-background/ASCIIBackgroundManager.js');
+      asciiBackgroundManager = new ASCIIBackgroundManager(container);
+    } catch (error) {
+      console.error('Failed to initialize ASCII Background System:', error);
+      initializeFallbackBackground();
+    }
+  };
+
+  const onInteract = () => {
+    window.removeEventListener('pointerdown', onInteract);
+    window.removeEventListener('keydown', onInteract);
+    clearFallback();
     scheduleInit(() => {
-      // Additional delay to ensure all critical content is rendered first
-      setTimeout(async () => {
-        try {
-          // Dynamic import - loads ASCII background code only when needed
-          // This removes 1.3s+ of JavaScript from initial load
-          const { ASCIIBackgroundManager } = await import('./ascii-background/ASCIIBackgroundManager.js');
-          
-          // Initialize ASCII background manager
-          asciiBackgroundManager = new ASCIIBackgroundManager(container);
-          console.log('ASCII Background System initialized successfully (lazy loaded)');
-        } catch (error) {
-          console.error('Failed to initialize ASCII Background System:', error);
-          // Fallback to simple background colors
-          initializeFallbackBackground();
-        }
-      }, 1000); // Wait 1 second after idle callback for smooth user experience
-    }, { timeout: 2000 }); // Ensure it runs within 2 seconds max
-  }
+      setTimeout(startAscii, 0);
+    }, { timeout: 3000 });
+  };
+
+  window.addEventListener('pointerdown', onInteract, { passive: true });
+  window.addEventListener('keydown', onInteract, { passive: true });
+
+  scheduleInit(() => {
+    fallbackTimer = setTimeout(() => {
+      fallbackTimer = null;
+      startAscii();
+    }, 4500);
+  }, { timeout: 6000 });
 }
 
 // Fallback background initialization (original system)
@@ -79,16 +101,14 @@ function updateBackground(theme) {
   }
 }
 
-// Initialize after page load to avoid blocking critical rendering path
-// Use 'load' event instead of 'DOMContentLoaded' for better performance
-window.addEventListener('load', initializeASCIIBackground);
+const runAsciiWhenLoaded = () => initializeASCIIBackground();
 
-// For already loaded pages, initialize on next idle
 if (document.readyState === 'complete') {
-  initializeASCIIBackground();
+  runAsciiWhenLoaded();
+} else {
+  window.addEventListener('load', runAsciiWhenLoaded);
 }
 
-// Portfolio content manager will initialize itself
 console.log('Main.js: Portfolio Content Manager system loading...');
 
 // Cleanup on page unload

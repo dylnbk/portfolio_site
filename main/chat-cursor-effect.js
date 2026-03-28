@@ -17,7 +17,6 @@ class ChatCursorEffect {
 
         this.chatboxElement = null;
         this.characterSpans = [];
-        this.characterPositions = []; // To store { span, rect }
         this.isDarkMode = false;
 
         // Bound event handlers
@@ -73,6 +72,14 @@ class ChatCursorEffect {
         // Observe for theme changes
         const themeObserver = new MutationObserver(() => this.updateThemeStatus());
         themeObserver.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+
+        // Web fonts and late layout (loading screen, opacity transitions) change span positions
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => this.refreshSpanList());
+        }
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => this.refreshSpanList());
+        });
     }
 
     updateThemeStatus() {
@@ -82,13 +89,12 @@ class ChatCursorEffect {
 
     handleResize() {
         if (!this.isEnabled) return;
-        this.cacheCharacterPositions();
+        this.refreshSpanList();
     }
 
     handleScroll() {
         if (!this.isEnabled) return;
         const now = performance.now();
-        // Throttle scroll updates. Using a slightly higher threshold than mouse move.
         if (now - this.lastScrollUpdate < (this.updateThreshold * 2)) {
             return;
         }
@@ -98,7 +104,8 @@ class ChatCursorEffect {
             cancelAnimationFrame(this.animationFrameIdScroll);
         }
         this.animationFrameIdScroll = requestAnimationFrame(() => {
-            this.cacheCharacterPositions();
+            // Scroll changes viewport coords of spans; do not use stale rects
+            this.updateCharacterColors();
             this.animationFrameIdScroll = null;
         });
     }
@@ -133,7 +140,7 @@ class ChatCursorEffect {
         const messageContent = this.getMessageContentElement(messageElement);
         if (messageContent) {
             this.wrapCharactersInSpans(messageContent);
-            this.cacheCharacterPositions(); // Update cache after new spans are added
+            this.refreshSpanList();
         }
     }
     
@@ -146,15 +153,13 @@ class ChatCursorEffect {
                 this.wrapCharactersInSpans(messageContent);
             }
         });
-        this.cacheCharacterPositions();
+        this.refreshSpanList();
     }
 
-    cacheCharacterPositions() {
+    /** Re-query .char-span nodes after DOM changes (positions are read fresh each frame). */
+    refreshSpanList() {
         if (!this.isEnabled || !this.chatboxElement) return;
         this.characterSpans = Array.from(this.chatboxElement.querySelectorAll('.char-span'));
-        this.characterPositions = this.characterSpans.map(span => {
-            return { span, rect: span.getBoundingClientRect() };
-        });
     }
 
     handleMouseMove(event) {
@@ -172,13 +177,13 @@ class ChatCursorEffect {
         
         this.animationFrameId = requestAnimationFrame(() => {
             this.updateCharacterColors();
+            this.animationFrameId = null;
         });
     }
 
     handleMouseLeave() {
         if (!this.isEnabled) return;
-        // Reset all character colors when mouse leaves chatbox
-        this.characterPositions.forEach(({ span }) => {
+        this.characterSpans.forEach((span) => {
             span.style.color = '';
             span.style.textShadow = '';
         });
@@ -199,6 +204,7 @@ class ChatCursorEffect {
         
         this.animationFrameId = requestAnimationFrame(() => {
             this.updateCharacterColors();
+            this.animationFrameId = null;
         });
     }
 
@@ -221,38 +227,52 @@ class ChatCursorEffect {
         
         this.animationFrameId = requestAnimationFrame(() => {
             this.updateCharacterColors();
+            this.animationFrameId = null;
         });
     }
 
     handleTouchEnd() {
         if (!this.isEnabled) return;
-        // Reset all character colors when touch ends, similar to mouseleave
-        this.characterPositions.forEach(({ span }) => {
+        this.characterSpans.forEach((span) => {
             span.style.color = '';
             span.style.textShadow = '';
         });
     }
 
+    /**
+     * Always measure spans in viewport space on this frame. Cached getBoundingClientRect
+     * goes stale after scroll, font load, or layout — that caused "vertical band" glitches.
+     */
     updateCharacterColors() {
-        if (!this.isEnabled || this.characterPositions.length === 0) return;
-        
-        this.characterPositions.forEach(({ span, rect }) => {
+        if (!this.isEnabled || !this.chatboxElement) return;
+        const spans = this.characterSpans.length
+            ? this.characterSpans
+            : Array.from(this.chatboxElement.querySelectorAll('.char-span'));
+        if (spans.length === 0) return;
+
+        const rects = new Array(spans.length);
+        for (let i = 0; i < spans.length; i++) {
+            rects[i] = spans[i].getBoundingClientRect();
+        }
+
+        const mx = this.mouseX;
+        const my = this.mouseY;
+        const maxD = this.maxDistance;
+
+        for (let i = 0; i < spans.length; i++) {
+            const span = spans[i];
+            const rect = rects[i];
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            
-            const distance = Math.sqrt(
-                Math.pow(this.mouseX - centerX, 2) +
-                Math.pow(this.mouseY - centerY, 2)
-            );
-            
-            if (distance <= this.maxDistance) {
+            const distance = Math.hypot(mx - centerX, my - centerY);
+
+            if (distance <= maxD) {
                 this.applyColorEffect(span, distance);
             } else {
-                // Reset color if outside max distance
                 span.style.color = '';
                 span.style.textShadow = '';
             }
-        });
+        }
     }
 
     applyColorEffect(span, distance) {
@@ -410,7 +430,6 @@ class ChatCursorEffect {
                 }
             });
             this.characterSpans = [];
-            this.characterPositions = [];
 
             if (this.chatboxElement) {
                 this.chatboxElement.removeEventListener('mousemove', this.boundHandleMouseMove);
@@ -451,7 +470,6 @@ class ChatCursorEffect {
         // Nullify cached elements
         this.chatboxElement = null;
         this.characterSpans = [];
-        this.characterPositions = [];
 
         // Cancel any pending animation frame
         if (this.animationFrameId) {

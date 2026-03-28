@@ -33,6 +33,13 @@
     Cache-Control = "public, max-age=31536000, immutable"
     X-Content-Type-Options = "nosniff"
 
+# Vite-emitted hashed CSS at /assets root (e.g. main-*.css)
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
 # Cache images for 1 year (they have content hashes)
 [[headers]]
   for = "/assets/images/*"
