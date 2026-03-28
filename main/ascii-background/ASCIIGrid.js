@@ -25,6 +25,7 @@ export class ASCIIGrid {
         
         // Performance: Reusable matrix for instance updates (avoid GC pressure)
         this._tempMatrix = new THREE.Matrix4();
+        this._tempColor = new THREE.Color();
         
         this.initializeGrid();
     }
@@ -53,7 +54,7 @@ export class ASCIIGrid {
                 map: texture,
                 transparent: true,
                 alphaTest: 0.1,
-                color: this.colorManager.getThreeJSASCIIColor()
+                color: 0xffffff
             });
             
             // Create geometry (simple plane)
@@ -111,7 +112,7 @@ export class ASCIIGrid {
 
     /**
      * Update character positions and visibility based on density data
-     * @param {Function} densityFunction - Function that returns density for x,y coordinates
+     * @param {Function} densityFunction - Function that returns density or cell state for x,y coordinates
      * @param {Object} interactionField - Interaction source with excitement and chaos methods
      */
     updateCharacterPositions(densityFunction = null, interactionField = null) {
@@ -124,9 +125,17 @@ export class ASCIIGrid {
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
                 let density = 0;
+                let cellState = null;
                 
                 if (densityFunction) {
-                    density = densityFunction(x, y);
+                    const result = densityFunction(x, y);
+
+                    if (typeof result === 'number') {
+                        density = result;
+                    } else if (result && typeof result === 'object') {
+                        cellState = result;
+                        density = result.density || 0;
+                    }
                 }
                 
                 // Let active interaction fields open up the threshold near comet heads and trails.
@@ -135,15 +144,28 @@ export class ASCIIGrid {
                     const excitement = interactionField.getExcitementLevel(x, y);
                     threshold = Math.max(0.01, threshold - excitement * 0.05); // Allow more characters to show
                 }
+
+                if (Number.isFinite(cellState?.threshold)) {
+                    threshold = Math.min(threshold, cellState.threshold);
+                }
                 
                 // Only show characters if density is above threshold
                 if (density > threshold) {
                     // Use density-based character
                     let character = this.characterSet.getCharacterByDensity(density);
+
+                    if (cellState?.preferredCharacter && this.characterSet.isValidCharacter(cellState.preferredCharacter)) {
+                        character = cellState.preferredCharacter;
+                    }
                     
                     // Shared chaos makes both cursor trails and falling comets sparkle similarly.
                     if (interactionField) {
-                        const chaosMultiplier = interactionField.getChaosMultiplier(x, y);
+                        let chaosMultiplier = interactionField.getChaosMultiplier(x, y);
+
+                        if (Number.isFinite(cellState?.chaosMultiplier)) {
+                            chaosMultiplier = Math.max(chaosMultiplier, cellState.chaosMultiplier);
+                        }
+
                         if (chaosMultiplier > 1 && Math.random() < (chaosMultiplier - 1) * 0.075) {
                             // Random character substitution for chaos effect
                             character = this.characterSet.getRandomCharacter();
@@ -161,7 +183,8 @@ export class ASCIIGrid {
                             x: worldX,
                             y: worldY,
                             z: 0,
-                            density: density
+                            density: density,
+                            color: Number.isFinite(cellState?.color) ? cellState.color : null
                         });
                     }
                 }
@@ -182,17 +205,23 @@ export class ASCIIGrid {
             
             instancedMesh.count = instances.length;
             
-            // Use standard material
+            // Use white material so instance colors can fully control each glyph.
+            instancedMesh.material.color.setHex(0xffffff);
             const defaultColor = this.colorManager.getThreeJSASCIIColor();
-            instancedMesh.material.color.setHex(defaultColor);
             
             // Update instance matrices using pooled matrix (reduces GC pressure)
             instances.forEach((instance, index) => {
                 this._tempMatrix.makeTranslation(instance.x, instance.y, instance.z);
                 instancedMesh.setMatrixAt(index, this._tempMatrix);
+
+                this._tempColor.setHex(Number.isFinite(instance.color) ? instance.color : defaultColor);
+                instancedMesh.setColorAt(index, this._tempColor);
             });
             
             instancedMesh.instanceMatrix.needsUpdate = true;
+            if (instancedMesh.instanceColor) {
+                instancedMesh.instanceColor.needsUpdate = true;
+            }
         });
     }
 
@@ -200,10 +229,8 @@ export class ASCIIGrid {
      * Update colors based on current theme
      */
     updateColors() {
-        const color = this.colorManager.getThreeJSASCIIColor();
-        
         this.instancedMeshes.forEach(instancedMesh => {
-            instancedMesh.material.color.setHex(color);
+            instancedMesh.material.color.setHex(0xffffff);
         });
     }
 

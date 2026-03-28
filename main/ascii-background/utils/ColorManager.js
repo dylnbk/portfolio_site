@@ -12,11 +12,13 @@ export class ColorManager {
         this.themeColors = {
             dark: {
                 ascii: '#ffffff',
-                background: '#000000'
+                background: '#000000',
+                cursorHoverPalette: ['#8080ff', '#4080ff', '#00ffff']
             },
             light: {
                 ascii: '#000000',
-                background: '#ffffff'
+                background: '#ffffff',
+                cursorHoverPalette: ['#7300e6', '#b340ff', '#ff00c8']
             }
         };
     }
@@ -47,6 +49,25 @@ export class ColorManager {
         const colorString = this.getASCIIColor();
         // Convert CSS color to hex number
         return parseInt(colorString.replace('#', '0x'));
+    }
+
+    /**
+     * Get the existing hover accent palette for the current theme.
+     * Colors match the text hover / chat cursor effect.
+     * @returns {Array<string>} CSS color strings
+     */
+    getCursorHoverPalette() {
+        return this.themeColors[this.currentTheme]?.cursorHoverPalette || ['#8080ff', '#4080ff', '#00ffff'];
+    }
+
+    /**
+     * Get the hover accent palette as Three.js-friendly hex numbers.
+     * @returns {Array<number>} Hex colors for Three.js
+     */
+    getThreeJSCursorHoverPalette() {
+        return this.getCursorHoverPalette().map((colorString) => {
+            return parseInt(colorString.replace('#', '0x'));
+        });
     }
 
     /**

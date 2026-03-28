@@ -215,6 +215,7 @@ export class ASCIIBackgroundManager {
     setupInteractionSystems() {
         this.fallingStarInteraction = new FallingStarInteraction(
             this.asciiGrid,
+            this.colorManager,
             this.performanceMode
         );
 
@@ -227,7 +228,8 @@ export class ASCIIBackgroundManager {
 
         this.combinedInteractionField = {
             getExcitementLevel: (x, y) => this.getCombinedExcitementLevel(x, y),
-            getChaosMultiplier: (x, y) => this.getCombinedChaosMultiplier(x, y)
+            getChaosMultiplier: (x, y) => this.getCombinedChaosMultiplier(x, y),
+            getCellState: (x, y) => this.getCombinedCellState(x, y)
         };
     }
 
@@ -348,6 +350,33 @@ export class ASCIIBackgroundManager {
         return Math.max(mouseChaosMultiplier, fallingStarChaosMultiplier);
     }
 
+    getCombinedCellState(x, y) {
+        const mouseExcitement = this.mouseInteraction
+            ? this.mouseInteraction.getExcitementLevel(x, y)
+            : 0;
+        const fallingStarExcitement = this.fallingStarInteraction
+            ? this.fallingStarInteraction.getExcitementLevel(x, y)
+            : 0;
+        const burstState = this.fallingStarInteraction
+            ? this.fallingStarInteraction.getCellState(x, y)
+            : null;
+
+        if (!burstState) {
+            return Math.max(mouseExcitement, fallingStarExcitement);
+        }
+
+        return {
+            density: Math.max(mouseExcitement, fallingStarExcitement, burstState.density),
+            color: burstState.color,
+            chaosMultiplier: Math.max(
+                burstState.chaosMultiplier || 1,
+                this.getCombinedChaosMultiplier(x, y)
+            ),
+            preferredCharacter: burstState.preferredCharacter,
+            threshold: burstState.threshold
+        };
+    }
+
     /**
      * Animation loop
      * @param {number} currentTime - Current timestamp
@@ -366,13 +395,24 @@ export class ASCIIBackgroundManager {
             }
 
             if (this.fallingStarInteraction) {
-                this.fallingStarInteraction.update(deltaTime * 0.001);
+                const mousePosition = this.mouseInteraction
+                    ? this.mouseInteraction.getMousePosition()
+                    : null;
+                const mouseActive = this.mouseInteraction
+                    ? this.mouseInteraction.isActive()
+                    : false;
+
+                this.fallingStarInteraction.update(
+                    deltaTime * 0.001,
+                    mousePosition,
+                    mouseActive
+                );
             }
             
             // Drive the grid from both the real cursor and autonomous falling comets.
             const densityFunction = (x, y) => {
                 return this.combinedInteractionField
-                    ? this.combinedInteractionField.getExcitementLevel(x, y)
+                    ? this.combinedInteractionField.getCellState(x, y)
                     : 0;
             };
             
