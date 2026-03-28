@@ -291,7 +291,7 @@ export class FallingStarInteraction {
         );
 
         for (let index = this.activeStars.length; index < initialCount; index++) {
-            const star = this.createStar(true);
+            const star = this.createStar(false);
             if (!star) {
                 break;
             }
