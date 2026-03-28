@@ -373,7 +373,8 @@ export class ASCIIBackgroundManager {
                 this.getCombinedChaosMultiplier(x, y)
             ),
             preferredCharacter: burstState.preferredCharacter,
-            threshold: burstState.threshold
+            threshold: burstState.threshold,
+            scale: burstState.scale
         };
     }
 

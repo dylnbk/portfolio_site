@@ -26,6 +26,7 @@ export class FallingStarInteraction {
         this.isInitialized = false;
 
         this.burstCharacters = ['x', '*', '+', 'o', '%', '@', '.', ':'];
+        this.lightBurstCharacters = ['`', '.', ',', ':', ';', "'", '-'];
 
         this.prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
         this.prefersReducedMotion = this.prefersReducedMotionQuery.matches;
@@ -674,6 +675,11 @@ export class FallingStarInteraction {
         return noise > 0.5 ? 'x' : 'o';
     }
 
+    pickLightBurstCharacter(noise) {
+        const index = Math.floor(noise * this.lightBurstCharacters.length) % this.lightBurstCharacters.length;
+        return this.lightBurstCharacters[index];
+    }
+
     storeBurstCell(x, y, state) {
         const key = `${x},${y}`;
         const existingState = this.burstCells.get(key);
@@ -874,6 +880,12 @@ export class FallingStarInteraction {
 
                     const noise = this.sampleNoise(x, y, burst.phase + burst.age * 12);
                     const sparkleStrength = this.clamp(baseStrength + noise * 0.18, 0, 1);
+                    const lateTail = Math.pow(tailProgress, 0.9);
+                    const scale = this.clamp(
+                        1 - (lateTail * 0.48) - ((1 - sparkleStrength) * 0.1),
+                        0.46,
+                        1
+                    );
                     const density = this.clamp(
                         burst.intensity
                         * (0.16 + sparkleStrength * 0.95)
@@ -884,16 +896,21 @@ export class FallingStarInteraction {
                     );
                     const chaosMultiplier = 1 + burst.chaosMultiplier
                         * (0.38 + sparkleStrength * 0.62);
-                    const preferredCharacter = (ringStrength > 0.55 || noise > 0.82)
-                        ? this.pickBurstCharacter(sparkleStrength, noise)
-                        : null;
+                    let preferredCharacter = null;
+
+                    if (lateTail > 0.18) {
+                        preferredCharacter = this.pickLightBurstCharacter(noise);
+                    } else if (ringStrength > 0.55 || noise > 0.82) {
+                        preferredCharacter = this.pickBurstCharacter(sparkleStrength, noise);
+                    }
 
                     this.storeBurstCell(x, y, {
                         density,
                         color: this.pickBurstColor(palette, sparkleStrength),
                         chaosMultiplier,
                         preferredCharacter,
-                        threshold: 0.0018
+                        threshold: 0.0018,
+                        scale
                     });
                 }
             }

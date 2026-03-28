@@ -26,6 +26,9 @@ export class ASCIIGrid {
         // Performance: Reusable matrix for instance updates (avoid GC pressure)
         this._tempMatrix = new THREE.Matrix4();
         this._tempColor = new THREE.Color();
+        this._tempPosition = new THREE.Vector3();
+        this._tempScale = new THREE.Vector3(1, 1, 1);
+        this._tempQuaternion = new THREE.Quaternion();
         
         this.initializeGrid();
     }
@@ -184,7 +187,8 @@ export class ASCIIGrid {
                             y: worldY,
                             z: 0,
                             density: density,
-                            color: Number.isFinite(cellState?.color) ? cellState.color : null
+                            color: Number.isFinite(cellState?.color) ? cellState.color : null,
+                            scale: Number.isFinite(cellState?.scale) ? cellState.scale : 1
                         });
                     }
                 }
@@ -211,7 +215,14 @@ export class ASCIIGrid {
             
             // Update instance matrices using pooled matrix (reduces GC pressure)
             instances.forEach((instance, index) => {
-                this._tempMatrix.makeTranslation(instance.x, instance.y, instance.z);
+                if (instance.scale && instance.scale !== 1) {
+                    this._tempPosition.set(instance.x, instance.y, instance.z);
+                    this._tempScale.set(instance.scale, instance.scale, 1);
+                    this._tempMatrix.compose(this._tempPosition, this._tempQuaternion, this._tempScale);
+                } else {
+                    this._tempMatrix.makeTranslation(instance.x, instance.y, instance.z);
+                }
+
                 instancedMesh.setMatrixAt(index, this._tempMatrix);
 
                 this._tempColor.setHex(Number.isFinite(instance.color) ? instance.color : defaultColor);
