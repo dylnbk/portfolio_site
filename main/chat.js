@@ -1,4 +1,5 @@
 import { loadExternalDependencies } from './utils/externalDependencies.js';
+import { escapeHTML, processLinksForNewTab, renderMarkdownToSafeHtml } from './utils/chatMarkdown.js';
 import { textSystemPrompt } from './prompts/dylanAssistantPrompt.js';
 
 const chatbox = document.querySelector(".chatbox");
@@ -32,17 +33,23 @@ let chatCursorEffect = null;
  * @param {string} className - The class name to apply ("incoming" or "outgoing").
  * @returns {HTMLElement} - The constructed <li> element.
  */
-const createChatLi = (message, className) => {
+const createChatLi = (message, className, { isHtml = false } = {}) => {
     const chatLi = document.createElement("li");
     chatLi.classList.add("chat", className);
-    const p = document.createElement("p");
+    const messageContent = document.createElement("div");
+    messageContent.classList.add("chat-content");
 
     if (className === "incoming") {
-        p.classList.add("incoming-text");
+        messageContent.classList.add("incoming-text");
     }
 
-    p.innerHTML = message; // Use innerHTML to allow HTML content
-    chatLi.appendChild(p);
+    if (isHtml) {
+        messageContent.innerHTML = message;
+    } else {
+        messageContent.textContent = message;
+    }
+
+    chatLi.appendChild(messageContent);
     
     // Apply cursor effect to the new chat element
     if (chatCursorEffect) {
@@ -59,12 +66,18 @@ const createChatLi = (message, className) => {
  */
 const generateResponse = async (chatElement, onFirstChunk) => {
     const API_URL = "https://api.openai.com/v1/chat/completions";
-    const messageElement = chatElement.querySelector("p");
+    const messageElement = chatElement.querySelector(".chat-content");
 
     // Add user's current message to messages array
     messages.push({ role: "user", content: userMessage });
 
     try {
+        try {
+            await loadExternalDependencies();
+        } catch (dependencyError) {
+            console.warn('Chat markdown dependencies unavailable, falling back to plain text rendering.', dependencyError);
+        }
+
         // Fetch the API key from your serverless function
         // Use Netlify dev server port for functions in development
         const apiUrl = window.location.hostname === 'localhost' && window.location.port !== '8888'
@@ -132,17 +145,9 @@ const generateResponse = async (chatElement, onFirstChunk) => {
                                 }
                             }
 
-                            // Convert markdown to HTML
-                            const markdownHTML = marked.parseInline(assistantMessage);
-
-                            // Sanitize the HTML to prevent XSS
-                            const sanitizedHTML = DOMPurify.sanitize(markdownHTML);
-
-                            // Process links to open in new tabs
-                            const processedHTML = processLinksForNewTab(sanitizedHTML);
-
-                            // Update the message element's HTML
-                            messageElement.innerHTML = processedHTML;
+                            // Update the message element's HTML with full markdown rendering.
+                            messageElement.classList.remove('thinking-indicator');
+                            messageElement.innerHTML = renderMarkdownToSafeHtml(assistantMessage);
                             
                             // Reapply cursor effect for streaming updates
                             if (chatCursorEffect) {
@@ -175,6 +180,7 @@ const generateResponse = async (chatElement, onFirstChunk) => {
 
     } catch (error) {
         console.error(error);
+        messageElement.classList.remove('thinking-indicator');
         messageElement.classList.add("error");
         messageElement.textContent = "Oops! Something went wrong. Please try again.";
     } finally {
@@ -190,11 +196,8 @@ const handleSpeechMessage = async (transcript) => {
     userMessage = transcript.trim();
     if (!userMessage) return;
 
-    // Escape and sanitize user message before displaying
-    const safeMessage = DOMPurify.sanitize(escapeHTML(userMessage));
-
     // Append the user's message to the chatbox
-    chatbox.appendChild(createChatLi(safeMessage, "outgoing"));
+    chatbox.appendChild(createChatLi(userMessage, "outgoing"));
     chatbox.scrollTo(0, chatbox.scrollHeight);
 
     // Define the states of thinking dots animation
@@ -204,6 +207,7 @@ const handleSpeechMessage = async (transcript) => {
     setTimeout(() => {
         const incomingChatLi = createChatLi(ellipsisFrames[0], "incoming");
         const incomingP = incomingChatLi.querySelector('.incoming-text');
+        incomingP.classList.add('thinking-indicator');
         chatbox.appendChild(incomingChatLi);
         chatbox.scrollTo(0, chatbox.scrollHeight);
 
@@ -234,11 +238,8 @@ const handleChat = () => {
     chatInput.value = "";
     chatInput.style.height = `${inputInitHeight}px`;
 
-    // Escape and sanitize user message before displaying
-    const safeMessage = DOMPurify.sanitize(escapeHTML(userMessage));
-
     // Append the user's message to the chatbox
-    chatbox.appendChild(createChatLi(safeMessage, "outgoing"));
+    chatbox.appendChild(createChatLi(userMessage, "outgoing"));
     chatbox.scrollTo(0, chatbox.scrollHeight);
 
     // Define the states of thinking dots animation
@@ -248,6 +249,7 @@ const handleChat = () => {
     setTimeout(() => {
         const incomingChatLi = createChatLi(ellipsisFrames[0], "incoming");
         const incomingP = incomingChatLi.querySelector('.incoming-text');
+        incomingP.classList.add('thinking-indicator');
         chatbox.appendChild(incomingChatLi);
         chatbox.scrollTo(0, chatbox.scrollHeight);
 
@@ -266,42 +268,6 @@ const handleChat = () => {
             clearInterval(ellipsisInterval);
         });
     }, 600);
-}
-
-/**
- * Escape HTML by replacing special characters with their HTML entities.
- * @param {string} str - The string to escape.
- * @returns {string} - The escaped string.
- */
-function escapeHTML(str) {
-    const specialChars = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        '\'': '&#039;',
-    };
-    return str.replace(/[&<>"']/g, m => specialChars[m]);
-}
-
-/**
- * Process HTML content to make all links open in new tabs with security attributes
- * @param {string} html - The HTML content to process
- * @returns {string} - The processed HTML with link attributes added
- */
-function processLinksForNewTab(html) {
-    // Create a temporary div to parse the HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    
-    // Find all anchor tags and add target and rel attributes
-    const links = tempDiv.querySelectorAll('a');
-    links.forEach(link => {
-        link.setAttribute('target', '_blank');
-        link.setAttribute('rel', 'noopener noreferrer');
-    });
-    
-    return tempDiv.innerHTML;
 }
 
 /**

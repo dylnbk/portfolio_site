@@ -375,10 +375,10 @@ ul.chatbox {
   margin-right: 10px;
 }
 
-.chatbox .chat p {
+.chatbox .chat .chat-content {
   word-wrap: break-word;
   overflow-wrap: anywhere;
-  white-space: pre-wrap;
+  white-space: normal;
   padding: 15px 15px;
   line-height: 25px;
   border-radius: 10px 10px 0 10px;
@@ -390,16 +390,110 @@ ul.chatbox {
   margin: 7px 0;
 }
 
-.chatbox .chat p.error {
+.chatbox .chat .chat-content.error {
   color: #ffffff;
   background: #040404a2;
   border: solid 1px #9effed5f;
 }
-.chatbox .incoming p {
+.chatbox .incoming .chat-content {
   color: #ffffff;
   background: #040404d3;
   border: solid 1px #9effed5f;
   border-radius: 10px 10px 10px 0;
+}
+
+.chatbox .incoming .chat-content.thinking-indicator {
+  display: inline-block;
+  width: 3ch;
+  min-width: 3ch;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-wrap: normal;
+  text-align: left;
+}
+
+.chatbox .chat .chat-content > *:first-child {
+  margin-top: 0;
+}
+
+.chatbox .chat .chat-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.chatbox .chat .chat-content p {
+  margin: 0 0 0.75rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.chatbox .chat .chat-content ul,
+.chatbox .chat .chat-content ol {
+  margin: 0 0 0.85rem 1.25rem;
+  padding-left: 1rem;
+}
+
+.chatbox .chat .chat-content li + li {
+  margin-top: 0.35rem;
+}
+
+.chatbox .chat .chat-content h1,
+.chatbox .chat .chat-content h2,
+.chatbox .chat .chat-content h3,
+.chatbox .chat .chat-content h4 {
+  margin: 0 0 0.75rem;
+  line-height: 1.35;
+}
+
+.chatbox .chat .chat-content pre {
+  margin: 0 0 0.85rem;
+  padding: 0.85rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  background: #121212;
+  border: solid 1px #cfcfcf5e;
+}
+
+.chatbox .chat .chat-content code {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.9em;
+  white-space: break-spaces;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+.chatbox .chat .chat-content pre code {
+  display: block;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  white-space: pre-wrap;
+}
+
+.chatbox .chat .chat-content blockquote {
+  margin: 0 0 0.85rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid #9effed5f;
+  color: rgba(207, 207, 207, 0.85);
+}
+
+.chatbox a {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #ffffff;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.chatbox a:hover {
+  text-decoration: none;
+}
+
+.chatbox a[href*="http"] {
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .chatbot .chat-input {
   width: 100%;

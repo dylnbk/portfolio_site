@@ -618,11 +618,11 @@ ul.chatbox {
   width: 35px;
 }
 
-.chatbox .chat p {
+.chatbox .chat .chat-content {
   word-wrap: break-word;
-  text-align: justify;
+  text-align: left;
   overflow-wrap: anywhere;
-  white-space: pre-wrap;
+  white-space: normal;
   padding: 15px 15px;
   line-height: 25px;
   border-radius: 10px 10px 0 10px;
@@ -635,22 +635,102 @@ ul.chatbox {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.chatbox .chat p.error {
+.chatbox .chat .chat-content.error {
   color: var(--clr-text-accent);
   background: var(--clr-bg-secondary);
   border: solid 1px var(--clr-border-accent);
 }
-.chatbox .incoming p {
+.chatbox .incoming .chat-content {
   color: var(--clr-text-accent);
   background: var(--clr-bg-secondary);
   border: solid 1px var(--clr-border-accent);
   border-radius: 10px 10px 10px 0;
-  text-align: justify;
+  text-align: left;
+}
+
+.chatbox .incoming .chat-content.thinking-indicator {
+  display: inline-block;
+  width: 3ch;
+  min-width: 3ch;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-wrap: normal;
+  text-align: left;
 }
 
 /* Light mode chat text - better contrast */
-[data-theme="light"] .chatbox .incoming p {
+[data-theme="light"] .chatbox .incoming .chat-content {
   color: #000000;
+}
+
+.chatbox .chat .chat-content > *:first-child {
+  margin-top: 0;
+}
+
+.chatbox .chat .chat-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.chatbox .chat .chat-content p {
+  margin: 0 0 0.75rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.chatbox .chat .chat-content ul,
+.chatbox .chat .chat-content ol {
+  margin: 0 0 0.85rem 1.25rem;
+  padding-left: 1rem;
+}
+
+.chatbox .chat .chat-content li + li {
+  margin-top: 0.35rem;
+}
+
+.chatbox .chat .chat-content h1,
+.chatbox .chat .chat-content h2,
+.chatbox .chat .chat-content h3,
+.chatbox .chat .chat-content h4 {
+  margin: 0 0 0.75rem;
+  line-height: 1.35;
+}
+
+.chatbox .chat .chat-content pre {
+  margin: 0 0 0.85rem;
+  padding: 0.85rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--clr-bg-tertiary);
+  border: solid 1px var(--clr-border-secondary);
+}
+
+.chatbox .chat .chat-content code {
+  font-family: 'Inconsolata', monospace;
+  font-size: 0.9em;
+  white-space: break-spaces;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+[data-theme="light"] .chatbox .chat .chat-content code {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.chatbox .chat .chat-content pre code {
+  display: block;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  white-space: pre-wrap;
+}
+
+.chatbox .chat .chat-content blockquote {
+  margin: 0 0 0.85rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--clr-border-accent);
+  color: var(--clr-text-secondary);
 }
 .chatbot .chat-input {
   width: 100%;
@@ -812,14 +892,9 @@ ul.chatbox {
   font-weight: bold;
   text-decoration: underline;
   color: var(--clr-text-primary);
-  /* Prevent links from breaking across lines */
-  white-space: nowrap;
-  /* Try to keep links together */
-  word-break: keep-all;
-  /* Add some spacing around links to encourage line breaks before/after */
-  display: inline-block;
-  /* Small margin to encourage natural line breaks */
-  margin: 0 2px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Hover effect for links */
@@ -827,32 +902,10 @@ ul.chatbox {
   text-decoration: none;
 }
 
-/* Encourage line breaks before/after links in paragraphs */
-.chatbox p {
-  /* Allow flexible word wrapping around links */
-  word-wrap: break-word;
-  /* But be more conservative with breaking */
-  overflow-wrap: break-word;
-  /* Adjust line height slightly for better spacing with links */
-  line-height: 1.5;
-}
-
 /* Special handling for long URLs that might still need to break */
 .chatbox a[href*="http"] {
-  /* For very long URLs, allow breaking at specific characters */
-  word-break: break-all;
-  /* But prefer to break at natural points */
+  word-break: break-word;
   overflow-wrap: anywhere;
-  /* Ensure we don't make short links break unnecessarily */
-  min-width: fit-content;
-}
-
-/* For URLs that are too long, we can break them more gracefully */
-.chatbox a[href*="http"]:before {
-  /* Add a subtle line-break opportunity before long URLs */
-  content: "";
-  display: inline-block;
-  width: 0;
 }
 
 /* ===== CURSOR HOVER EFFECT STYLES ===== */
@@ -886,8 +939,8 @@ ul.chatbox {
   transition: color 0.2s ease-out, text-shadow 0.2s ease-out !important;
 }
 
-/* Specific styles for character spans in chat paragraphs */
-.chatbox .chat p .char-span {
+/* Specific styles for character spans in chat content */
+.chatbox .chat .chat-content .char-span {
   /* Ensure no interference from existing span styles */
   cursor: inherit !important;
   float: none !important;
@@ -896,7 +949,7 @@ ul.chatbox {
 }
 
 /* Override any conflicting color rules */
-.chatbox .chat p .char-span[style*="color"] {
+.chatbox .chat .chat-content .char-span[style*="color"] {
   color: inherit;
 }
 

@@ -4,6 +4,8 @@
  */
 import LoadingSpinner from '../components/shared/LoadingSpinner.js';
 import { realtimeInstructions } from '../prompts/dylanAssistantPrompt.js';
+import { loadExternalDependencies } from '../utils/externalDependencies.js';
+import { renderMarkdownToSafeHtml } from '../utils/chatMarkdown.js';
 
 class RealtimeSpeechController {
     constructor() {
@@ -20,6 +22,10 @@ class RealtimeSpeechController {
         this.currentAssistantResponse = '';
         this.currentAssistantChatElement = null;
         
+        loadExternalDependencies().catch((error) => {
+            console.warn('RealtimeSpeechController: Failed to preload markdown dependencies:', error);
+        });
+
         this.initializeUI();
     }
 
@@ -465,7 +471,7 @@ class RealtimeSpeechController {
                 console.log('RealtimeSpeechController: Assistant chat element ready for streaming text');
                 
                 // Verify element structure for debugging
-                const messageElement = this.currentAssistantChatElement.querySelector('p');
+                const messageElement = this.currentAssistantChatElement.querySelector('.chat-content');
                 console.log('RealtimeSpeechController: Message element found in chat element:', !!messageElement);
                 
             } else {
@@ -491,26 +497,11 @@ class RealtimeSpeechController {
         
         // Update content immediately for real-time streaming (no thinking animation)
         if (text) {
-            const messageElement = this.currentAssistantChatElement.querySelector('p');
+            const messageElement = this.currentAssistantChatElement.querySelector('.chat-content');
             console.log('RealtimeSpeechController: Message element found:', !!messageElement);
-            console.log('RealtimeSpeechController: DOMPurify available:', typeof DOMPurify !== 'undefined');
             
-            if (messageElement && typeof DOMPurify !== 'undefined') {
-                // Use marked for markdown parsing if available, otherwise just sanitize HTML
-                let processedText = text;
-                if (typeof marked !== 'undefined' && marked.parseInline) {
-                    console.log('RealtimeSpeechController: Processing text with marked markdown parser');
-                    processedText = marked.parseInline(text);
-                }
-                
-                // Sanitize the HTML to prevent XSS
-                const sanitizedHTML = DOMPurify.sanitize(processedText);
-                
-                // Process links to open in new tabs (if function is available)
-                const finalHTML = typeof window.processLinksForNewTab === 'function'
-                    ? window.processLinksForNewTab(sanitizedHTML)
-                    : sanitizedHTML;
-                
+            if (messageElement) {
+                const finalHTML = renderMarkdownToSafeHtml(text);
                 console.log('RealtimeSpeechController: Setting processed text to message element');
                 messageElement.innerHTML = finalHTML;
                 console.log('RealtimeSpeechController: Text successfully updated in chat element');
@@ -526,9 +517,8 @@ class RealtimeSpeechController {
                     chatbox.scrollTo(0, chatbox.scrollHeight);
                 }
             } else {
-                console.error('RealtimeSpeechController: ERROR - Missing messageElement or DOMPurify, cannot update text');
+                console.error('RealtimeSpeechController: ERROR - Missing messageElement, cannot update text');
                 console.log('RealtimeSpeechController: Debug - messageElement:', messageElement);
-                console.log('RealtimeSpeechController: Debug - DOMPurify type:', typeof DOMPurify);
             }
         } else {
             console.log('RealtimeSpeechController: No text provided, skipping content update');

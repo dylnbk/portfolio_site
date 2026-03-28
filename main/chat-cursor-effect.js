@@ -120,9 +120,17 @@ class ChatCursorEffect {
         }
     }
 
+    getMessageContentElement(messageElement) {
+        if (!messageElement) return null;
+
+        return Array.from(messageElement.children).find((child) => {
+            return child.classList?.contains('chat-content') || child.tagName === 'P';
+        }) || null;
+    }
+
     processNewMessageElement(messageElement) {
         if (!messageElement || !this.isEnabled) return;
-        const messageContent = messageElement.querySelector('p'); // Adjust if structure is different
+        const messageContent = this.getMessageContentElement(messageElement);
         if (messageContent) {
             this.wrapCharactersInSpans(messageContent);
             this.cacheCharacterPositions(); // Update cache after new spans are added
@@ -131,8 +139,13 @@ class ChatCursorEffect {
     
     processAllMessages() {
         if (!this.chatboxElement || !this.isEnabled) return;
-        const messageElements = this.chatboxElement.querySelectorAll('li p'); // Adjust selector as needed
-        messageElements.forEach(p => this.wrapCharactersInSpans(p));
+        const messageElements = this.chatboxElement.querySelectorAll('li');
+        messageElements.forEach((messageElement) => {
+            const messageContent = this.getMessageContentElement(messageElement);
+            if (messageContent) {
+                this.wrapCharactersInSpans(messageContent);
+            }
+        });
         this.cacheCharacterPositions();
     }
 
