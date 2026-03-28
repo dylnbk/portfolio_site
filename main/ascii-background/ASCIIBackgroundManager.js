@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { ASCIIGrid } from './ASCIIGrid.js';
 import { ColorManager } from './utils/ColorManager.js';
 import { MouseInteraction } from './MouseInteraction.js';
+import { FallingStarInteraction } from './FallingStarInteraction.js';
 
 export class ASCIIBackgroundManager {
     constructor(container) {
@@ -17,6 +18,8 @@ export class ASCIIBackgroundManager {
         this.asciiGrid = null;
         this.colorManager = null;
         this.mouseInteraction = null;
+        this.fallingStarInteraction = null;
+        this.combinedInteractionField = null;
         
         // Animation properties
         this.animationId = null;
@@ -210,12 +213,22 @@ export class ASCIIBackgroundManager {
      * Set up interaction systems (mouse)
      */
     setupInteractionSystems() {
+        this.fallingStarInteraction = new FallingStarInteraction(
+            this.asciiGrid,
+            this.performanceMode
+        );
+
         // Set up mouse interaction with performance mode
         this.mouseInteraction = new MouseInteraction(
             this.container,
             this.asciiGrid,
             this.performanceMode
         );
+
+        this.combinedInteractionField = {
+            getExcitementLevel: (x, y) => this.getCombinedExcitementLevel(x, y),
+            getChaosMultiplier: (x, y) => this.getCombinedChaosMultiplier(x, y)
+        };
     }
 
     /**
@@ -293,6 +306,10 @@ export class ASCIIBackgroundManager {
         if (this.mouseInteraction) {
             this.mouseInteraction.updateGridDimensions();
         }
+
+        if (this.fallingStarInteraction) {
+            this.fallingStarInteraction.updateGridDimensions();
+        }
         
         // Update camera
         this.updateCameraForGrid();
@@ -307,6 +324,28 @@ export class ASCIIBackgroundManager {
         if (this.asciiGrid) {
             this.asciiGrid.updateColors();
         }
+    }
+
+    getCombinedExcitementLevel(x, y) {
+        const mouseExcitement = this.mouseInteraction
+            ? this.mouseInteraction.getExcitementLevel(x, y)
+            : 0;
+        const fallingStarExcitement = this.fallingStarInteraction
+            ? this.fallingStarInteraction.getExcitementLevel(x, y)
+            : 0;
+
+        return Math.max(mouseExcitement, fallingStarExcitement);
+    }
+
+    getCombinedChaosMultiplier(x, y) {
+        const mouseChaosMultiplier = this.mouseInteraction
+            ? this.mouseInteraction.getChaosMultiplier(x, y)
+            : 1;
+        const fallingStarChaosMultiplier = this.fallingStarInteraction
+            ? this.fallingStarInteraction.getChaosMultiplier(x, y)
+            : 1;
+
+        return Math.max(mouseChaosMultiplier, fallingStarChaosMultiplier);
     }
 
     /**
@@ -325,15 +364,19 @@ export class ASCIIBackgroundManager {
             if (this.mouseInteraction) {
                 this.mouseInteraction.update(deltaTime * 0.001);
             }
+
+            if (this.fallingStarInteraction) {
+                this.fallingStarInteraction.update(deltaTime * 0.001);
+            }
             
-            // Create density function that only responds to mouse excitement
+            // Drive the grid from both the real cursor and autonomous falling comets.
             const densityFunction = (x, y) => {
-                const excitement = this.mouseInteraction ? this.mouseInteraction.getExcitementLevel(x, y) : 0;
-                return excitement;
+                return this.combinedInteractionField
+                    ? this.combinedInteractionField.getExcitementLevel(x, y)
+                    : 0;
             };
             
-            // Update ASCII grid with mouse excitement
-            this.asciiGrid.updateCharacterPositions(densityFunction, this.mouseInteraction);
+            this.asciiGrid.updateCharacterPositions(densityFunction, this.combinedInteractionField);
             
             // Render scene
             this.renderer.render(this.scene, this.camera);
@@ -401,6 +444,10 @@ export class ASCIIBackgroundManager {
         if (this.mouseInteraction) {
             this.mouseInteraction.dispose();
         }
+
+        if (this.fallingStarInteraction) {
+            this.fallingStarInteraction.dispose();
+        }
         
         // Dispose of Three.js resources
         if (this.asciiGrid) {
@@ -421,6 +468,8 @@ export class ASCIIBackgroundManager {
         this.asciiGrid = null;
         this.colorManager = null;
         this.mouseInteraction = null;
+        this.fallingStarInteraction = null;
+        this.combinedInteractionField = null;
     }
 
     /**

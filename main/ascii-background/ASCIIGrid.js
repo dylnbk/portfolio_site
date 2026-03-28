@@ -112,9 +112,9 @@ export class ASCIIGrid {
     /**
      * Update character positions and visibility based on density data
      * @param {Function} densityFunction - Function that returns density for x,y coordinates
-     * @param {MouseInteraction} mouseInteraction - Mouse interaction instance for excitement effects
+     * @param {Object} interactionField - Interaction source with excitement and chaos methods
      */
-    updateCharacterPositions(densityFunction = null, mouseInteraction = null) {
+    updateCharacterPositions(densityFunction = null, interactionField = null) {
         // Clear all instances
         this.characterInstances.forEach((instances, char) => {
             instances.length = 0;
@@ -129,10 +129,10 @@ export class ASCIIGrid {
                     density = densityFunction(x, y);
                 }
                 
-                // Apply mouse excitement effects to density threshold for intense sparkle
+                // Let active interaction fields open up the threshold near comet heads and trails.
                 let threshold = 0.01; // Lower base threshold for more visible characters
-                if (mouseInteraction) {
-                    const excitement = mouseInteraction.getExcitementLevel(x, y);
+                if (interactionField) {
+                    const excitement = interactionField.getExcitementLevel(x, y);
                     threshold = Math.max(0.01, threshold - excitement * 0.05); // Allow more characters to show
                 }
                 
@@ -141,9 +141,9 @@ export class ASCIIGrid {
                     // Use density-based character
                     let character = this.characterSet.getCharacterByDensity(density);
                     
-                    // Apply chaos effects from mouse interaction
-                    if (mouseInteraction) {
-                        const chaosMultiplier = mouseInteraction.getChaosMultiplier(x, y);
+                    // Shared chaos makes both cursor trails and falling comets sparkle similarly.
+                    if (interactionField) {
+                        const chaosMultiplier = interactionField.getChaosMultiplier(x, y);
                         if (chaosMultiplier > 1 && Math.random() < (chaosMultiplier - 1) * 0.075) {
                             // Random character substitution for chaos effect
                             character = this.characterSet.getRandomCharacter();
