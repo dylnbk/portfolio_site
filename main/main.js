@@ -3,6 +3,7 @@ import './portfolio-content-manager.js';
 
 // Global reference to ASCII background manager
 let asciiBackgroundManager = null;
+let asciiStartPromise = null;
 
 // Theme-based background colors (fallback for container)
 const themeBackgrounds = {
@@ -11,69 +12,85 @@ const themeBackgrounds = {
   party: '#000000' // Party mode uses black background as requested
 };
 
-let asciiInitHooked = false;
+/**
+ * Single-flight loader for Three.js + ASCII (avoids parallel double init).
+ */
+function startAsciiBackground() {
+  const container = document.getElementById('container');
+  if (!container || asciiBackgroundManager) {
+    return Promise.resolve();
+  }
+  if (asciiStartPromise) {
+    return asciiStartPromise;
+  }
+  asciiStartPromise = (async () => {
+    try {
+      const { ASCIIBackgroundManager } = await import('./ascii-background/ASCIIBackgroundManager.js');
+      if (!asciiBackgroundManager) {
+        asciiBackgroundManager = new ASCIIBackgroundManager(container);
+      }
+    } catch (error) {
+      console.error('Failed to initialize ASCII Background System:', error);
+      asciiStartPromise = null;
+      initializeFallbackBackground();
+    }
+  })();
+  return asciiStartPromise;
+}
+
+let asciiScheduleArm = false;
 
 /**
- * Load Three.js ASCII background after first interaction, or after idle fallback,
- * so initial main-thread work stays available for LCP and input.
+ * Begin ASCII background soon after main UI is visible, without blocking first paint:
+ * - requestIdleCallback with a low timeout so work starts even if the main thread stays busy
+ * - first pointer/key still bumps start earlier if the user interacts first
  */
-function initializeASCIIBackground() {
-  if (asciiInitHooked) return;
-  asciiInitHooked = true;
-
-  const container = document.getElementById('container');
-  if (!container) return;
+function armASCIIBackgroundSchedule() {
+  if (asciiScheduleArm) return;
+  asciiScheduleArm = true;
 
   const scheduleInit = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
 
-  let fallbackTimer = null;
-  const clearFallback = () => {
-    if (fallbackTimer != null) {
-      clearTimeout(fallbackTimer);
-      fallbackTimer = null;
-    }
-  };
-
-  const startAscii = async () => {
-    if (asciiBackgroundManager) return;
-    try {
-      const { ASCIIBackgroundManager } = await import('./ascii-background/ASCIIBackgroundManager.js');
-      asciiBackgroundManager = new ASCIIBackgroundManager(container);
-    } catch (error) {
-      console.error('Failed to initialize ASCII Background System:', error);
-      initializeFallbackBackground();
-    }
-  };
-
-  const onInteract = () => {
-    window.removeEventListener('pointerdown', onInteract);
-    window.removeEventListener('keydown', onInteract);
-    clearFallback();
+  const kick = () => {
     scheduleInit(() => {
-      setTimeout(startAscii, 0);
-    }, { timeout: 3000 });
+      startAsciiBackground();
+    }, { timeout: 700 });
   };
 
-  window.addEventListener('pointerdown', onInteract, { passive: true });
-  window.addEventListener('keydown', onInteract, { passive: true });
+  kick();
 
-  scheduleInit(() => {
-    fallbackTimer = setTimeout(() => {
-      fallbackTimer = null;
-      startAscii();
-    }, 4500);
-  }, { timeout: 6000 });
+  const boost = () => {
+    window.removeEventListener('pointerdown', boost);
+    window.removeEventListener('keydown', boost);
+    startAsciiBackground();
+  };
+  window.addEventListener('pointerdown', boost, { passive: true });
+  window.addEventListener('keydown', boost, { passive: true });
 }
+
+// When loading coordinator reveals content — earlier than window "load" on slow networks
+document.addEventListener(
+  'portfolio:ui-ready',
+  () => {
+    armASCIIBackgroundSchedule();
+  },
+  { once: true }
+);
+
+// Fallback if the event never fires (e.g. coordinator bypassed)
+window.addEventListener('load', () => {
+  armASCIIBackgroundSchedule();
+});
+
+console.log('Main.js: Portfolio Content Manager system loading...');
 
 // Fallback background initialization (original system)
 function initializeFallbackBackground() {
   const body = document.body;
   const currentTheme = body.getAttribute('data-theme') || 'dark';
-  
-  // Set initial background color
+
   updateBackground(currentTheme);
-  
-  // Watch for theme changes
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
@@ -82,7 +99,7 @@ function initializeFallbackBackground() {
       }
     });
   });
-  
+
   observer.observe(body, {
     attributes: true,
     attributeFilter: ['data-theme']
@@ -93,23 +110,12 @@ function initializeFallbackBackground() {
 function updateBackground(theme) {
   const container = document.getElementById('container');
   const body = document.body;
-  
+
   if (container && themeBackgrounds[theme]) {
-    // Set background color with smooth transition
     container.style.background = themeBackgrounds[theme];
     body.style.background = themeBackgrounds[theme];
   }
 }
-
-const runAsciiWhenLoaded = () => initializeASCIIBackground();
-
-if (document.readyState === 'complete') {
-  runAsciiWhenLoaded();
-} else {
-  window.addEventListener('load', runAsciiWhenLoaded);
-}
-
-console.log('Main.js: Portfolio Content Manager system loading...');
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {

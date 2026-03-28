@@ -71,6 +71,9 @@ class LoadingCoordinator {
         
         // Add loaded class to body to show content
         document.body.classList.add('loaded');
+
+        // Lets main.js start heavy work (ASCII/Three) after first paint, without waiting for window.load
+        document.dispatchEvent(new CustomEvent('portfolio:ui-ready', { bubbles: true }));
         
         // Fade out loading screen - faster transition
         if (this.loadingScreen) {
