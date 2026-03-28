@@ -86,26 +86,26 @@ export class FallingStarInteraction {
                     maxBurstIntensityMultiplier: 0.96,
                     minBurstChaos: 2.6,
                     maxBurstChaos: 4.2,
-                    minBurstTailDuration: 0.55,
-                    maxBurstTailDuration: 0.85,
+                    minBurstTailDuration: 0.8,
+                    maxBurstTailDuration: 1.15,
                     minDebrisCount: 10,
                     maxDebrisCount: 16,
-                    minDebrisDuration: 1.8,
-                    maxDebrisDuration: 2.45,
+                    minDebrisDuration: 2.35,
+                    maxDebrisDuration: 3.2,
                     minDebrisSpeed: 52,
                     maxDebrisSpeed: 105,
                     minDebrisRadiusMultiplier: 0.18,
                     maxDebrisRadiusMultiplier: 0.34,
                     minDebrisGravity: 68,
                     maxDebrisGravity: 108,
-                    minDebrisFallDelay: 0.2,
-                    maxDebrisFallDelay: 0.36,
+                    minDebrisFallDelay: 0.26,
+                    maxDebrisFallDelay: 0.46,
                     minDebrisDriftAmplitude: 8,
                     maxDebrisDriftAmplitude: 18,
                     minDebrisDriftSpeed: 2.1,
                     maxDebrisDriftSpeed: 4,
-                    minDebrisDrag: 0.94,
-                    maxDebrisDrag: 0.97
+                    minDebrisDrag: 0.955,
+                    maxDebrisDrag: 0.982
                 };
             case 'medium':
                 return {
@@ -138,26 +138,26 @@ export class FallingStarInteraction {
                     maxBurstIntensityMultiplier: 1.04,
                     minBurstChaos: 3.2,
                     maxBurstChaos: 5.4,
-                    minBurstTailDuration: 0.72,
-                    maxBurstTailDuration: 1.05,
+                    minBurstTailDuration: 1,
+                    maxBurstTailDuration: 1.45,
                     minDebrisCount: 14,
                     maxDebrisCount: 22,
-                    minDebrisDuration: 2.2,
-                    maxDebrisDuration: 3.05,
+                    minDebrisDuration: 2.85,
+                    maxDebrisDuration: 4.0,
                     minDebrisSpeed: 64,
                     maxDebrisSpeed: 122,
                     minDebrisRadiusMultiplier: 0.2,
                     maxDebrisRadiusMultiplier: 0.4,
                     minDebrisGravity: 82,
                     maxDebrisGravity: 128,
-                    minDebrisFallDelay: 0.24,
-                    maxDebrisFallDelay: 0.42,
+                    minDebrisFallDelay: 0.32,
+                    maxDebrisFallDelay: 0.56,
                     minDebrisDriftAmplitude: 10,
                     maxDebrisDriftAmplitude: 24,
                     minDebrisDriftSpeed: 2.4,
                     maxDebrisDriftSpeed: 4.5,
-                    minDebrisDrag: 0.945,
-                    maxDebrisDrag: 0.975
+                    minDebrisDrag: 0.96,
+                    maxDebrisDrag: 0.986
                 };
             case 'high':
             default:
@@ -191,26 +191,26 @@ export class FallingStarInteraction {
                     maxBurstIntensityMultiplier: 1.12,
                     minBurstChaos: 3.8,
                     maxBurstChaos: 6.2,
-                    minBurstTailDuration: 0.9,
-                    maxBurstTailDuration: 1.3,
+                    minBurstTailDuration: 1.25,
+                    maxBurstTailDuration: 1.8,
                     minDebrisCount: 18,
                     maxDebrisCount: 28,
-                    minDebrisDuration: 2.55,
-                    maxDebrisDuration: 3.55,
+                    minDebrisDuration: 3.35,
+                    maxDebrisDuration: 4.75,
                     minDebrisSpeed: 78,
                     maxDebrisSpeed: 145,
                     minDebrisRadiusMultiplier: 0.22,
                     maxDebrisRadiusMultiplier: 0.46,
                     minDebrisGravity: 94,
                     maxDebrisGravity: 146,
-                    minDebrisFallDelay: 0.28,
-                    maxDebrisFallDelay: 0.48,
+                    minDebrisFallDelay: 0.38,
+                    maxDebrisFallDelay: 0.68,
                     minDebrisDriftAmplitude: 12,
                     maxDebrisDriftAmplitude: 30,
                     minDebrisDriftSpeed: 2.6,
                     maxDebrisDriftSpeed: 5.1,
-                    minDebrisDrag: 0.95,
-                    maxDebrisDrag: 0.98
+                    minDebrisDrag: 0.965,
+                    maxDebrisDrag: 0.988
                 };
         }
     }
@@ -693,17 +693,17 @@ export class FallingStarInteraction {
         const progress = particle.age / particle.duration;
         const fadeStart = Number.isFinite(particle.fadeStart)
             ? particle.fadeStart
-            : Math.min(0.72, 0.26 + (particle.fallDelay / particle.duration) * 0.9);
+            : Math.min(0.86, 0.38 + (particle.fallDelay / particle.duration) * 1.15);
         const fadeProgress = progress <= fadeStart
             ? 0
             : (progress - fadeStart) / (1 - fadeStart);
-        const fade = Math.pow(Math.max(0, 1 - fadeProgress), 1.9);
+        const fade = Math.pow(Math.max(0, 1 - fadeProgress), 1.45);
 
         if (fade <= 0.01) {
             return;
         }
 
-        const radius = Math.max(this.cellSize * 0.7, particle.radius * (0.92 - progress * 0.38));
+        const radius = Math.max(this.cellSize * 0.5, particle.radius * (0.98 - progress * 0.52));
         const gridX = Math.floor(particle.x / this.cellSize);
         const gridY = Math.floor(particle.y / this.cellSize);
         const influenceGridRadius = Math.ceil(radius / this.cellSize);
@@ -735,7 +735,7 @@ export class FallingStarInteraction {
                     this.maxExcitement
                 );
 
-                if (density <= 0.012) {
+                if (density <= 0.008) {
                     continue;
                 }
 
@@ -753,7 +753,7 @@ export class FallingStarInteraction {
                     color: this.pickBurstColor(palette, strength),
                     chaosMultiplier: 1 + particle.chaosMultiplier * (0.35 + distanceFade * 0.65),
                     preferredCharacter,
-                    threshold: 0.0025
+                    threshold: 0.0012
                 });
             }
         }
@@ -817,7 +817,7 @@ export class FallingStarInteraction {
                 ? 0
                 : this.clamp((burst.age - burst.duration) / burst.tailDuration, 0, 1);
             const softFadeProgress = this.clamp((activeProgress - 0.52) / 0.48, 0, 1);
-            const visibility = (1 - softFadeProgress * 0.55) * Math.pow(1 - tailProgress, 1.65);
+            const visibility = (1 - softFadeProgress * 0.42) * Math.pow(1 - tailProgress, 1.28);
             const progress = this.clamp(burst.age / totalDuration, 0, 1);
             burst.x = burst.anchorX;
             burst.y = burst.anchorY;
@@ -833,7 +833,7 @@ export class FallingStarInteraction {
 
             const waveThickness = Math.max(
                 this.cellSize * 1.15,
-                burst.waveThickness * ((1 - activeProgress * 0.12) + tailProgress * 0.35)
+                burst.waveThickness * ((1 - activeProgress * 0.12) + tailProgress * 0.9)
             );
             const innerFlashRadius = Math.max(
                 this.cellSize * 1.5,
@@ -881,16 +881,27 @@ export class FallingStarInteraction {
                     const noise = this.sampleNoise(x, y, burst.phase + burst.age * 12);
                     const sparkleStrength = this.clamp(baseStrength + noise * 0.18, 0, 1);
                     const lateTail = Math.pow(tailProgress, 0.9);
+                    const tailSparsity = this.clamp(
+                        Math.max(0, tailProgress - 0.08) * 0.72 + ((1 - sparkleStrength) * 0.16),
+                        0,
+                        0.78
+                    );
+
+                    if (tailSparsity > 0 && noise < tailSparsity) {
+                        continue;
+                    }
+
                     const scale = this.clamp(
-                        1 - (lateTail * 0.48) - ((1 - sparkleStrength) * 0.1),
-                        0.46,
+                        1 - (lateTail * 0.68) - ((1 - sparkleStrength) * 0.14),
+                        0.26,
                         1
                     );
                     const density = this.clamp(
                         burst.intensity
                         * (0.16 + sparkleStrength * 0.95)
                         * visibility
-                        * Math.pow(1 - progress, 0.82),
+                        * (1 - lateTail * 0.22)
+                        * Math.pow(1 - progress, 0.68),
                         0,
                         this.maxExcitement
                     );
@@ -898,7 +909,7 @@ export class FallingStarInteraction {
                         * (0.38 + sparkleStrength * 0.62);
                     let preferredCharacter = null;
 
-                    if (lateTail > 0.18) {
+                    if (lateTail > 0.08) {
                         preferredCharacter = this.pickLightBurstCharacter(noise);
                     } else if (ringStrength > 0.55 || noise > 0.82) {
                         preferredCharacter = this.pickBurstCharacter(sparkleStrength, noise);
@@ -909,7 +920,7 @@ export class FallingStarInteraction {
                         color: this.pickBurstColor(palette, sparkleStrength),
                         chaosMultiplier,
                         preferredCharacter,
-                        threshold: 0.0018,
+                        threshold: 0.001,
                         scale
                     });
                 }
